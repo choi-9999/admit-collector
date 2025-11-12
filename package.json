@@ -17,6 +17,7 @@
     "cloudinary": "^2.8.0",
     "formidable": "^3.5.4",
     "googleapis": "^165.0.0",
+    "nanoid": "^5.1.6",
     "next": "15.5.3",
     "react": "19.1.0",
     "react-dom": "19.1.0"

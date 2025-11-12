@@ -1,33 +1,54 @@
-import { NextResponse } from 'next/server';
-type AdmitStatus = '대기중' | '승인' | '반려';
+// app/api/admits/[id]/status/route.ts
+import { NextRequest, NextResponse } from "next/server";
+import { google } from "googleapis";
 
-export async function PATCH(
-  req: Request,
-  ctx: { params: Promise<{ id: string }> }
-) {
-  const { id } = await ctx.params;
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
-  const auth = req.headers.get('authorization') || '';
-  if (!auth.endsWith('admin_token_v1')) {
-    return NextResponse.json({ ok: false, error: 'UNAUTHORIZED' }, { status: 401 });
-  }
+const SHEET_ID = process.env.GOOGLE_SHEET_ID!;
+const TAB = "admit";
 
-  let body: any;
+function sheetsClient() {
+  const auth = new google.auth.JWT({
+    email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL!,
+    key: (process.env.GOOGLE_PRIVATE_KEY || "").replace(/\\n/g, "\n"),
+    scopes: ["https://www.googleapis.com/auth/spreadsheets"],
+  });
+  return google.sheets({ version: "v4", auth });
+}
+
+export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
   try {
-    body = await req.json();
-  } catch {
-    return NextResponse.json({ ok: false, error: 'BAD_JSON' }, { status: 400 });
-  }
+    const { status, reason }:{ status: "대기중"|"승인"|"반려"; reason?: string } = await req.json();
 
-  const status = body?.status as AdmitStatus | undefined;
-  const reason = (body?.reason as string | undefined)?.trim();
-  if (!status) {
-    return NextResponse.json({ ok: false, error: 'MISSING_STATUS' }, { status: 400 });
-  }
-  if (status === '반려' && !reason) {
-    return NextResponse.json({ ok: false, error: 'MISSING_REASON' }, { status: 400 });
-  }
+    const sheets = sheetsClient();
+    const { data } = await sheets.spreadsheets.values.get({
+      spreadsheetId: SHEET_ID,
+      range: `${TAB}!A1:N`,
+    });
 
-  // TODO: DB 반영
-  return NextResponse.json({ ok: true, id, status, reason });
+    const rows = data.values || [];
+    if (rows.length <= 1) return NextResponse.json({ ok:false, error:"empty" }, { status:404 });
+
+    const header = rows[0];
+    const idx: Record<string, number> = Object.fromEntries(header.map((h, i) => [h, i]));
+    const targetIndex = rows.findIndex((r, i) => i>0 && r[idx.id] === params.id);
+    if (targetIndex === -1) return NextResponse.json({ ok:false, error:"not found" }, { status:404 });
+
+    const rowNum = targetIndex + 1; // 1-based
+    const updatedAt = new Date().toISOString();
+    const col = (n:number) => String.fromCharCode("A".charCodeAt(0) + n);
+
+    await sheets.spreadsheets.values.update({
+      spreadsheetId: SHEET_ID,
+      range: `${TAB}!${col(idx.status)}${rowNum}:${col(idx.updatedAt)}${rowNum}`,
+      valueInputOption: "RAW",
+      requestBody: { values: [[status, reason || "", updatedAt]] },
+    });
+
+    return NextResponse.json({ ok:true });
+  } catch (e:any) {
+    console.error("[PATCH /api/admits/:id/status]", e?.response?.data || e);
+    return NextResponse.json({ ok:false, error:e.message }, { status:500 });
+  }
 }

@@ -832,6 +832,17 @@ export default function AdmitCollectorApp() {
     setTab("upload");
   };
 
+  // 탭/지점/관리자 보기 변경 시 목록 재조회
+  React.useEffect(() => {
+    (async () => {
+      const q = new URLSearchParams();
+      if (!(isAdmin && viewAllBranches) && branch) q.set("branch", branch);
+      const res = await fetch(`/api/admits?${q.toString()}`, { cache: "no-store" });
+      const json = await res.json();
+      if (json?.ok) setRows(json.rows);
+    })();
+  }, [branch, isAdmin, viewAllBranches, tab]); // status/admin 탭에서 전환시 갱신
+
   const univSuggestions = useMemo(() => Object.keys(universities), [universities]);
   const deptSuggestions = useMemo(() => {
     const u = universities[univ];
@@ -849,7 +860,7 @@ export default function AdmitCollectorApp() {
   const handleSubmit = async () => {
     setFileError(false);
 
-    // ✅ 기본 검증
+    // 0) 기본 검증
     if (!file) {
       setFileError(true);
       alert("합격증 파일은 필수입니다. 업로드 후 제출해주세요.");
@@ -868,83 +879,89 @@ export default function AdmitCollectorApp() {
       return;
     }
 
-    // ✅ 코드 조회
+    // 1) 대학/학과 코드 조회
     const { universityCode, deptCode } = getCodes(univ.trim(), dept.trim());
 
+    // 2) Cloudinary 업로드용 FormData 구성
+    //    - 서버 라우트에서 폴더/파일명(publicId)도 사용할 수 있게 같이 전송
+    //    - 폴더: admit/{branch}/{YYYY}/{MM}/{DD}
+    const now = new Date();
+    const yyyy = now.getFullYear();
+    const mm = String(now.getMonth() + 1).padStart(2, "0");
+    const dd = String(now.getDate()).padStart(2, "0");
+    const folder = `admit/${branch}/${yyyy}/${mm}/${dd}`;
+
+    // 파일명: "이름_대학_YYYYMMDD"
+    const baseName = `${name.trim()}_${univ.trim()}_${yyyy}${mm}${dd}`
+      // Cloudinary public_id에 문제될 수 있는 문자 정리
+      .replace(/[^\w\-가-힣._]/g, "_");
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("folder", folder);
+    formData.append("publicId", baseName); // 확장자는 Cloudinary가 형식에 따라 결정
+
     try {
-      // ✅ 날짜별 폴더 자동 생성
-      const now = new Date();
-      const year = now.getFullYear();
-      const month = String(now.getMonth() + 1).padStart(2, '0');
-      const day = String(now.getDate()).padStart(2, '0');
-      const folderPath = `admit/${branch}/${year}/${month}/${day}`;
-
-      // ✅ 파일명 생성 ("이름_대학_날짜.확장자")
-      const ext = file.name.split('.').pop()?.toLowerCase() || 'pdf';
-      const safeName = name.replace(/\s+/g, ''); // 공백 제거
-      const safeUniv = univ.replace(/\s+/g, '');
-      const formattedDate = `${year}${month}${day}`;
-      const customFileName = `${safeName}_${safeUniv}_${formattedDate}.${ext}`;
-
-      // ✅ FormData 구성
-      const formData = new FormData();
-      formData.append('file', file, customFileName); // ← 파일명 지정
-      formData.append('folder', folderPath); // ← 폴더 지정
-      formData.append('branch', branch);
-      formData.append('name', name.trim());
-      formData.append('university', univ.trim());
-      formData.append('dept', dept.trim());
-
-      // ✅ 백엔드 업로드 요청
-      const uploadRes = await fetch('/api/upload/cloudinary', {
-        method: 'POST',
+      // 3) Cloudinary 업로드 (멀티파트 수신 라우트)
+      const up = await fetch("/api/upload/cloudinary", {
+        method: "POST",
         body: formData,
       });
 
-      const contentType = uploadRes.headers.get('content-type') || '';
-      let payload: any;
-      if (contentType.includes('application/json')) {
-        payload = await uploadRes.json();
-      } else {
-        const text = await uploadRes.text();
-        console.error('[Upload non-JSON response]', text);
-        alert('업로드 응답이 JSON 형식이 아닙니다. 콘솔을 확인하세요.');
+      if (!up.ok) {
+        const errJson = await up.json().catch(() => ({}));
+        console.error("Upload error:", errJson);
+        alert(errJson.error || "업로드에 실패했습니다.");
         return;
       }
 
-      if (!uploadRes.ok || !payload?.ok) {
-        console.error('[Upload error]', payload);
-        alert(payload?.message || payload?.error || '업로드 실패');
+      // ✅ 업로드 응답 파싱
+      const upJson: {
+        ok: boolean;
+        message?: string;
+        file: { secure_url: string; public_id: string };
+      } = await up.json();
+
+      const cloud = upJson.file; // ← Cloudinary 저장 결과
+      // 4) Redis(Upstash)에 메타 저장
+      const metaRes = await fetch("/api/admits", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: name.trim(),
+          university: univ.trim(),
+          universityCode,
+          dept: dept.trim(),
+          deptCode,
+          track,
+          branch,
+          fileUrl: cloud.secure_url,
+        }),
+      });
+
+      const metaJson = await metaRes.json();
+      if (!metaRes.ok || !metaJson?.ok) {
+        console.error("Meta save error:", metaJson);
+        alert("서버 저장에 실패했습니다.");
         return;
       }
 
-      // ✅ 상태 반영
-      const newRow: AdmitRow = {
-        id: Math.random().toString(36).slice(2),
-        name: name.trim(),
-        university: univ.trim(),
-        universityCode,
-        dept: dept.trim(),
-        deptCode,
-        track,
-        branch,
-        file,
-        status: "대기중",
-      };
-      setRows((rs) => [newRow, ...rs]);
+      const saved = metaJson.row as AdmitRow;
 
-      // ✅ 폼 초기화
+      // 5) 프론트 상태 반영
+      setRows((rs) => [saved, ...rs]);
+
+      // 6) 폼 초기화
       setName("");
       setUniv("");
       setDept("");
       setTrack("수시");
       setFile(undefined);
 
-      // ✅ 성공 Toast
-      pushToast("✅ 제출이 완료되었습니다. 파일이 저장되었습니다.");
-
+      // 7) 성공 토스트
+      pushToast(upJson.message || "✅ 제출이 완료되었습니다. 검토가 진행됩니다.");
     } catch (err) {
-      console.error('❌ Upload exception:', err);
+      console.error("❌ Submit exception:", err);
       alert("업로드 중 오류가 발생했습니다. 네트워크를 확인하세요.");
     }
   };

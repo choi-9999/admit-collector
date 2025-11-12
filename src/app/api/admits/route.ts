@@ -1,76 +1,118 @@
-import { NextResponse } from 'next/server';
-import { redis } from '@/lib/redis';
+// app/api/admits/route.ts
+import { NextRequest, NextResponse } from "next/server";
+import { google } from "googleapis";
+import { nanoid } from "nanoid";
 
-export const runtime = 'nodejs';
-type AdmitStatus = '대기중' | '승인' | '반려';
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
-interface AdmitRow {
-  id: string;
-  name: string;
-  university: string;
-  universityCode: string;
-  dept: string;
-  deptCode: string;
-  track: '수시' | '정시';
-  branch: string;
-  status: AdmitStatus;
-  rejectReason: string | null;
-  fileUrl: string;
-  createdAt: number;
-  updatedAt: number;
+const SHEET_ID = process.env.GOOGLE_SHEET_ID!;
+const TAB = "admit";
+const HEADER = [
+  "id","name","university","universityCode","dept","deptCode",
+  "track","branch","fileUrl","filePublicId","status","rejectReason",
+  "createdAt","updatedAt"
+];
+
+function sheetsClient() {
+  const auth = new google.auth.JWT({
+    email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL!,
+    key: (process.env.GOOGLE_PRIVATE_KEY || "").replace(/\\n/g, "\n"),
+    scopes: ["https://www.googleapis.com/auth/spreadsheets"],
+  });
+  return google.sheets({ version: "v4", auth });
 }
 
-export async function POST(req: Request) {
-  const b = await req.json() as {
-    name: string; university: string; universityCode?: string;
-    dept: string; deptCode?: string; track: '수시'|'정시';
-    branch: string; fileUrl: string;
-  };
+export async function GET(req: NextRequest) {
+  try {
+    const url = new URL(req.url);
+    const branch = url.searchParams.get("branch") || undefined;
 
-  const id = crypto.randomUUID();
-  const now = Date.now();
+    const sheets = sheetsClient();
+    const { data } = await sheets.spreadsheets.values.get({
+      spreadsheetId: SHEET_ID,
+      range: `${TAB}!A1:N`,
+    });
 
-  const row: AdmitRow = {
-    id,
-    name: b.name.trim(),
-    university: b.university.trim(),
-    universityCode: b.universityCode ?? '',
-    dept: b.dept.trim(),
-    deptCode: b.deptCode ?? '000',
-    track: b.track,
-    branch: b.branch,
-    status: '대기중',
-    rejectReason: null,
-    fileUrl: b.fileUrl,
-    createdAt: now,
-    updatedAt: now,
-  };
+    const rows = data.values || [];
+    if (rows.length <= 1) return NextResponse.json({ ok: true, rows: [] });
 
-  await redis.set(`admit:${id}`, JSON.stringify(row));
-  await redis.zadd('admit:index:all', { score: now, member: id });
-  await redis.zadd(`admit:index:branch:${row.branch}:status:${row.status}`, { score: now, member: id });
+    const idx = Object.fromEntries(HEADER.map((h, i) => [h, i]));
+    const body = rows.slice(1).map((r) => ({
+      id: r[idx.id] || "",
+      name: r[idx.name] || "",
+      university: r[idx.university] || "",
+      universityCode: r[idx.universityCode] || "",
+      dept: r[idx.dept] || "",
+      deptCode: r[idx.deptCode] || "000",
+      track: (r[idx.track] || "수시") as "수시" | "정시",
+      branch: r[idx.branch] || "",
+      fileUrl: r[idx.fileUrl] || "",
+      filePublicId: r[idx.filePublicId] || "",
+      status: (r[idx.status] || "대기중") as "대기중" | "승인" | "반려",
+      rejectReason: r[idx.rejectReason] || "",
+      createdAt: r[idx.createdAt] || "",
+      updatedAt: r[idx.updatedAt] || "",
+    }));
 
-  return NextResponse.json({ ok: true, row });
+    const filtered = branch ? body.filter(b => b.branch === branch) : body;
+    filtered.sort((a,b)=> (b.createdAt||"").localeCompare(a.createdAt||"")); // 최신순
+
+    return NextResponse.json({ ok: true, rows: filtered });
+  } catch (e:any) {
+    console.error("[GET /api/admits]", e?.response?.data || e);
+    return NextResponse.json({ ok:false, error:e.message }, { status:500 });
+  }
 }
 
-export async function GET(req: Request) {
-  const { searchParams } = new URL(req.url);
-  const branch = searchParams.get('branch');
-  const status = searchParams.get('status'); // '승인' | '반려' | '대기중'
-  const limit  = Number(searchParams.get('limit') ?? '50');
-  const cursor = Number(searchParams.get('cursor') ?? '0');
+export async function POST(req: NextRequest) {
+  try {
+    const payload = await req.json();
+    const id = nanoid();
+    const now = new Date().toISOString();
 
-  const key = branch && status
-    ? `admit:index:branch:${branch}:status:${status}`
-    : 'admit:index:all';
+    const row = [
+      id,
+      payload.name,
+      payload.university,
+      payload.universityCode || "",
+      payload.dept,
+      payload.deptCode || "000",
+      payload.track,
+      payload.branch,
+      payload.fileUrl || "",
+      payload.filePublicId || "",
+      "대기중",
+      "",
+      now,
+      now,
+    ];
 
-  const ids = await redis.zrange<string[]>(key, -(cursor + limit), -1 - cursor);
-  ids.reverse();
+    const sheets = sheetsClient();
+    const res = await sheets.spreadsheets.values.append({
+      spreadsheetId: SHEET_ID,
+      range: `${TAB}!A1`,
+      valueInputOption: "RAW",
+      requestBody: { values: [row] },
+    });
 
-  const rows = await Promise.all(
-    ids.map(async (id) => JSON.parse((await redis.get<string>(`admit:${id}`)) || "null"))
-  );
-  const nextCursor = ids.length < limit ? null : cursor + limit;
+    if (!res.data.updates?.updatedRows) {
+      throw new Error("append failed");
+    }
 
-  return NextResponse.json({ ok: true, rows, nextCursor });
+    return NextResponse.json({
+      ok: true,
+      row: {
+        id,
+        ...payload,
+        status: "대기중",
+        rejectReason: "",
+        createdAt: now,
+        updatedAt: now,
+      },
+    });
+  } catch (e:any) {
+    console.error("[POST /api/admits]", e?.response?.data || e);
+    return NextResponse.json({ ok:false, error:e.message }, { status:500 });
+  }
 }
