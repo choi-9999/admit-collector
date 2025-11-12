@@ -1,4 +1,3 @@
-// app/api/admits/[id]/status/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { google } from "googleapis";
 
@@ -17,8 +16,13 @@ function sheetsClient() {
   return google.sheets({ version: "v4", auth });
 }
 
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+// ✅ Next 15: context.params 는 Promise 로 들어옴
+export async function PATCH(
+  req: NextRequest,
+  context: { params: Promise<{ id: string }> }
+) {
   try {
+    const { id } = await context.params; // ← 반드시 await
     const { status, reason }:{ status: "대기중"|"승인"|"반려"; reason?: string } = await req.json();
 
     const sheets = sheetsClient();
@@ -28,14 +32,19 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     });
 
     const rows = data.values || [];
-    if (rows.length <= 1) return NextResponse.json({ ok:false, error:"empty" }, { status:404 });
+    if (rows.length <= 1) {
+      return NextResponse.json({ ok:false, error:"empty" }, { status:404 });
+    }
 
     const header = rows[0];
     const idx: Record<string, number> = Object.fromEntries(header.map((h, i) => [h, i]));
-    const targetIndex = rows.findIndex((r, i) => i>0 && r[idx.id] === params.id);
-    if (targetIndex === -1) return NextResponse.json({ ok:false, error:"not found" }, { status:404 });
 
-    const rowNum = targetIndex + 1; // 1-based
+    const targetIndex = rows.findIndex((r, i) => i>0 && r[idx.id] === id);
+    if (targetIndex === -1) {
+      return NextResponse.json({ ok:false, error:"not found" }, { status:404 });
+    }
+
+    const rowNum = targetIndex + 1;
     const updatedAt = new Date().toISOString();
     const col = (n:number) => String.fromCharCode("A".charCodeAt(0) + n);
 
