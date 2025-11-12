@@ -1,0 +1,53 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite" // 운영 시 postgresql로 교체 가능
+  url      = env("DATABASE_URL")
+}
+
+enum AdmitStatus {
+  대기중
+  승인
+  반려
+}
+
+model University {
+  id        String       @id @default(cuid())
+  name      String       @unique
+  code      String       @default("")
+  depts     Department[]
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+}
+
+model Department {
+  id           String     @id @default(cuid())
+  name         String
+  code         String     @default("000")
+  university   University @relation(fields: [universityId], references: [id])
+  universityId String
+  @@unique([universityId, name])
+}
+
+model Branch {
+  id   String @id @default(cuid())
+  name String @unique
+}
+
+model AdmitRow {
+  id             String      @id @default(cuid())
+  name           String
+  universityName String
+  universityCode String
+  deptName       String
+  deptCode       String      @default("000")
+  track          String
+  branchName     String
+  fileKey        String      // 로컬 데모에선 /tmp 경로
+  fileUrl        String      // 미리보기 링크(로컬에선 임시 프리뷰 URL)
+  mimeType       String
+  status         AdmitStatus @default(대기중)
+  createdAt      DateTime    @default(now())
+}
