@@ -36,7 +36,7 @@ function downloadFile(filename: string, text: string) {
   URL.revokeObjectURL(url);
 }
 
-  const HOWTO_URL = 'https://www.notion.so/2aa47bd4842d80bea0d4d78f64d99a0a';
+  const HOWTO_URL = 'https://charm-count-364.notion.site/2aa47bd4842d80bea0d4d78f64d99a0a';
 
 // --- 타입 --- //
 export type AdmitStatus = "대기중" | "승인" | "반려";
