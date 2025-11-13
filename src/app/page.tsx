@@ -1552,10 +1552,26 @@ export default function AdmitCollectorApp() {
           universities={universities}
           branches={BRANCHES}
           onClose={() => setEditRow(null)}
-          onSave={(patch) => {
-            // 로컬 상태 갱신 (백엔드 연동 시 여기에 PATCH 호출 추가)
+          onSave={async (patch) => {
+            // 1) 서버에 PATCH 요청
+            const res = await fetch(`/api/admits/${editRow.id}/edit`, {
+              method: "PATCH",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(patch),
+            });
+      
+            const json = await res.json().catch(() => null);
+            if (!res.ok || !json?.ok) {
+              alert("수정 내용이 서버에 반영되지 않았습니다.");
+              console.error("edit error:", json);
+              return;
+            }
+      
+            // 2) 프론트 상태 동기화
             setRows((rs) =>
-              rs.map((r) => (r.id === editRow.id ? { ...r, ...patch } : r))
+              rs.map((r) =>
+                r.id === editRow.id ? { ...r, ...patch } : r,
+              ),
             );
             setEditRow(null);
             pushToast("✅ 항목이 수정되었습니다.");
