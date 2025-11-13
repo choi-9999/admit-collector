@@ -770,6 +770,21 @@ export default function AdmitCollectorApp() {
   // 지점
   const [branch, setBranch] = useState<string | null>(BRANCHES[0]);
 
+     // 🔹 최초 로드시 localStorage에서 저장된 지점 불러오기
+  React.useEffect(() => {
+    const saved = localStorage.getItem("admit_branch");
+    if (saved && BRANCHES.includes(saved)) {
+      setBranch(saved);
+    }
+  }, []);
+
+  // 🔹 branch가 바뀔 때마다 localStorage에 저장
+  React.useEffect(() => {
+    if (branch) {
+      localStorage.setItem("admit_branch", branch);
+    }
+  }, [branch]);
+
   // 마스터(관리) 데이터
   const [universities, setUniversities] = useState(INIT_UNIVERSITIES);
 
