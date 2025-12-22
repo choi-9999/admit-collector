@@ -1175,7 +1175,7 @@ export default function AdmitCollectorApp() {
               value={univ}
               setValue={setUniv}
               suggestions={univSuggestions}
-              placeholder="예: 서울대학교"
+              placeholder="예: 서울대학교 (목록에 있는 대학만 입력 가능합니다.)"
               required
               restrictToList
             />
@@ -1185,7 +1185,7 @@ export default function AdmitCollectorApp() {
               value={dept}
               setValue={setDept}
               suggestions={deptSuggestions}
-              placeholder="예: 경영학과"
+              placeholder="예: 경영학과 (목록에 없는 학과도 입력 가능합니다.)"
               required
             />
 
