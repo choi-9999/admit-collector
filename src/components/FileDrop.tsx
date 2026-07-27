@@ -38,10 +38,12 @@ export function FileDrop({
   };
 
   return (
-    <div className="w-full">
-      <label className="mb-2 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#00256c] dark:text-sky-300">
-        <span>📎</span> 합격증 증빙 서류 첨부 <span className="text-[#0077c8]">*</span>
-      </label>
+    <div className="relative flex flex-col justify-center px-4 py-2">
+      <div className="flex items-center justify-between">
+        <label className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
+          좌석 등급 / 증빙 서류 <span className="text-[#0077c8]">*</span>
+        </label>
+      </div>
 
       <div
         onDragOver={(e) => {
@@ -55,71 +57,48 @@ export function FileDrop({
           const f = e.dataTransfer.files?.[0];
           if (f) validate(f);
         }}
+        onClick={() => inputRef.current?.click()}
         className={classNames(
-          "group relative flex min-h-[140px] w-full flex-col items-center justify-center rounded-2xl border-2 border-dashed p-4 text-center transition-all duration-200",
-          dragOver
-            ? "border-[#0077c8] bg-[#e8f3fa] shadow-md dark:bg-sky-950/40"
-            : error
-            ? "border-rose-400 bg-rose-50/70 dark:bg-rose-950/40"
-            : "border-[#cde2f5] bg-[#f8fbfe] hover:border-[#0077c8] hover:bg-[#e8f3fa]/50 dark:border-gray-700 dark:bg-gray-900/70 dark:hover:bg-gray-800/40"
+          "mt-0.5 flex cursor-pointer items-center justify-between gap-2 rounded-xl p-1.5 transition-all",
+          dragOver ? "bg-[#e8f3fa]" : "hover:bg-[#f4f9fd]"
         )}
       >
-        <div className="flex flex-col items-center gap-2">
-          <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#e8f3fa] text-[#0077c8] dark:bg-sky-900/50 dark:text-sky-300">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor" className="h-6 w-6">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z" />
-            </svg>
-          </div>
-
+        <div className="flex items-center gap-2 truncate">
+          <span className="text-base">📂</span>
           {file ? (
-            <div className="mt-1 flex flex-col items-center">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-[#00256c] px-4 py-1.5 text-xs font-bold text-white shadow-sm dark:bg-sky-900 dark:text-sky-200">
-                📄 {file.name} ({Math.round(file.size / 1024)} KB)
-              </span>
-              <button
-                type="button"
-                onClick={() => setFile(undefined)}
-                className="mt-1.5 text-xs font-bold text-rose-500 hover:underline"
-              >
-                삭제하기
-              </button>
-            </div>
+            <span className="truncate text-xs font-bold text-[#00256c] dark:text-sky-300">
+              {file.name}
+            </span>
           ) : (
-            <>
-              <p className="text-xs font-bold text-[#00256c] dark:text-gray-200">
-                합격증 이미지/PDF를 이곳에 드래그하거나 선택해 주세요.
-              </p>
-              <p className="text-[11px] font-semibold text-slate-400 dark:text-gray-500">
-                PDF · JPG · PNG 지원 (최대 10MB)
-              </p>
-            </>
+            <span className="text-xs font-bold text-slate-400">
+              파일을 선택하세요 (PDF/이미지)
+            </span>
           )}
-
-          <button
-            type="button"
-            onClick={() => inputRef.current?.click()}
-            className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-[#00256c] px-5 py-2 text-xs font-bold text-white shadow-md transition-transform hover:scale-[1.02] hover:bg-[#001948] dark:bg-[#0077c8] dark:hover:bg-[#005fa3]"
-          >
-            {file ? "다른 파일 선택" : "파일 찾기"}
-          </button>
-
-          <input
-            ref={inputRef}
-            type="file"
-            accept=".pdf,image/png,image/jpeg,.jpg,.jpeg"
-            className="hidden"
-            onChange={(e) => {
-              const f = e.target.files?.[0];
-              if (f) validate(f);
-              e.currentTarget.value = "";
-            }}
-          />
         </div>
+
+        <button
+          type="button"
+          className="shrink-0 rounded-full bg-[#00256c] px-3 py-1 text-[11px] font-bold text-white shadow-sm hover:bg-[#001948]"
+        >
+          {file ? "변경" : "첨부"}
+        </button>
+
+        <input
+          ref={inputRef}
+          type="file"
+          accept=".pdf,image/png,image/jpeg,.jpg,.jpeg"
+          className="hidden"
+          onChange={(e) => {
+            const f = e.target.files?.[0];
+            if (f) validate(f);
+            e.currentTarget.value = "";
+          }}
+        />
       </div>
 
       {error && (
-        <p className="mt-2 text-xs font-bold text-rose-500">
-          ⚠️ 합격증 파일 첨부는 필수 항목입니다.
+        <p className="absolute -bottom-4 left-4 text-[10px] font-bold text-rose-500">
+          * 증빙 파일 필수
         </p>
       )}
     </div>

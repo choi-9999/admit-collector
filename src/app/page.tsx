@@ -10,7 +10,6 @@ import { runCsvTests, runCsvExtraTests, runDashboardTests } from "@/utils/testRu
 
 import { Combobox } from "@/components/Combobox";
 import { FileDrop } from "@/components/FileDrop";
-import { BranchSelector } from "@/components/BranchSelector";
 import { StatusBadge } from "@/components/StatusBadge";
 import { LoginForm } from "@/components/LoginForm";
 import { UniversityManager } from "@/components/UniversityManager";
@@ -351,713 +350,692 @@ export default function AdmitCollectorApp() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#cce4f7] via-[#eaf3fa] to-[#f0f6fa] text-slate-900 dark:from-slate-950 dark:via-gray-950 dark:to-gray-900 dark:text-gray-100 font-sans">
-      {/* 최상단 대한항공 스타일 미니 우측 메뉴 바 */}
-      <div className="border-b border-[#cde2f5]/60 bg-white/40 px-4 py-1.5 text-xs text-[#00256c] dark:border-gray-800 dark:bg-gray-900/40 dark:text-sky-300">
-        <div className="mx-auto flex max-w-6xl items-center justify-end gap-5 font-bold">
-          <a href={HOWTO_URL} target="_blank" rel="noreferrer" className="hover:underline">
-            📘 이용방법 안내
+    <div className="min-h-screen bg-white text-slate-900 font-sans dark:bg-gray-950 dark:text-gray-100">
+      {/* 1. 대한항공 공식 상단 우측 미니 링크 바 */}
+      <div className="border-b border-slate-100 bg-white px-6 py-2 text-xs text-[#00256c] dark:border-gray-800 dark:bg-gray-900 dark:text-sky-300">
+        <div className="mx-auto flex max-w-7xl items-center justify-end gap-6 font-bold">
+          <a href={HOWTO_URL} target="_blank" rel="noreferrer" className="flex items-center gap-1 hover:underline">
+            <span>🎁</span> 이벤트 / 가이드
           </a>
-          <button onClick={toggleTheme} className="hover:underline">
-            {theme === "dark" ? "☀️ 라이트 모드" : "🌙 다크 모드"}
+          <a href={HOWTO_URL} target="_blank" rel="noreferrer" className="flex items-center gap-1 hover:underline">
+            <span>❓</span> 자주 묻는 질문
+          </a>
+          <button onClick={toggleTheme} className="flex items-center gap-1 hover:underline">
+            <span>🌐</span> 대한민국 - {theme === "dark" ? "다크" : "한국어"}
           </button>
           {isAdmin ? (
-            <button onClick={handleLogout} className="text-rose-600 hover:underline dark:text-rose-400">
-              로그아웃
+            <button onClick={handleLogout} className="flex items-center gap-1 text-rose-600 hover:underline">
+              <span>👤</span> 로그아웃
             </button>
           ) : (
-            <button onClick={() => setShowLogin(true)} className="hover:underline">
-              로그인
+            <button onClick={() => setShowLogin(true)} className="flex items-center gap-1 hover:underline">
+              <span>👤</span> 회원가입 / 로그인
             </button>
           )}
         </div>
       </div>
 
-      <div className="mx-auto max-w-6xl p-4 md:p-8">
-        {/* 대한항공 공식 브랜드 헤더 */}
-        <header className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div className="flex items-center gap-4">
-            {/* 대한항공 로고 아이콘 오마주 */}
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#00256c] text-white shadow-md">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="h-7 w-7">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3 21l1.5-4.5L18 12 4.5 7.5 3 3l3 9z" />
-              </svg>
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="rounded-full bg-[#0077c8] px-3 py-0.5 text-[11px] font-black uppercase tracking-wider text-white">
-                  ETOOS 247
-                </span>
-                <h1 className="text-2xl font-black tracking-tight text-[#00256c] dark:text-gray-100 md:text-3xl">
-                  합격자 취합 센터
-                </h1>
+      {/* 2. 대한항공 메인 헤더 (KOREAN AIR 로고 + 중앙 메뉴 + 우측 검색/로그인) */}
+      <header className="border-b border-slate-200/80 bg-white px-6 py-3.5 dark:border-gray-800 dark:bg-gray-900">
+        <div className="mx-auto flex max-w-7xl items-center justify-between">
+          {/* 좌측 브랜드 로고 & 메인 메뉴 */}
+          <div className="flex items-center gap-10">
+            <div className="flex items-center gap-2.5 cursor-pointer">
+              {/* 대한항공 음양 원형 로고 모방 */}
+              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#00256c] text-white shadow-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="h-5 w-5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3 21l1.5-4.5L18 12 4.5 7.5 3 3l3 9z" />
+                </svg>
               </div>
-              <p className="mt-0.5 text-xs font-bold text-slate-500 dark:text-gray-400">
-                대한항공 서비스 인터페이스 기반 입시 합격 실적 및 증빙 수집 시스템
-              </p>
+              <span className="text-xl font-black tracking-tighter text-[#00256c] dark:text-white">
+                KOREAN AIR <span className="ml-1 text-sm font-bold text-[#0077c8]">ETOOS 247</span>
+              </span>
             </div>
+
+            {/* 대한항공 메인 메뉴 (예약, 여행 준비, 스카이패스 스타일) */}
+            <nav className="hidden items-center gap-8 text-sm font-extrabold text-[#00256c] dark:text-gray-200 md:flex">
+              <button
+                onClick={() => setTab("upload")}
+                className={classNames("hover:text-[#0077c8] transition-colors", tab === "upload" && "text-[#0077c8] border-b-2 border-[#0077c8] pb-0.5")}
+              >
+                지점 수집
+              </button>
+              <button
+                onClick={() => setTab("status")}
+                className={classNames("hover:text-[#0077c8] transition-colors", tab === "status" && "text-[#0077c8] border-b-2 border-[#0077c8] pb-0.5")}
+              >
+                합격 현황
+              </button>
+              <button
+                onClick={() => (isAdmin ? setTab("admin") : alert("관리자 로그인이 필요합니다."))}
+                className={classNames("hover:text-[#0077c8] transition-colors", tab === "admin" && "text-[#0077c8] border-b-2 border-[#0077c8] pb-0.5")}
+              >
+                관리자 센터
+              </button>
+            </nav>
           </div>
 
+          {/* 우측 검색 알약 피셔 & 로그인 알약 버튼 */}
           <div className="flex items-center gap-3">
-            {isAdmin && (
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-[#e6f7ed] px-3.5 py-1.5 text-xs font-bold text-[#047857] ring-1 ring-[#a7f3d0] dark:bg-emerald-950/60 dark:text-emerald-300">
-                <span className="h-2 w-2 rounded-full bg-[#10b981] animate-pulse" />
-                관리자 모드 실행 중
-              </span>
+            <div className="relative hidden sm:block">
+              <input
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="궁금한 것을 검색해보세요! 🔍"
+                className="w-56 rounded-full border border-slate-200 bg-[#f4f7fa] px-4 py-1.5 text-xs font-semibold text-[#00256c] placeholder:text-slate-400 focus:border-[#0077c8] focus:bg-white focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+              />
+            </div>
+
+            {isAdmin ? (
+              <button
+                onClick={handleLogout}
+                className="rounded-full border border-[#00256c] bg-white px-5 py-1.5 text-xs font-extrabold text-[#00256c] hover:bg-[#00256c] hover:text-white transition-colors dark:border-sky-400 dark:bg-gray-800 dark:text-sky-300"
+              >
+                로그아웃
+              </button>
+            ) : (
+              <button
+                onClick={() => setShowLogin(true)}
+                className="rounded-full border border-[#00256c] bg-white px-5 py-1.5 text-xs font-extrabold text-[#00256c] hover:bg-[#00256c] hover:text-white transition-colors dark:border-sky-400 dark:bg-gray-800 dark:text-sky-300"
+              >
+                로그인
+              </button>
             )}
           </div>
-        </header>
+        </div>
+      </header>
 
-        {/* 지점 선택 위젯 */}
-        <BranchSelector current={branch} setCurrent={setBranch} branches={BRANCHES} />
-
-        {/* 대한항공 메인 검색/예매 위젯 (Hero Main Card Widget) */}
-        <div className="relative mb-8 rounded-3xl border border-[#cde2f5] bg-white p-6 shadow-[0_12px_40px_rgba(0,37,108,0.08)] backdrop-blur-xl dark:border-gray-800 dark:bg-gray-900 md:p-8">
-          {/* 대한항공 상단 메인 탭바 (라운드 펠 커스텀) */}
-          <nav className="mb-6 flex flex-wrap gap-3 border-b border-[#cde2f5] pb-5 dark:border-gray-800">
+      {/* 3. 대한항공 엠비언트 하의 하늘색 그라데이션 Hero 영역 */}
+      <section className="relative bg-gradient-to-r from-[#b3dafa] via-[#e5f1fb] to-[#c7e2f9] px-4 pb-16 pt-8 dark:from-slate-900 dark:via-gray-900 dark:to-slate-950 md:px-8">
+        <div className="mx-auto max-w-7xl">
+          {/* 대한항공 항공권 예매 / 나의 여행 / 체크인 / 출도착 탭바 (위젯 카드 위에 이음새 연결) */}
+          <div className="flex flex-wrap items-end gap-1 px-4">
             <button
               onClick={() => setTab("upload")}
               className={classNames(
-                "inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-extrabold transition-all shadow-sm",
+                "flex items-center gap-2 rounded-t-2xl px-7 py-3.5 text-sm font-extrabold transition-all shadow-sm",
                 tab === "upload"
-                  ? "bg-[#00256c] text-white shadow-md"
-                  : "bg-[#e8f3fa] text-[#00256c] hover:bg-[#d8eaf7] dark:bg-gray-800 dark:text-gray-300"
+                  ? "bg-white text-[#00256c] shadow-lg dark:bg-gray-900 dark:text-white"
+                  : "bg-white/50 text-[#00256c]/70 hover:bg-white/80 dark:bg-gray-800/50 dark:text-gray-300"
               )}
             >
-              <span>✈️</span> 합격증 등록
+              <span>✈️</span> 항공권 예매 (등록)
             </button>
             <button
               onClick={() => setTab("status")}
               className={classNames(
-                "inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-extrabold transition-all shadow-sm",
+                "flex items-center gap-2 rounded-t-2xl px-7 py-3.5 text-sm font-extrabold transition-all shadow-sm",
                 tab === "status"
-                  ? "bg-[#00256c] text-white shadow-md"
-                  : "bg-[#e8f3fa] text-[#00256c] hover:bg-[#d8eaf7] dark:bg-gray-800 dark:text-gray-300"
+                  ? "bg-white text-[#00256c] shadow-lg dark:bg-gray-900 dark:text-white"
+                  : "bg-white/50 text-[#00256c]/70 hover:bg-white/80 dark:bg-gray-800/50 dark:text-gray-300"
               )}
             >
-              <span>📊</span> 합격 현황 & 대시보드
+              <span>👤</span> 나의 여행 (현황)
             </button>
             <button
-              onClick={() => (isAdmin ? setTab("admin") : alert("관리자 권한이 필요합니다."))}
+              onClick={() => (isAdmin ? setTab("admin") : alert("관리자 로그인이 필요합니다."))}
               className={classNames(
-                "inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-extrabold transition-all shadow-sm",
+                "flex items-center gap-2 rounded-t-2xl px-7 py-3.5 text-sm font-extrabold transition-all shadow-sm",
                 tab === "admin"
-                  ? "bg-[#00256c] text-white shadow-md"
-                  : "bg-[#e8f3fa] text-[#00256c] hover:bg-[#d8eaf7] dark:bg-gray-800 dark:text-gray-300"
+                  ? "bg-white text-[#00256c] shadow-lg dark:bg-gray-900 dark:text-white"
+                  : "bg-white/50 text-[#00256c]/70 hover:bg-white/80 dark:bg-gray-800/50 dark:text-gray-300"
               )}
             >
-              <span>⚙️</span> 관리자 센터
+              <span>🧳</span> 관리자 센터
             </button>
-          </nav>
+          </div>
 
-          {/* 탭 1: 합격증 등록 (대한항공 대형 티켓 서식 스타일) */}
-          {tab === "upload" && (
-            <div className="grid gap-8 lg:grid-cols-12">
-              {/* 좌측 입력 폼 (7열) */}
-              <div className="flex flex-col gap-5 lg:col-span-7">
-                {/* 대한항공 출발지/도착지 티켓 스타일 서식 */}
-                <div className="rounded-3xl border border-[#cde2f5] bg-[#f8fbfe] p-5 dark:border-gray-800 dark:bg-gray-900/60">
-                  <div className="mb-4 flex items-center justify-between border-b border-[#cde2f5] pb-3 dark:border-gray-800">
-                    <span className="text-xs font-black uppercase tracking-wider text-[#00256c] dark:text-sky-300">
-                      STEP 01. 학생 인적 및 합격 정보 입력
-                    </span>
-                    <span className="text-xs font-extrabold text-[#0077c8]">{branch ?? "지점 미선택"}</span>
-                  </div>
+          {/* 4. 대한항공 메인 티켓 수집 카드 (Pure White Rounded Widget Card) */}
+          <div className="rounded-3xl rounded-tl-none bg-white p-6 shadow-[0_16px_48px_rgba(0,37,108,0.12)] dark:bg-gray-900 md:p-8">
+            {/* 서브 옵션 바 (예매/마일리지 예매, 왕복/편도, 가까운 날짜 함께 조회 라인) */}
+            <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 pb-4 dark:border-gray-800">
+              <div className="flex flex-wrap items-center gap-3">
+                {/* 수집/마스터 선택 필 그룹 */}
+                <div className="flex rounded-full bg-[#f0f4f8] p-1 dark:bg-gray-800">
+                  <button className="rounded-full bg-[#00256c] px-4 py-1 text-xs font-bold text-white shadow-sm">
+                    예매 등록
+                  </button>
+                  <button className="rounded-full px-4 py-1 text-xs font-bold text-slate-600 hover:text-[#00256c] dark:text-gray-400">
+                    마일리지 예매
+                  </button>
+                </div>
 
-                  <div className="space-y-4">
-                    <div>
-                      <label className="mb-1.5 block text-xs font-extrabold uppercase tracking-wider text-[#00256c] dark:text-gray-300">
-                        👤 학생 이름 <span className="text-[#0077c8]">*</span>
-                      </label>
+                {/* 수시 / 정시 전형 필 선택 */}
+                <div className="flex items-center gap-1.5">
+                  <button
+                    onClick={() => setTrack("수시")}
+                    className={classNames(
+                      "rounded-full px-4 py-1.5 text-xs font-extrabold transition-all",
+                      track === "수시"
+                        ? "bg-[#dbeefe] text-[#0077c8] shadow-sm"
+                        : "text-slate-500 hover:bg-slate-100 dark:text-gray-400"
+                    )}
+                  >
+                    수시 (왕복)
+                  </button>
+                  <button
+                    onClick={() => setTrack("정시")}
+                    className={classNames(
+                      "rounded-full px-4 py-1.5 text-xs font-extrabold transition-all",
+                      track === "정시"
+                        ? "bg-[#dbeefe] text-[#0077c8] shadow-sm"
+                        : "text-slate-500 hover:bg-slate-100 dark:text-gray-400"
+                    )}
+                  >
+                    정시 (편도)
+                  </button>
+                </div>
+              </div>
+
+              {/* 우측 지점 선택 & 체크박스 */}
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-extrabold text-[#00256c] dark:text-sky-300">지점:</span>
+                  <select
+                    value={branch ?? ""}
+                    onChange={(e) => setBranch(e.target.value)}
+                    className="rounded-full border border-slate-200 bg-[#f4f7fa] px-3.5 py-1 text-xs font-extrabold text-[#00256c] focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                  >
+                    {BRANCHES.map((b) => (
+                      <option key={b} value={b}>
+                        {b} 지점
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {isAdmin && (
+                  <label className="flex cursor-pointer items-center gap-1.5 text-xs font-bold text-slate-600 dark:text-gray-300">
+                    <input
+                      type="checkbox"
+                      checked={viewAllBranches}
+                      onChange={(e) => setViewAllBranches(e.target.checked)}
+                      className="accent-[#0077c8]"
+                    />
+                    전체 지점 조회 ⓘ
+                  </label>
+                )}
+              </div>
+            </div>
+
+            {/* 5. 대한항공 시그니처 1줄 수평 수집 폼 행 (PUS ⇄ To Departure / Date / Passenger / Class / Search CTA) */}
+            {tab === "upload" && (
+              <div className="rounded-2xl border border-slate-200/90 bg-[#fcfdfe] shadow-inner dark:border-gray-800 dark:bg-gray-900/80">
+                <div className="grid grid-cols-1 divide-y divide-slate-100 dark:divide-gray-800 lg:grid-cols-12 lg:divide-x lg:divide-y-0">
+                  {/* Column 1: PUS ⇄ To (학생 성명 / 대학) (4열) */}
+                  <div className="flex items-center justify-between lg:col-span-4">
+                    {/* PUS 부산 (학생 성명) */}
+                    <div className="flex-1 px-4 py-2">
+                      <div className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
+                        학생 성명 (PUS)
+                      </div>
                       <input
                         value={name}
                         onChange={(e) => setName(e.target.value)}
-                        placeholder="예: 홍길동"
-                        className="w-full rounded-2xl border border-[#cde2f5] bg-white p-4 text-sm font-bold text-[#00256c] shadow-sm focus:border-[#0077c8] focus:outline-none focus:ring-4 focus:ring-[#0077c8]/15 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+                        placeholder="부산 / 홍길동"
+                        className="w-full bg-transparent text-xl font-black text-[#00256c] placeholder:text-slate-300 focus:outline-none dark:text-gray-100"
                       />
                     </div>
 
-                    <Combobox
-                      label="합격 대학"
-                      icon="🏛️"
-                      value={univ}
-                      setValue={setUniv}
-                      suggestions={univSuggestions}
-                      placeholder="예: 서울대학교 (목록 내 지정된 대학 선택)"
-                      required
-                      restrictToList
-                    />
+                    {/* ⇄ Swap Circle Button */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const temp = name;
+                        setName(univ);
+                        setUniv(temp);
+                      }}
+                      title="입력 교환"
+                      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-400 shadow-sm transition-transform hover:rotate-180 hover:text-[#0077c8]"
+                    >
+                      ⇄
+                    </button>
 
+                    {/* To 도착지 (합격 대학) */}
+                    <div className="flex-1">
+                      <Combobox
+                        label="합격 대학 (To)"
+                        value={univ}
+                        setValue={setUniv}
+                        suggestions={univSuggestions}
+                        placeholder="도착지 / 서울대"
+                        required
+                        restrictToList
+                        subLabel={univ ? `코드 ${universities[univ]?.code ?? ""}` : undefined}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Column 2: 학과 (출발일 가는날 ~ 오는날 위치) (3열) */}
+                  <div className="lg:col-span-3">
                     <Combobox
-                      label="학과"
-                      icon="📚"
+                      label="학과 (출발일)"
                       value={dept}
                       setValue={setDept}
                       suggestions={deptSuggestions}
-                      placeholder="예: 경영학과 (자유 입력 지원)"
+                      placeholder="📅 경영학과 선택"
                       required
-                    />
-
-                    <div>
-                      <label className="mb-2 block text-xs font-extrabold uppercase tracking-wider text-[#00256c] dark:text-gray-300">
-                        🎯 수시 / 정시 전형 구분 <span className="text-[#0077c8]">*</span>
-                      </label>
-                      <div className="flex gap-3">
-                        {(["수시", "정시"] as const).map((t) => (
-                          <button
-                            type="button"
-                            key={t}
-                            onClick={() => setTrack(t)}
-                            className={classNames(
-                              "flex-1 rounded-full py-3 text-sm font-black transition-all shadow-sm border",
-                              track === t
-                                ? "bg-[#00256c] text-white border-[#00256c]"
-                                : "bg-white text-[#00256c] border-[#cde2f5] hover:bg-[#e8f3fa]"
-                            )}
-                          >
-                            {t} 전형
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <FileDrop file={file} setFile={setFile} error={fileError} />
-              </div>
-
-              {/* 우측 대한항공 실시간 승권 카드 뷰 (5열) */}
-              <div className="flex flex-col justify-between rounded-3xl border border-[#00256c] bg-gradient-to-br from-[#00256c] via-[#001948] to-[#001235] p-7 text-white shadow-2xl lg:col-span-5">
-                <div>
-                  <div className="flex items-center justify-between border-b border-white/15 pb-4">
-                    <span className="rounded-full bg-white/10 px-3.5 py-1 text-xs font-black tracking-widest text-[#93c5fd] ring-1 ring-white/20">
-                      BOARDING PASS
-                    </span>
-                    <span className="text-xs font-bold text-slate-300">ETOOS 247</span>
-                  </div>
-
-                  <div className="mt-6 space-y-4">
-                    <div>
-                      <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">지점명</span>
-                      <p className="text-xl font-black text-[#93c5fd]">{branch ?? "지점 미선택"}</p>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4 border-t border-white/10 pt-3">
-                      <div>
-                        <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">학생 성명</span>
-                        <p className="text-2xl font-black text-white">{name || "—"}</p>
-                      </div>
-                      <div>
-                        <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">전형 구분</span>
-                        <p className="text-lg font-black text-[#93c5fd]">{track}</p>
-                      </div>
-                    </div>
-
-                    <div className="border-t border-white/10 pt-3">
-                      <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">합격 대학 (학교코드)</span>
-                      <p className="text-lg font-black text-white">
-                        {univ || "—"}
-                        {univ && <span className="ml-2 font-mono text-xs font-bold text-[#93c5fd]">({universities[univ]?.code ?? "미등록"})</span>}
-                      </p>
-                    </div>
-
-                    <div className="border-t border-white/10 pt-3">
-                      <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">학과 (학과코드)</span>
-                      <p className="text-base font-bold text-slate-200">
-                        {dept || "—"}
-                        {dept && <span className="ml-2 font-mono text-xs font-bold text-[#93c5fd]">({(universities[univ]?.depts ?? {})[dept] ?? "000"})</span>}
-                      </p>
-                    </div>
-
-                    <div className="border-t border-white/10 pt-3">
-                      <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">증빙 합격증 서류</span>
-                      <p className="mt-0.5 text-xs font-bold text-[#93c5fd]">
-                        {file ? `📄 ${file.name}` : "⚠️ 증빙 파일 미첨부"}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mt-8 border-t border-white/15 pt-5">
-                  <button
-                    onClick={handleSubmit}
-                    disabled={submitting}
-                    className="w-full rounded-full bg-[#0077c8] px-8 py-4 text-base font-black text-white shadow-[0_6px_20px_rgba(0,119,200,0.4)] transition-all hover:scale-[1.01] hover:bg-[#005fa3] disabled:opacity-50"
-                  >
-                    {submitting ? "제출 처리 중..." : "🚀 합격증 제출하기"}
-                  </button>
-                  <p className="mt-2.5 text-center text-[11px] font-semibold text-slate-300">
-                    제출 즉시 Cloudinary 및 Google Sheets에 저장됩니다.
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* 탭 2: 합격 현황 & 대시보드 (대한항공 공지 및 메트릭 카드) */}
-          {tab === "status" && (
-            <div className="space-y-6">
-              {/* 대한항공 스타일 4종 KPI 카드 */}
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <div className="rounded-3xl border border-[#cde2f5] bg-[#e8f3fa] p-5 shadow-sm">
-                  <div className="text-xs font-black uppercase tracking-wider text-[#00256c]">
-                    총 합격증 제출
-                  </div>
-                  <div className="mt-2 text-3xl font-black text-[#00256c]">
-                    {stats.total} <span className="text-sm font-extrabold text-slate-500">건</span>
-                  </div>
-                  <p className="mt-2 text-[11px] font-bold text-slate-500">
-                    보기 대상: {isAdmin && viewAllBranches ? "전체 지점" : (branch ?? "미선택")}
-                  </p>
-                </div>
-
-                <div className="rounded-3xl border border-[#a7f3d0] bg-[#e6f7ed] p-5 shadow-sm">
-                  <div className="flex items-center justify-between text-xs font-black uppercase tracking-wider text-[#047857]">
-                    <span>승인율</span>
-                    <span>{stats.approvedRate}%</span>
-                  </div>
-                  <div className="mt-2 text-2xl font-black text-[#047857]">
-                    {stats.byStatus["승인"]}건 승인 완료
-                  </div>
-                  <div className="mt-2.5 h-2 w-full overflow-hidden rounded-full bg-emerald-100">
-                    <div className="h-full bg-[#10b981]" style={{ width: `${stats.approvedRate}%` }} />
-                  </div>
-                </div>
-
-                <div className="rounded-3xl border border-[#cde2f5] bg-[#e8f3fa] p-5 shadow-sm">
-                  <div className="text-xs font-black uppercase tracking-wider text-[#00256c]">
-                    수시 / 정시 전형 비율
-                  </div>
-                  <div className="mt-2 flex items-center justify-between text-xs font-extrabold text-[#00256c]">
-                    <span>수시 {stats.byTrack["수시"]}건</span>
-                    <span>정시 {stats.byTrack["정시"]}건</span>
-                  </div>
-                  <div className="mt-2.5 flex h-2 w-full overflow-hidden rounded-full bg-slate-200">
-                    <div
-                      className="bg-[#00256c]"
-                      style={{ width: `${stats.total ? (stats.byTrack["수시"] / stats.total) * 100 : 0}%` }}
-                    />
-                    <div
-                      className="bg-[#0077c8]"
-                      style={{ width: `${stats.total ? (stats.byTrack["정시"] / stats.total) * 100 : 0}%` }}
-                    />
-                  </div>
-                </div>
-
-                <div className="rounded-3xl border border-[#fde68a] bg-[#fff8e6] p-5 shadow-sm">
-                  <div className="text-xs font-black uppercase tracking-wider text-[#b45309]">
-                    최상위 합격 대학
-                  </div>
-                  <div className="mt-2 flex flex-wrap gap-1.5">
-                    {stats.topUniversities.length === 0 ? (
-                      <span className="text-xs text-slate-400">데이터 없음</span>
-                    ) : (
-                      stats.topUniversities.slice(0, 3).map((u) => (
-                        <span key={u.name} className="rounded-full border border-[#fde68a] bg-white px-3 py-1 text-xs font-extrabold text-[#b45309] shadow-sm">
-                          {u.name} <span className="font-black text-[#d97706]">×{u.count}</span>
-                        </span>
-                      ))
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {/* 대한항공 검색 및 필터 조작 바 */}
-              <div className="flex flex-col gap-3 rounded-2xl border border-[#cde2f5] bg-[#f8fbfe] p-4 shadow-sm md:flex-row md:items-center md:justify-between">
-                <div className="flex flex-1 flex-wrap items-center gap-3">
-                  <div className="relative flex-1 min-w-[200px]">
-                    <input
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder="이름, 대학, 학과, 지점 검색..."
-                      className="w-full rounded-full border border-[#cde2f5] bg-white px-4 py-2 text-xs font-bold text-[#00256c] shadow-sm focus:border-[#0077c8] focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+                      subLabel={dept && univ ? `코드 ${(universities[univ]?.depts ?? {})[dept] ?? "000"}` : undefined}
                     />
                   </div>
 
-                  <div className="flex rounded-full border border-[#cde2f5] bg-white p-1 dark:bg-gray-900">
-                    {(["전체", "승인", "대기중", "반려"] as const).map((st) => (
-                      <button
-                        key={st}
-                        onClick={() => setStatusFilter(st)}
-                        className={classNames(
-                          "rounded-full px-3.5 py-1 text-xs font-extrabold transition-all",
-                          statusFilter === st
-                            ? "bg-[#00256c] text-white shadow-sm"
-                            : "text-[#00256c] hover:bg-[#e8f3fa]"
-                        )}
-                      >
-                        {st}
-                      </button>
-                    ))}
+                  {/* Column 3: 좌석 등급 / 합격증 첨부 (3열) */}
+                  <div className="lg:col-span-3">
+                    <FileDrop file={file} setFile={setFile} error={fileError} />
                   </div>
-                </div>
 
-                <div className="flex items-center gap-3">
-                  {isAdmin && (
-                    <label className="flex cursor-pointer items-center gap-1.5 text-xs font-bold text-[#00256c]">
-                      <input
-                        type="checkbox"
-                        checked={viewAllBranches}
-                        onChange={(e) => setViewAllBranches(e.target.checked)}
-                        className="accent-[#0077c8]"
-                      />
-                      전체 지점 데이터 보기
-                    </label>
-                  )}
-
-                  <button
-                    onClick={() => exportCSV(true)}
-                    className="rounded-full bg-[#047857] px-5 py-2 text-xs font-extrabold text-white shadow transition-all hover:bg-[#065f46]"
-                  >
-                    📥 승인건 CSV 추출
-                  </button>
-                </div>
-              </div>
-
-              {/* 데이터 현황 테이블 */}
-              <div className="overflow-x-auto">
-                <table className="min-w-full border-separate border-spacing-y-2 text-left text-xs">
-                  <thead>
-                    <tr className="font-extrabold text-[#00256c]">
-                      <th className="px-3 py-2">상태</th>
-                      <th className="px-3 py-2">이름</th>
-                      <th className="px-3 py-2">합격 대학</th>
-                      <th className="px-3 py-2">학교코드</th>
-                      <th className="px-3 py-2">학과</th>
-                      <th className="px-3 py-2">학과코드</th>
-                      <th className="px-3 py-2">전형</th>
-                      <th className="px-3 py-2">지점</th>
-                      <th className="px-3 py-2">증빙 파일</th>
-                      {isAdmin && <th className="px-3 py-2 text-right">관리 조치</th>}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredRows.length === 0 ? (
-                      <tr>
-                        <td colSpan={isAdmin ? 10 : 9} className="rounded-2xl border border-[#cde2f5] bg-white py-12 text-center text-sm font-bold text-slate-400">
-                          조건에 부합하는 합격 내역이 없습니다.
-                        </td>
-                      </tr>
-                    ) : (
-                      filteredRows.map((r) => (
-                        <tr
-                          key={r.id}
-                          className="group rounded-2xl border border-[#cde2f5] bg-white shadow-sm transition-all hover:border-[#0077c8] hover:shadow-md dark:bg-gray-900"
-                        >
-                          <td className="rounded-l-2xl px-3 py-4">
-                            <StatusBadge s={r.status} reason={r.rejectReason} />
-                          </td>
-                          <td className="px-3 py-4 font-black text-[#00256c] dark:text-gray-100">{r.name}</td>
-                          <td className="px-3 py-4 font-bold text-slate-800 dark:text-gray-200">{r.university}</td>
-                          <td className="px-3 py-4 font-mono font-bold text-[#0077c8]">{r.universityCode || "—"}</td>
-                          <td className="px-3 py-4 font-bold text-slate-800 dark:text-gray-200">{r.dept}</td>
-                          <td className="px-3 py-4 font-mono font-bold text-[#0077c8]">{r.deptCode || "000"}</td>
-                          <td className="px-3 py-4 font-black text-[#00256c]">{r.track}</td>
-                          <td className="px-3 py-4 font-semibold text-slate-600">{r.branch}</td>
-                          <td className="px-3 py-4">
-                            {r.fileUrl ? (
-                              <button
-                                onClick={() => setPreviewRow(r)}
-                                className="inline-flex items-center gap-1 rounded-full border border-[#cde2f5] bg-[#e8f3fa] px-3 py-1 text-xs font-bold text-[#0077c8] hover:bg-[#0077c8] hover:text-white transition-colors"
-                              >
-                                👁️ 증빙서류
-                              </button>
-                            ) : (
-                              <span className="text-slate-400">없음</span>
-                            )}
-                          </td>
-                          {isAdmin && (
-                            <td className="rounded-r-2xl px-3 py-4 text-right">
-                              <div className="flex justify-end gap-1.5">
-                                <button
-                                  onClick={() => setRowStatus(r.id, "승인")}
-                                  className="rounded-full bg-[#e6f7ed] px-3 py-1 text-xs font-bold text-[#047857] hover:bg-[#10b981] hover:text-white transition-colors"
-                                >
-                                  승인
-                                </button>
-                                <button
-                                  onClick={async () => {
-                                    const reason = prompt("반려 사유를 입력하세요 (필수)");
-                                    if (!reason || !reason.trim()) return;
-                                    await setRowStatus(r.id, "반려", reason.trim());
-                                  }}
-                                  className="rounded-full bg-[#ffeef0] px-3 py-1 text-xs font-bold text-[#be123c] hover:bg-[#f43f5e] hover:text-white transition-colors"
-                                >
-                                  반려
-                                </button>
-                                <button
-                                  onClick={() => setEditRow(r)}
-                                  className="rounded-full bg-[#fff8e6] px-3 py-1 text-xs font-bold text-[#b45309] hover:bg-[#f59e0b] hover:text-white transition-colors"
-                                >
-                                  수정
-                                </button>
-                              </div>
-                            </td>
-                          )}
-                        </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
-
-          {/* 탭 3: 관리자 센터 */}
-          {tab === "admin" && (
-            <div className="space-y-8">
-              <div className="rounded-3xl border border-[#cde2f5] bg-[#f8fbfe] p-6 shadow-sm">
-                <UniversityManager
-                  universities={universities}
-                  onUpsertUniversity={upsertUniversity}
-                  onUpsertDept={upsertDept}
-                />
-              </div>
-
-              <div className="rounded-3xl border border-[#cde2f5] bg-[#f8fbfe] p-6 shadow-sm">
-                <div className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-[#cde2f5] pb-4">
-                  <h3 className="text-sm font-black text-[#00256c]">
-                    🛠️ 합격자 검토 및 시스템 도구
-                  </h3>
-                  <div className="flex flex-wrap gap-2">
+                  {/* Column 4: 대한항공 시그니처 Sky Blue 알약 검색 버튼 (2열) */}
+                  <div className="flex items-center justify-center p-3 lg:col-span-2">
                     <button
-                      onClick={runCsvTests}
-                      className="rounded-full bg-[#00256c] px-4 py-2 text-xs font-bold text-white shadow hover:bg-[#001948]"
+                      onClick={handleSubmit}
+                      disabled={submitting}
+                      className="w-full rounded-full bg-[#0077c8] px-6 py-4 text-sm font-black text-white shadow-[0_6px_20px_rgba(0,119,200,0.35)] transition-all hover:scale-[1.02] hover:bg-[#005fa3] disabled:opacity-50"
                     >
-                      CSV 유닛 테스트
-                    </button>
-                    <button
-                      onClick={runCsvExtraTests}
-                      className="rounded-full bg-[#00256c] px-4 py-2 text-xs font-bold text-white shadow hover:bg-[#001948]"
-                    >
-                      CSV 확장 테스트
-                    </button>
-                    <button
-                      onClick={runDashboardTests}
-                      className="rounded-full bg-[#00256c] px-4 py-2 text-xs font-bold text-white shadow hover:bg-[#001948]"
-                    >
-                      대시보드 테스트
-                    </button>
-                    <button
-                      onClick={() => {
-                        const cmp = buildExportComparator();
-                        const sorted = rows
-                          .map((r, idx) => ({ r, a: toApplicant(r), idx }))
-                          .sort((x, y) => {
-                            const c = cmp(x.a, y.a);
-                            return c !== 0 ? c : x.idx - y.idx;
-                          })
-                          .map((x) => x.r);
-                        console.log("[EXPORT PREVIEW] sorted", sorted);
-                        alert("콘솔에서 입시 정렬 결과를 확인하세요 (F12 → Console)");
-                      }}
-                      className="rounded-full bg-[#0077c8] px-4 py-2 text-xs font-bold text-white shadow hover:bg-[#005fa3]"
-                    >
-                      정렬 콘솔 미리보기
-                    </button>
-                    <button
-                      onClick={() => exportCSV(true)}
-                      className="rounded-full bg-[#047857] px-4 py-2 text-xs font-bold text-white shadow hover:bg-[#065f46]"
-                    >
-                      승인건 CSV 추출
+                      {submitting ? "제출 중..." : "합격증 검색"}
                     </button>
                   </div>
                 </div>
-
-                <div className="overflow-x-auto">
-                  <table className="min-w-full border-separate border-spacing-y-2 text-left text-xs">
-                    <thead>
-                      <tr className="font-extrabold text-[#00256c]">
-                        <th className="px-3 py-2">상태</th>
-                        <th className="px-3 py-2">이름</th>
-                        <th className="px-3 py-2">합격 대학</th>
-                        <th className="px-3 py-2">학과</th>
-                        <th className="px-3 py-2">전형</th>
-                        <th className="px-3 py-2">지점</th>
-                        <th className="px-3 py-2 text-right">빠른 조치</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {rows.length === 0 ? (
-                        <tr>
-                          <td colSpan={7} className="py-8 text-center text-slate-400">데이터가 없습니다</td>
-                        </tr>
-                      ) : (
-                        rows.map((r) => (
-                          <tr key={r.id} className="rounded-2xl border border-[#cde2f5] bg-white shadow-sm">
-                            <td className="rounded-l-2xl px-3 py-3.5"><StatusBadge s={r.status} /></td>
-                            <td className="px-3 py-3.5 font-bold text-[#00256c]">{r.name}</td>
-                            <td className="px-3 py-3.5 font-bold text-slate-800">{r.university}</td>
-                            <td className="px-3 py-3.5 font-bold text-slate-800">{r.dept}</td>
-                            <td className="px-3 py-3.5 font-black text-[#00256c]">{r.track}</td>
-                            <td className="px-3 py-3.5 font-semibold text-slate-600">{r.branch}</td>
-                            <td className="rounded-r-2xl px-3 py-3.5 text-right">
-                              <div className="flex justify-end gap-1.5">
-                                <button
-                                  onClick={() => setRowStatus(r.id, "승인")}
-                                  className="rounded-full bg-[#e6f7ed] px-3 py-1 text-xs font-bold text-[#047857] hover:bg-[#10b981] hover:text-white"
-                                >
-                                  승인
-                                </button>
-                                <button
-                                  onClick={() => setRowStatus(r.id, "반려")}
-                                  className="rounded-full bg-[#ffeef0] px-3 py-1 text-xs font-bold text-[#be123c] hover:bg-[#f43f5e] hover:text-white"
-                                >
-                                  반려
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))
-                      )}
-                    </tbody>
-                  </table>
-                </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* 6. 대한항공 미드 3개 프로모션 카드 / 대시보드 통계 카드 */}
+      <section className="mx-auto max-w-7xl px-4 py-8 md:px-8">
+        {/* 상단 배너 카드 */}
+        <div className="mb-8 flex flex-col items-center justify-between rounded-2xl bg-[#e8f3fb] p-6 text-[#00256c] md:flex-row dark:bg-gray-900 dark:text-sky-300">
+          <div>
+            <h3 className="text-lg font-black">대한항공의 새로워진 대입 합격자 취합 서비스를 한눈에</h3>
+            <p className="mt-1 text-xs font-bold text-slate-500 dark:text-gray-400">지점 실적 데이터 및 증빙 합격증을 실시간으로 확인해 보세요.</p>
+          </div>
+          <button
+            onClick={() => setTab("status")}
+            className="mt-4 rounded-full border border-[#00256c] bg-white px-5 py-2 text-xs font-extrabold text-[#00256c] hover:bg-[#00256c] hover:text-white transition-colors md:mt-0 dark:bg-gray-800 dark:text-sky-300"
+          >
+            신규서비스 보러가기
+          </button>
         </div>
 
-        {/* 대한항공 하단 서비스 아이콘 그리드 ("여행의 완성을 위한 경험") */}
-        <section className="mb-10">
-          <h3 className="mb-4 text-xs font-black uppercase tracking-wider text-[#00256c] dark:text-sky-300">
-            ✈️ 원클릭 서비스 퀵 도구
-          </h3>
-          <div className="grid grid-cols-2 gap-3.5 sm:grid-cols-3 md:grid-cols-5">
-            <button
-              onClick={() => exportCSV(true)}
-              className="flex flex-col items-center justify-center rounded-3xl border border-[#cde2f5] bg-[#e8f3fa] p-5 shadow-sm transition-all hover:-translate-y-1 hover:bg-[#d8eaf7] hover:shadow-md"
-            >
-              <span className="text-3xl">📊</span>
-              <span className="mt-2.5 text-xs font-extrabold text-[#00256c]">승인 CSV 추출</span>
-            </button>
-            <button
-              onClick={() => {
-                if (!isAdmin) {
-                  alert("관리자 로그인이 필요합니다.");
-                  setShowLogin(true);
-                } else {
-                  setTab("admin");
-                }
-              }}
-              className="flex flex-col items-center justify-center rounded-3xl border border-[#cde2f5] bg-[#e8f3fa] p-5 shadow-sm transition-all hover:-translate-y-1 hover:bg-[#d8eaf7] hover:shadow-md"
-            >
-              <span className="text-3xl">🏫</span>
-              <span className="mt-2.5 text-xs font-extrabold text-[#00256c]">대학/학과 코드 관리</span>
-            </button>
-            <button
-              onClick={() => {
-                const cmp = buildExportComparator();
-                const sorted = rows
-                  .map((r, idx) => ({ r, a: toApplicant(r), idx }))
-                  .sort((x, y) => {
-                    const c = cmp(x.a, y.a);
-                    return c !== 0 ? c : x.idx - y.idx;
-                  })
-                  .map((x) => x.r);
-                console.log("[EXPORT PREVIEW] sorted", sorted);
-                alert("콘솔에서 입시 정렬 결과를 확인하세요 (F12 → Console)");
-              }}
-              className="flex flex-col items-center justify-center rounded-3xl border border-[#cde2f5] bg-[#e8f3fa] p-5 shadow-sm transition-all hover:-translate-y-1 hover:bg-[#d8eaf7] hover:shadow-md"
-            >
-              <span className="text-3xl">🧪</span>
-              <span className="mt-2.5 text-xs font-extrabold text-[#00256c]">정렬 콘솔 검증</span>
-            </button>
-            <button
-              onClick={runCsvTests}
-              className="flex flex-col items-center justify-center rounded-3xl border border-[#cde2f5] bg-[#e8f3fa] p-5 shadow-sm transition-all hover:-translate-y-1 hover:bg-[#d8eaf7] hover:shadow-md"
-            >
-              <span className="text-3xl">📋</span>
-              <span className="mt-2.5 text-xs font-extrabold text-[#00256c]">CSV 유닛 테스트</span>
-            </button>
-            <a
-              href={HOWTO_URL}
-              target="_blank"
-              rel="noreferrer"
-              className="flex flex-col items-center justify-center rounded-3xl border border-[#cde2f5] bg-[#e8f3fa] p-5 shadow-sm transition-all hover:-translate-y-1 hover:bg-[#d8eaf7] hover:shadow-md"
-            >
-              <span className="text-3xl">📖</span>
-              <span className="mt-2.5 text-xs font-extrabold text-[#00256c]">이용 가이드</span>
-            </a>
+        {/* 3 Grid 프로모션 스타일 통계 카드 */}
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+          <div className="overflow-hidden rounded-3xl border border-slate-200/80 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+            <div className="flex h-40 w-full items-center justify-center rounded-2xl bg-[#e8f3fb] text-4xl dark:bg-gray-800">
+              📈
+            </div>
+            <div className="mt-4">
+              <span className="text-xs font-black uppercase text-[#0077c8]">통계 한눈에 보기</span>
+              <h4 className="mt-1 text-base font-black text-[#00256c] dark:text-white">
+                총 합격증 제출 실적: {stats.total}건
+              </h4>
+              <p className="mt-1 text-xs font-semibold text-slate-500 dark:text-gray-400">
+                {branch ?? "전체"} 지점 등록 실적이 실시간으로 가공되어 집계됩니다.
+              </p>
+            </div>
+          </div>
+
+          <div className="overflow-hidden rounded-3xl border border-slate-200/80 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+            <div className="flex h-40 w-full items-center justify-center rounded-2xl bg-[#e6f7ed] text-4xl dark:bg-gray-800">
+              ✅
+            </div>
+            <div className="mt-4">
+              <span className="text-xs font-black uppercase text-[#047857]">검토 및 승인율</span>
+              <h4 className="mt-1 text-base font-black text-[#047857]">
+                승인 완료율: {stats.approvedRate}% ({stats.byStatus["승인"]}건)
+              </h4>
+              <p className="mt-1 text-xs font-semibold text-slate-500 dark:text-gray-400">
+                관리자 검토를 통해 승인된 데이터만 CSV 파일로 정상 추출됩니다.
+              </p>
+            </div>
+          </div>
+
+          <div className="overflow-hidden rounded-3xl border border-slate-200/80 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+            <div className="flex h-40 w-full items-center justify-center rounded-2xl bg-[#fff8e6] text-4xl dark:bg-gray-800">
+              🏆
+            </div>
+            <div className="mt-4">
+              <span className="text-xs font-black uppercase text-[#b45309]">주요 대학 실적</span>
+              <h4 className="mt-1 text-base font-black text-[#b45309]">
+                상위 대학: {stats.topUniversities[0]?.name || "데이터 준비중"}
+              </h4>
+              <p className="mt-1 text-xs font-semibold text-slate-500 dark:text-gray-400">
+                의약학 계열 및 서울 주요 대학 합격자 자동 분류 정렬 포함.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 7. 현황 및 관리 리스트 (Korean Air "알려드립니다" 공지/목록 스타일) */}
+      <section className="mx-auto max-w-7xl px-4 py-8 md:px-8">
+        <div className="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900 md:p-8">
+          <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 pb-4 dark:border-gray-800">
+            <div>
+              <h3 className="text-xl font-black text-[#00256c] dark:text-white">알려드립니다 (합격 현황)</h3>
+              <p className="text-xs font-bold text-slate-500">실시간 지점별 합격 등록 내역 목록</p>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <div className="flex rounded-full border border-slate-200 bg-white p-1 dark:bg-gray-800">
+                {(["전체", "승인", "대기중", "반려"] as const).map((st) => (
+                  <button
+                    key={st}
+                    onClick={() => setStatusFilter(st)}
+                    className={classNames(
+                      "rounded-full px-4 py-1 text-xs font-extrabold transition-all",
+                      statusFilter === st
+                        ? "bg-[#00256c] text-white shadow-sm"
+                        : "text-slate-600 hover:bg-slate-100 dark:text-gray-400"
+                    )}
+                  >
+                    {st}
+                  </button>
+                ))}
+              </div>
+
+              <button
+                onClick={() => exportCSV(true)}
+                className="rounded-full bg-[#047857] px-5 py-2 text-xs font-extrabold text-white shadow hover:bg-[#065f46]"
+              >
+                📥 승인건 CSV 추출
+              </button>
+            </div>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="min-w-full border-separate border-spacing-y-2 text-left text-xs">
+              <thead>
+                <tr className="font-black text-[#00256c]">
+                  <th className="px-3 py-2">상태</th>
+                  <th className="px-3 py-2">이름</th>
+                  <th className="px-3 py-2">합격 대학</th>
+                  <th className="px-3 py-2">학교코드</th>
+                  <th className="px-3 py-2">학과</th>
+                  <th className="px-3 py-2">학과코드</th>
+                  <th className="px-3 py-2">전형</th>
+                  <th className="px-3 py-2">지점</th>
+                  <th className="px-3 py-2">증빙 파일</th>
+                  {isAdmin && <th className="px-3 py-2 text-right">관리 조치</th>}
+                </tr>
+              </thead>
+              <tbody>
+                {filteredRows.length === 0 ? (
+                  <tr>
+                    <td colSpan={isAdmin ? 10 : 9} className="rounded-2xl border border-slate-100 bg-[#f8fbfe] py-12 text-center text-sm font-bold text-slate-400">
+                      등록된 데이터가 없습니다.
+                    </td>
+                  </tr>
+                ) : (
+                  filteredRows.map((r) => (
+                    <tr
+                      key={r.id}
+                      className="group rounded-2xl border border-slate-200/80 bg-white shadow-sm transition-all hover:border-[#0077c8] hover:shadow-md dark:bg-gray-900"
+                    >
+                      <td className="rounded-l-2xl px-3 py-4">
+                        <StatusBadge s={r.status} reason={r.rejectReason} />
+                      </td>
+                      <td className="px-3 py-4 font-black text-[#00256c] dark:text-gray-100">{r.name}</td>
+                      <td className="px-3 py-4 font-bold text-slate-800 dark:text-gray-200">{r.university}</td>
+                      <td className="px-3 py-4 font-mono font-bold text-[#0077c8]">{r.universityCode || "—"}</td>
+                      <td className="px-3 py-4 font-bold text-slate-800 dark:text-gray-200">{r.dept}</td>
+                      <td className="px-3 py-4 font-mono font-bold text-[#0077c8]">{r.deptCode || "000"}</td>
+                      <td className="px-3 py-4 font-black text-[#00256c]">{r.track}</td>
+                      <td className="px-3 py-4 font-semibold text-slate-600">{r.branch}</td>
+                      <td className="px-3 py-4">
+                        {r.fileUrl ? (
+                          <button
+                            onClick={() => setPreviewRow(r)}
+                            className="inline-flex items-center gap-1 rounded-full border border-[#cde2f5] bg-[#e8f3fa] px-3 py-1 text-xs font-bold text-[#0077c8] hover:bg-[#0077c8] hover:text-white transition-colors"
+                          >
+                            👁️ 증빙서류
+                          </button>
+                        ) : (
+                          <span className="text-slate-400">없음</span>
+                        )}
+                      </td>
+                      {isAdmin && (
+                        <td className="rounded-r-2xl px-3 py-4 text-right">
+                          <div className="flex justify-end gap-1.5">
+                            <button
+                              onClick={() => setRowStatus(r.id, "승인")}
+                              className="rounded-full bg-[#e6f7ed] px-3 py-1 text-xs font-bold text-[#047857] hover:bg-[#10b981] hover:text-white transition-colors"
+                            >
+                              승인
+                            </button>
+                            <button
+                              onClick={async () => {
+                                const reason = prompt("반려 사유를 입력하세요 (필수)");
+                                if (!reason || !reason.trim()) return;
+                                await setRowStatus(r.id, "반려", reason.trim());
+                              }}
+                              className="rounded-full bg-[#ffeef0] px-3 py-1 text-xs font-bold text-[#be123c] hover:bg-[#f43f5e] hover:text-white transition-colors"
+                            >
+                              반려
+                            </button>
+                            <button
+                              onClick={() => setEditRow(r)}
+                              className="rounded-full bg-[#fff8e6] px-3 py-1 text-xs font-bold text-[#b45309] hover:bg-[#f59e0b] hover:text-white transition-colors"
+                            >
+                              수정
+                            </button>
+                          </div>
+                        </td>
+                      )}
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      {/* 8. 관리자 센터 탭일 때 매니저 모듈 */}
+      {tab === "admin" && (
+        <section className="mx-auto max-w-7xl px-4 py-6 md:px-8">
+          <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:bg-gray-900">
+            <UniversityManager
+              universities={universities}
+              onUpsertUniversity={upsertUniversity}
+              onUpsertDept={upsertDept}
+            />
           </div>
         </section>
+      )}
 
-        {/* 대한항공 공식 푸터 레이아웃 */}
-        <footer className="mt-12 border-t border-[#cde2f5] pt-8 text-center text-xs font-semibold text-slate-500 dark:border-gray-800 dark:text-gray-500">
-          <p className="font-extrabold text-[#00256c] dark:text-sky-300">
-            이투스247 대입합격자 수집 시스템 · ETOOS ECI Co.,Ltd.
-          </p>
-          <p className="mt-1.5 text-[11px] text-slate-400">
-            서울특별시 강남구 테헤란로 110-81-14794 | 대표: 이투스ECI | 전화: 1588-2001
-          </p>
-          <p className="mt-1 text-[11px] text-slate-400">
-            Copyright ⓒ ETOOS ECI Co.,Ltd. All Rights Reserved.
-          </p>
-        </footer>
+      {/* 9. 대한항공 하단 "여행의 완성을 위한 경험" 퀵 카테고리 메뉴 바 */}
+      <section className="mx-auto max-w-7xl px-4 py-8 md:px-8">
+        <h3 className="mb-4 text-sm font-black text-[#00256c] dark:text-sky-300">
+          여행의 완성을 위한 경험 (퀵 원클릭 바로가기)
+        </h3>
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-5">
+          <button
+            onClick={() => exportCSV(true)}
+            className="flex flex-col items-center justify-center rounded-2xl bg-[#e8f3fa] p-5 font-extrabold text-[#00256c] transition-all hover:bg-[#d8eaf7] hover:shadow-md"
+          >
+            <span className="text-3xl">📊</span>
+            <span className="mt-2 text-xs">승인 CSV 추출</span>
+          </button>
+          <button
+            onClick={() => {
+              if (!isAdmin) {
+                alert("관리자 로그인이 필요합니다.");
+                setShowLogin(true);
+              } else {
+                setTab("admin");
+              }
+            }}
+            className="flex flex-col items-center justify-center rounded-2xl bg-[#e8f3fa] p-5 font-extrabold text-[#00256c] transition-all hover:bg-[#d8eaf7] hover:shadow-md"
+          >
+            <span className="text-3xl">🏫</span>
+            <span className="mt-2 text-xs">대학/학과 코드</span>
+          </button>
+          <button
+            onClick={() => {
+              const cmp = buildExportComparator();
+              const sorted = rows
+                .map((r, idx) => ({ r, a: toApplicant(r), idx }))
+                .sort((x, y) => {
+                  const c = cmp(x.a, y.a);
+                  return c !== 0 ? c : x.idx - y.idx;
+                })
+                .map((x) => x.r);
+              console.log("[EXPORT PREVIEW] sorted", sorted);
+              alert("콘솔에서 입시 정렬 결과를 확인하세요 (F12 → Console)");
+            }}
+            className="flex flex-col items-center justify-center rounded-2xl bg-[#e8f3fa] p-5 font-extrabold text-[#00256c] transition-all hover:bg-[#d8eaf7] hover:shadow-md"
+          >
+            <span className="text-3xl">🧪</span>
+            <span className="mt-2 text-xs">정렬 미리보기</span>
+          </button>
+          <button
+            onClick={runCsvTests}
+            className="flex flex-col items-center justify-center rounded-2xl bg-[#e8f3fa] p-5 font-extrabold text-[#00256c] transition-all hover:bg-[#d8eaf7] hover:shadow-md"
+          >
+            <span className="text-3xl">📋</span>
+            <span className="mt-2 text-xs">유닛 테스트</span>
+          </button>
+          <a
+            href={HOWTO_URL}
+            target="_blank"
+            rel="noreferrer"
+            className="flex flex-col items-center justify-center rounded-2xl bg-[#e8f3fa] p-5 font-extrabold text-[#00256c] transition-all hover:bg-[#d8eaf7] hover:shadow-md"
+          >
+            <span className="text-3xl">📖</span>
+            <span className="mt-2 text-xs">이용 가이드</span>
+          </a>
+        </div>
+      </section>
 
-        {/* 모달 팝업 */}
-        {showLogin && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#00256c]/40 backdrop-blur-sm p-4">
-            <div className="w-full max-w-sm rounded-3xl border border-[#cde2f5] bg-white p-6 shadow-2xl dark:bg-gray-900">
-              <h3 className="mb-4 text-base font-black text-[#00256c] dark:text-gray-100">
-                🔒 관리자 로그인
-              </h3>
-              <LoginForm
-                onSuccess={() => {
-                  localStorage.setItem("admit_token", "admin_token_v1");
-                  setIsAdmin(true);
-                  setTab("admin");
-                  setShowLogin(false);
-                  pushToast("관리자 로그인에 성공하였습니다.");
-                }}
-                onCancel={() => setShowLogin(false)}
-              />
+      {/* 10. 플로팅 대한항공 AI 챗봇 오마주 버튼 (+ 이용 가이드) */}
+      <a
+        href={HOWTO_URL}
+        target="_blank"
+        rel="noreferrer"
+        className="fixed bottom-8 right-8 z-40 flex items-center gap-2 rounded-full bg-[#0077c8] px-5 py-3 text-xs font-black text-white shadow-2xl transition-transform hover:scale-105 hover:bg-[#005fa3]"
+      >
+        <span className="text-base">✨</span> AI 가이드 / 이용방법
+      </a>
+
+      {/* 11. 대한항공 멀티컬럼 푸터 */}
+      <footer className="mt-12 border-t border-slate-200 bg-white px-6 py-10 text-xs text-slate-500 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400">
+        <div className="mx-auto max-w-7xl">
+          <div className="grid grid-cols-2 gap-8 md:grid-cols-5">
+            <div>
+              <h5 className="font-extrabold text-[#00256c] dark:text-sky-300">회사소개</h5>
+              <ul className="mt-2 space-y-1.5 text-[11px] font-semibold">
+                <li>ETOOS ECI 소개</li>
+                <li>이투스247 학원</li>
+                <li>지점 네트워크</li>
+              </ul>
+            </div>
+            <div>
+              <h5 className="font-extrabold text-[#00256c] dark:text-sky-300">고객지원</h5>
+              <ul className="mt-2 space-y-1.5 text-[11px] font-semibold">
+                <li>공지사항</li>
+                <li>자주 묻는 질문</li>
+                <li>시스템 가이드</li>
+              </ul>
+            </div>
+            <div>
+              <h5 className="font-extrabold text-[#00256c] dark:text-sky-300">약관 및 규정</h5>
+              <ul className="mt-2 space-y-1.5 text-[11px] font-semibold">
+                <li className="font-black text-[#0077c8]">개인정보 처리방침</li>
+                <li>이용 약관</li>
+                <li>운영 및 고지사항</li>
+              </ul>
+            </div>
+            <div>
+              <h5 className="font-extrabold text-[#00256c] dark:text-sky-300">기타 안내</h5>
+              <ul className="mt-2 space-y-1.5 text-[11px] font-semibold">
+                <li>관리자 로그인</li>
+                <li>CSV 엑스포트 규칙</li>
+                <li>사이트맵</li>
+              </ul>
+            </div>
+            <div>
+              <h5 className="font-extrabold text-[#00256c] dark:text-sky-300">주요 지점</h5>
+              <ul className="mt-2 space-y-1.5 text-[11px] font-semibold">
+                <li>강남 / 마포 / 목동</li>
+                <li>분당 / 일산 / 대구</li>
+                <li>부산 / 광주 / 대전</li>
+              </ul>
             </div>
           </div>
-        )}
 
-        {editRow && (
-          <EditRowModal
-            row={editRow}
-            universities={universities}
-            branches={BRANCHES}
-            onClose={() => setEditRow(null)}
-            onSave={async (patch) => {
-              const res = await fetch(`/api/admits/${editRow.id}/edit`, {
-                method: "PATCH",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(patch),
-              });
-
-              const json = await res.json().catch(() => null);
-              if (!res.ok || !json?.ok) {
-                alert("수정 내용이 서버에 반영되지 않았습니다.");
-                console.error("edit error:", json);
-                return;
-              }
-
-              setRows((rs) => rs.map((r) => (r.id === editRow.id ? { ...r, ...patch } : r)));
-              setEditRow(null);
-              pushToast("✅ 항목이 수정되었습니다.");
-            }}
-          />
-        )}
-
-        {previewRow && (
-          <FilePreviewModal row={previewRow} onClose={() => setPreviewRow(null)} />
-        )}
-
-        {/* Toast Container */}
-        <div className="pointer-events-none fixed right-5 top-5 z-[100] flex flex-col gap-2">
-          {toasts.map((t) => (
-            <div
-              key={t.id}
-              className="pointer-events-auto rounded-full bg-[#00256c] px-5 py-3 text-xs font-bold text-white shadow-2xl border border-white/20 backdrop-blur-md"
-            >
-              {t.msg}
-            </div>
-          ))}
+          <div className="mt-8 border-t border-slate-100 pt-6 text-center dark:border-gray-800">
+            <p className="font-black text-[#00256c] dark:text-sky-300">
+              (주)이투스ECI | 대표: 이투스ECI | 주소: 서울특별시 강남구 테헤란로 | 전화: 1588-2001
+            </p>
+            <p className="mt-1 text-[11px] text-slate-400">
+              Copyright ⓒ ETOOS ECI Co.,Ltd. All Rights Reserved.
+            </p>
+          </div>
         </div>
+      </footer>
+
+      {/* 모달 팝업 */}
+      {showLogin && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#00256c]/40 backdrop-blur-sm p-4">
+          <div className="w-full max-w-sm rounded-3xl border border-slate-200 bg-white p-6 shadow-2xl dark:bg-gray-900">
+            <h3 className="mb-4 text-base font-black text-[#00256c] dark:text-gray-100">
+              🔒 관리자 로그인
+            </h3>
+            <LoginForm
+              onSuccess={() => {
+                localStorage.setItem("admit_token", "admin_token_v1");
+                setIsAdmin(true);
+                setTab("admin");
+                setShowLogin(false);
+                pushToast("관리자 로그인에 성공하였습니다.");
+              }}
+              onCancel={() => setShowLogin(false)}
+            />
+          </div>
+        </div>
+      )}
+
+      {editRow && (
+        <EditRowModal
+          row={editRow}
+          universities={universities}
+          branches={BRANCHES}
+          onClose={() => setEditRow(null)}
+          onSave={async (patch) => {
+            const res = await fetch(`/api/admits/${editRow.id}/edit`, {
+              method: "PATCH",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(patch),
+            });
+
+            const json = await res.json().catch(() => null);
+            if (!res.ok || !json?.ok) {
+              alert("수정 내용이 서버에 반영되지 않았습니다.");
+              console.error("edit error:", json);
+              return;
+            }
+
+            setRows((rs) => rs.map((r) => (r.id === editRow.id ? { ...r, ...patch } : r)));
+            setEditRow(null);
+            pushToast("✅ 항목이 수정되었습니다.");
+          }}
+        />
+      )}
+
+      {previewRow && (
+        <FilePreviewModal row={previewRow} onClose={() => setPreviewRow(null)} />
+      )}
+
+      {/* Toast Container */}
+      <div className="pointer-events-none fixed right-5 top-5 z-[100] flex flex-col gap-2">
+        {toasts.map((t) => (
+          <div
+            key={t.id}
+            className="pointer-events-auto rounded-full bg-[#00256c] px-5 py-3 text-xs font-bold text-white shadow-2xl border border-white/20 backdrop-blur-md"
+          >
+            {t.msg}
+          </div>
+        ))}
       </div>
     </div>
   );
