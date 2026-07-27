@@ -418,11 +418,11 @@ export default function AdmitCollectorApp() {
       <section className="air-hero relative px-5 pb-16 pt-10 dark:from-slate-900 dark:via-gray-900 dark:to-slate-950 md:px-10 md:pb-20 xl:px-12">
         <div className="w-full">
           {/* 대한항공 항공권 예매 / 나의 여행 / 체크인 / 출도착 탭바 (위젯 카드 위에 이음새 연결) */}
-          <div className="relative z-10 -mb-px w-64 overflow-hidden rounded-t-2xl border border-b-0 border-white/70 bg-white shadow-[0_-4px_18px_rgba(7,29,73,0.05)]">
+          <div className="relative z-10 -mb-px w-60 rounded-tl-2xl rounded-tr-xl bg-white shadow-[0_-4px_18px_rgba(7,29,73,0.05)]">
             <button
               onClick={() => setTab("upload")}
               className={classNames(
-                "flex w-full items-center justify-center gap-2 px-5 py-4 text-xs font-bold",
+                "relative z-10 flex w-full items-center justify-center gap-2 rounded-tl-2xl rounded-tr-xl px-5 py-4 text-xs font-bold",
                 tab === "upload"
                   ? "bg-white text-[#071d49] dark:bg-gray-900 dark:text-white"
                   : "text-[#425570] hover:bg-white/80 dark:bg-gray-800/50 dark:text-gray-300"
@@ -430,9 +430,13 @@ export default function AdmitCollectorApp() {
             >
               <span aria-hidden="true">✈</span> 합격자 등록
             </button>
+            <span
+              className="pointer-events-none absolute -right-6 bottom-0 h-6 w-6 bg-white [clip-path:polygon(0_0,0_100%,100%_100%)] dark:bg-gray-900"
+              aria-hidden="true"
+            />
           </div>
 
-          <div className="rounded-xl bg-white p-5 shadow-[0_12px_38px_rgba(7,29,73,0.08)] dark:bg-gray-900 md:p-7">
+          <div className="rounded-b-xl rounded-tr-xl bg-white p-5 shadow-[0_12px_38px_rgba(7,29,73,0.08)] dark:bg-gray-900 md:p-7">
             {/* 서브 옵션 바 (예매/마일리지 예매, 왕복/편도, 가까운 날짜 함께 조회 라인) */}
             <div className="mb-5 flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 pb-4 dark:border-gray-800">
               {/* 좌측 지점 선택 & 체크박스 */}
