@@ -28,8 +28,8 @@ export function LoginForm({
       className="grid gap-4"
     >
       <div>
-        <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-gray-400">
-          관리자 암호 입력
+        <label className="mb-2 block text-xs font-extrabold uppercase tracking-wider text-[#00256c] dark:text-gray-400">
+          관리자 비밀번호 입력
         </label>
         <input
           type="password"
@@ -37,26 +37,26 @@ export function LoginForm({
           value={pw}
           onChange={(e) => setPw(e.target.value)}
           className={classNames(
-            "w-full rounded-2xl border bg-white p-3.5 text-sm font-semibold focus:outline-none focus:ring-4 dark:bg-gray-900 dark:text-gray-100",
+            "w-full rounded-2xl border bg-white p-4 text-sm font-semibold text-[#00256c] focus:outline-none focus:ring-4 dark:bg-gray-900 dark:text-gray-100",
             error
               ? "border-rose-400 focus:ring-rose-500/20"
-              : "border-slate-200 focus:border-sky-500 focus:ring-sky-500/15 dark:border-gray-700"
+              : "border-[#cde2f5] focus:border-[#0077c8] focus:ring-[#0077c8]/15 dark:border-gray-700"
           )}
         />
-        {error && <p className="mt-1.5 text-xs font-semibold text-rose-500">{error}</p>}
+        {error && <p className="mt-2 text-xs font-bold text-rose-500">{error}</p>}
       </div>
 
       <div className="flex justify-end gap-2.5">
         <button
           type="button"
           onClick={onCancel}
-          className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
+          className="rounded-full border border-slate-200 bg-white px-5 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
         >
           취소
         </button>
         <button
           type="submit"
-          className="rounded-xl bg-sky-600 px-5 py-2 text-xs font-bold text-white shadow-lg transition-transform hover:scale-[1.02] hover:bg-sky-700 dark:bg-sky-500"
+          className="rounded-full bg-[#00256c] px-6 py-2.5 text-xs font-bold text-white shadow-md transition-transform hover:scale-[1.02] hover:bg-[#001948] dark:bg-[#0077c8]"
         >
           로그인
         </button>

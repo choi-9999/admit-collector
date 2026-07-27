@@ -37,9 +37,9 @@ export function Combobox({
 
   return (
     <div className="w-full">
-      <label className="mb-1.5 flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-gray-400">
-        {icon && <span>{icon}</span>}
-        {label} {required && <span className="text-rose-500">*</span>}
+      <label className="mb-2 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#00256c] dark:text-sky-300">
+        {icon && <span className="text-sm">{icon}</span>}
+        {label} {required && <span className="text-[#0077c8]">*</span>}
       </label>
       <div className="relative">
         <input
@@ -50,7 +50,7 @@ export function Combobox({
           onBlur={() => {
             setTimeout(() => setOpen(false), 150);
             if (restrictToList && value.trim() && !suggestions.includes(value.trim())) {
-              alert("목록에서 정해진 대학/값을 선택해 주세요.");
+              alert("목록에서 지정된 값을 선택해 주세요.");
               setValue("");
             }
             onBlur?.();
@@ -78,16 +78,16 @@ export function Combobox({
             }
           }}
           placeholder={placeholder}
-          className="w-full rounded-2xl border border-slate-200 bg-white/90 p-3.5 pr-10 text-sm font-semibold text-slate-900 shadow-sm transition-all focus:border-sky-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-sky-500/15 dark:border-gray-700 dark:bg-gray-900/90 dark:text-gray-100 dark:focus:border-sky-400 dark:focus:ring-sky-400/20"
+          className="w-full rounded-2xl border border-[#cde2f5] bg-white p-4 pr-10 text-sm font-semibold text-[#00256c] shadow-[0_2px_8px_rgba(0,37,108,0.04)] transition-all focus:border-[#0077c8] focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#0077c8]/15 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-sky-400 dark:focus:ring-sky-400/20"
         />
-        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 dark:text-gray-500">
+        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-[#0077c8] dark:text-sky-400">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5">
             <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" clipRule="evenodd" />
           </svg>
         </div>
 
         {open && (
-          <div className="absolute z-40 mt-1.5 max-h-60 w-full overflow-auto rounded-2xl border border-slate-200/80 bg-white p-1.5 shadow-2xl backdrop-blur-lg dark:border-gray-700 dark:bg-gray-900">
+          <div className="absolute z-50 mt-2 max-h-60 w-full overflow-auto rounded-2xl border border-[#cde2f5] bg-white p-2 shadow-[0_12px_32px_rgba(0,37,108,0.12)] backdrop-blur-md dark:border-gray-700 dark:bg-gray-900">
             {filtered.length === 0 ? (
               <div className="p-3 text-center text-xs text-slate-400 dark:text-gray-500">
                 {restrictToList ? "검색 결과가 없습니다 (목록 내 선택만 가능)" : "검색 결과 없음. 입력값을 그대로 사용 가능"}
@@ -106,10 +106,10 @@ export function Combobox({
                     inputRef.current?.blur();
                   }}
                   className={classNames(
-                    "block w-full cursor-pointer rounded-xl px-3.5 py-2.5 text-left text-sm font-semibold transition-colors",
+                    "block w-full cursor-pointer rounded-xl px-4 py-3 text-left text-sm font-bold transition-colors",
                     idx === hoverIndex
-                      ? "bg-sky-50 text-sky-800 dark:bg-sky-950/60 dark:text-sky-200"
-                      : "text-slate-700 hover:bg-slate-50 dark:text-gray-200 dark:hover:bg-gray-800/60"
+                      ? "bg-[#e8f3fa] text-[#00256c] dark:bg-sky-950/70 dark:text-sky-200"
+                      : "text-slate-700 hover:bg-[#f4f9fd] dark:text-gray-200 dark:hover:bg-gray-800"
                   )}
                 >
                   {s}
