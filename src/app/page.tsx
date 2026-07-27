@@ -435,45 +435,7 @@ export default function AdmitCollectorApp() {
           <div className="rounded-xl bg-white p-5 shadow-[0_12px_38px_rgba(7,29,73,0.08)] dark:bg-gray-900 md:p-7">
             {/* 서브 옵션 바 (예매/마일리지 예매, 왕복/편도, 가까운 날짜 함께 조회 라인) */}
             <div className="mb-5 flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 pb-4 dark:border-gray-800">
-              <div className="flex flex-wrap items-center gap-3">
-                {/* 수집/마스터 선택 필 그룹 */}
-                <div className="flex rounded-full bg-[#f3f6f9] p-1 dark:bg-gray-800">
-                  <button className="rounded-full bg-[#071d49] px-4 py-1.5 text-[11px] font-bold text-white">
-                    일반 등록
-                  </button>
-                  <button className="rounded-full px-4 py-1.5 text-[11px] font-semibold text-slate-500 hover:text-[#071d49] dark:text-gray-400">
-                    일괄 등록
-                  </button>
-                </div>
-
-                {/* 수시 / 정시 전형 필 선택 */}
-                <div className="flex items-center gap-1.5">
-                  <button
-                    onClick={() => setTrack("수시")}
-                    className={classNames(
-                      "rounded-full px-4 py-1.5 text-[11px] font-bold",
-                      track === "수시"
-                        ? "bg-[#e5f5fc] text-[#1676ad]"
-                        : "text-slate-500 hover:bg-slate-100 dark:text-gray-400"
-                    )}
-                  >
-                    수시
-                  </button>
-                  <button
-                    onClick={() => setTrack("정시")}
-                    className={classNames(
-                      "rounded-full px-4 py-1.5 text-[11px] font-bold",
-                      track === "정시"
-                        ? "bg-[#e5f5fc] text-[#1676ad]"
-                        : "text-slate-500 hover:bg-slate-100 dark:text-gray-400"
-                    )}
-                  >
-                    정시
-                  </button>
-                </div>
-              </div>
-
-              {/* 우측 지점 선택 & 체크박스 */}
+              {/* 좌측 지점 선택 & 체크박스 */}
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2">
                   <span className="text-[11px] font-bold text-[#071d49] dark:text-sky-300">지점</span>
@@ -501,6 +463,16 @@ export default function AdmitCollectorApp() {
                     전체 지점 조회 ⓘ
                   </label>
                 )}
+              </div>
+
+              {/* 우측 일반 / 일괄 등록 선택 */}
+              <div className="flex rounded-full bg-[#f3f6f9] p-1 dark:bg-gray-800">
+                <button type="button" className="rounded-full bg-[#071d49] px-4 py-1.5 text-[11px] font-bold text-white">
+                  일반 등록
+                </button>
+                <button type="button" className="rounded-full px-4 py-1.5 text-[11px] font-semibold text-slate-500 hover:text-[#071d49] dark:text-gray-400">
+                  일괄 등록
+                </button>
               </div>
             </div>
 
@@ -538,8 +510,8 @@ export default function AdmitCollectorApp() {
                     </div>
                   </div>
 
-                  {/* Column 2: 학과 (출발일 가는날 ~ 오는날 위치) (3열) */}
-                  <div className="lg:col-span-3">
+                  {/* Column 2: 학과 (2열) */}
+                  <div className="lg:col-span-2">
                     <Combobox
                       label="학과"
                       value={dept}
@@ -551,12 +523,45 @@ export default function AdmitCollectorApp() {
                     />
                   </div>
 
-                  {/* Column 3: 좌석 등급 / 합격증 첨부 (3열) */}
-                  <div className="lg:col-span-3">
+                  {/* Column 3: 수시 / 정시 전형 선택 (2열) */}
+                  <div className="flex min-h-[72px] flex-col justify-center px-4 py-2 lg:col-span-2">
+                    <div className="text-[10px] font-bold tracking-wide text-slate-500">
+                      전형 유형 <span className="text-[#3f9fdb]">*</span>
+                    </div>
+                    <div className="mt-1 flex w-fit rounded-full bg-[#f3f6f9] p-0.5 dark:bg-gray-800">
+                      <button
+                        type="button"
+                        onClick={() => setTrack("수시")}
+                        className={classNames(
+                          "rounded-full px-3 py-1 text-[11px] font-bold",
+                          track === "수시"
+                            ? "bg-[#e5f5fc] text-[#1676ad]"
+                            : "text-slate-500 hover:bg-slate-100 dark:text-gray-400"
+                        )}
+                      >
+                        수시
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setTrack("정시")}
+                        className={classNames(
+                          "rounded-full px-3 py-1 text-[11px] font-bold",
+                          track === "정시"
+                            ? "bg-[#e5f5fc] text-[#1676ad]"
+                            : "text-slate-500 hover:bg-slate-100 dark:text-gray-400"
+                        )}
+                      >
+                        정시
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Column 4: 합격증 첨부 (2열) */}
+                  <div className="lg:col-span-2">
                     <FileDrop file={file} setFile={setFile} error={fileError} />
                   </div>
 
-                  {/* Column 4: 대한항공 시그니처 Sky Blue 알약 검색 버튼 (2열) */}
+                  {/* Column 5: 대한항공 시그니처 Sky Blue 알약 검색 버튼 (2열) */}
                   <div className="flex items-center justify-center p-3 lg:col-span-2">
                     <button
                       onClick={handleSubmit}
