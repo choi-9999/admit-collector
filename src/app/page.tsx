@@ -342,7 +342,7 @@ export default function AdmitCollectorApp() {
 
   return (
     <div className="min-h-screen bg-white font-sans text-slate-900 dark:bg-gray-950 dark:text-gray-100">
-      <header className="sticky top-0 z-50 border-b border-white/10 bg-[#09061d]/95 px-5 shadow-[0_4px_18px_rgba(9,6,29,0.2)] backdrop-blur-md md:px-10 xl:px-12">
+      <header className="sticky top-0 z-50 border-b border-slate-100 bg-white/95 px-5 shadow-[0_2px_12px_rgba(7,29,73,0.06)] backdrop-blur-md md:px-10 xl:px-12">
         <div className="relative flex h-[68px] w-full items-center justify-between">
           <div className="flex shrink-0 items-center gap-4">
             <button onClick={() => setTab("upload")} className="flex items-center text-left" aria-label="홈으로">
@@ -352,32 +352,32 @@ export default function AdmitCollectorApp() {
                 width={330}
                 height={111}
                 priority
-                className="h-8 w-auto brightness-0 invert"
+                className="h-8 w-auto"
               />
             </button>
-            <span className="h-5 w-px bg-white/25" aria-hidden="true" />
-            <span className="hidden whitespace-nowrap text-[13px] font-semibold text-[#9fd9f6] lg:inline">
+            <span className="h-5 w-px bg-slate-300" aria-hidden="true" />
+            <span className="hidden whitespace-nowrap text-[13px] font-semibold text-[#315d81] lg:inline">
               합격자 관리 시스템
             </span>
           </div>
 
-          <nav className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-9 text-[13px] font-bold text-white md:flex">
+          <nav className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-9 text-[13px] font-bold text-[#071d49] md:flex">
             <button
               onClick={() => setTab("upload")}
-              className={classNames("hover:text-[#62c6f2]", tab === "upload" && "text-[#62c6f2]")}
+              className={classNames("hover:text-[#3f9fdb]", tab === "upload" && "text-[#3f9fdb]")}
             >
               합격자 등록
             </button>
             <button
               onClick={() => setTab("status")}
-              className={classNames("hover:text-[#62c6f2]", tab === "status" && "text-[#62c6f2]")}
+              className={classNames("hover:text-[#3f9fdb]", tab === "status" && "text-[#3f9fdb]")}
             >
               합격 현황
             </button>
             {isAdmin && (
               <button
                 onClick={() => setTab("admin")}
-                className={classNames("hover:text-[#62c6f2]", tab === "admin" && "text-[#62c6f2]")}
+                className={classNames("hover:text-[#3f9fdb]", tab === "admin" && "text-[#3f9fdb]")}
               >
                 대시보드
               </button>
@@ -391,22 +391,22 @@ export default function AdmitCollectorApp() {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="이름 또는 대학 검색"
                 aria-label="합격자 검색"
-                className="w-48 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-[11px] font-medium text-white placeholder:text-white/45 focus:border-[#62c6f2] focus:bg-white/15 focus:outline-none"
+                className="w-48 rounded-full border border-slate-200 bg-[#f7f9fb] px-4 py-2 text-[11px] font-medium text-[#071d49] placeholder:text-slate-400 focus:border-[#3f9fdb] focus:bg-white focus:outline-none"
               />
-              <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-white/50" aria-hidden="true">⌕</span>
+              <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400" aria-hidden="true">⌕</span>
             </div>
 
             {isAdmin ? (
               <button
                 onClick={handleLogout}
-                className="rounded-full border border-white/55 bg-transparent px-5 py-2 text-[11px] font-bold text-white hover:border-white hover:bg-white hover:text-[#09061d]"
+                className="rounded-full border border-[#071d49] bg-white px-5 py-2 text-[11px] font-bold text-[#071d49] hover:bg-[#071d49] hover:text-white"
               >
                 로그아웃
               </button>
             ) : (
               <button
                 onClick={() => setShowLogin(true)}
-                className="rounded-full border border-white/55 bg-transparent px-5 py-2 text-[11px] font-bold text-white hover:border-white hover:bg-white hover:text-[#09061d]"
+                className="rounded-full border border-[#071d49] bg-white px-5 py-2 text-[11px] font-bold text-[#071d49] hover:bg-[#071d49] hover:text-white"
               >
                 로그인
               </button>
