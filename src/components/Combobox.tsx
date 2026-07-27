@@ -38,10 +38,10 @@ export function Combobox({
   return (
     <div className="relative flex flex-col justify-center px-4 py-2">
       <div className="flex items-center justify-between">
-        <label className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
-          {label} {required && <span className="text-[#0077c8]">*</span>}
+        <label className="text-[10px] font-bold tracking-wide text-slate-500">
+          {label} {required && <span className="text-[#3f9fdb]">*</span>}
         </label>
-        {subLabel && <span className="text-[10px] font-bold text-[#0077c8]">{subLabel}</span>}
+        {subLabel && <span className="text-[9px] font-semibold text-[#3f9fdb]">{subLabel}</span>}
       </div>
 
       <input
@@ -80,11 +80,11 @@ export function Combobox({
           }
         }}
         placeholder={placeholder}
-        className="w-full bg-transparent text-lg font-black text-[#00256c] placeholder:text-slate-300 placeholder:font-normal focus:outline-none dark:text-gray-100"
+        className="w-full bg-transparent text-base font-bold text-[#071d49] placeholder:font-normal placeholder:text-slate-300 focus:outline-none dark:text-gray-100"
       />
 
       {open && (
-        <div className="absolute left-0 right-0 top-full z-50 mt-2 max-h-60 overflow-auto rounded-2xl border border-[#cde2f5] bg-white p-2 shadow-[0_12px_32px_rgba(0,37,108,0.15)] dark:border-gray-700 dark:bg-gray-900">
+        <div className="absolute left-0 right-0 top-full z-50 mt-2 max-h-60 overflow-auto rounded-lg border border-[#dfe8ef] bg-white p-2 shadow-[0_10px_28px_rgba(7,29,73,0.12)] dark:border-gray-700 dark:bg-gray-900">
           {filtered.length === 0 ? (
             <div className="p-3 text-center text-xs text-slate-400">
               {restrictToList ? "검색 결과 없음 (목록 내 선택만 가능)" : "입력값 그대로 사용 가능"}
@@ -105,7 +105,7 @@ export function Combobox({
                 className={classNames(
                   "block w-full cursor-pointer rounded-xl px-3.5 py-2.5 text-left text-xs font-bold transition-colors",
                   idx === hoverIndex
-                    ? "bg-[#e8f3fa] text-[#00256c] dark:bg-sky-950/70 dark:text-sky-200"
+                    ? "bg-[#eaf7fd] text-[#071d49] dark:bg-sky-950/70 dark:text-sky-200"
                     : "text-slate-700 hover:bg-[#f4f9fd] dark:text-gray-200 dark:hover:bg-gray-800"
                 )}
               >

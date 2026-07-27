@@ -40,8 +40,8 @@ export function FileDrop({
   return (
     <div className="relative flex flex-col justify-center px-4 py-2">
       <div className="flex items-center justify-between">
-        <label className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
-          좌석 등급 / 증빙 서류 <span className="text-[#0077c8]">*</span>
+        <label className="text-[10px] font-bold tracking-wide text-slate-500">
+          합격증 첨부 <span className="text-[#3f9fdb]">*</span>
         </label>
       </div>
 
@@ -66,11 +66,11 @@ export function FileDrop({
         <div className="flex items-center gap-2 truncate">
           <span className="text-base">📂</span>
           {file ? (
-            <span className="truncate text-xs font-bold text-[#00256c] dark:text-sky-300">
+            <span className="truncate text-[11px] font-semibold text-[#071d49] dark:text-sky-300">
               {file.name}
             </span>
           ) : (
-            <span className="text-xs font-bold text-slate-400">
+            <span className="text-[11px] font-medium text-slate-400">
               파일을 선택하세요 (PDF/이미지)
             </span>
           )}
@@ -78,7 +78,7 @@ export function FileDrop({
 
         <button
           type="button"
-          className="shrink-0 rounded-full bg-[#00256c] px-3 py-1 text-[11px] font-bold text-white shadow-sm hover:bg-[#001948]"
+          className="shrink-0 rounded-full bg-[#071d49] px-3 py-1 text-[10px] font-bold text-white hover:bg-[#153d79]"
         >
           {file ? "변경" : "첨부"}
         </button>

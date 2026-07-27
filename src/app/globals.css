@@ -2,7 +2,11 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #111827;
+  --air-navy: #071d49;
+  --air-blue: #3f9fdb;
+  --air-sky: #eaf7fd;
+  --air-line: #dfe8ef;
 }
 
 @theme inline {
@@ -22,5 +26,109 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), "Pretendard", "Noto Sans KR",
+    Arial, Helvetica, sans-serif;
+  letter-spacing: -0.015em;
+}
+
+button,
+a,
+input,
+select {
+  transition-duration: 180ms;
+}
+
+::selection {
+  background: #c9eafd;
+  color: var(--air-navy);
+}
+
+.air-hero {
+  isolation: isolate;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 18% 22%, rgb(135 215 248 / 52%), transparent 29%),
+    radial-gradient(circle at 75% 2%, rgb(255 195 215 / 48%), transparent 30%),
+    linear-gradient(118deg, #d9f5ff 0%, #eefaff 46%, #d7eefb 100%);
+}
+
+.air-hero::before,
+.air-hero::after {
+  position: absolute;
+  z-index: -1;
+  content: "";
+  border-radius: 999px;
+  filter: blur(2px);
+  opacity: 0.42;
+}
+
+.air-hero::before {
+  width: 32rem;
+  height: 10rem;
+  left: -7rem;
+  bottom: -5rem;
+  background: rgb(255 255 255 / 72%);
+  transform: rotate(-8deg);
+}
+
+.air-hero::after {
+  width: 38rem;
+  height: 11rem;
+  right: -10rem;
+  top: 3rem;
+  background: rgb(255 255 255 / 48%);
+  transform: rotate(10deg);
+}
+
+.air-banner {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: linear-gradient(100deg, #e8f7fd, #dff2fb);
+}
+
+.air-banner::before,
+.air-banner::after {
+  position: absolute;
+  z-index: -1;
+  content: "";
+  width: 11rem;
+  height: 11rem;
+  background: rgb(255 255 255 / 38%);
+  transform: rotate(32deg);
+}
+
+.air-banner::before {
+  left: 3%;
+  top: -6rem;
+}
+
+.air-banner::after {
+  right: 9%;
+  bottom: -7rem;
+}
+
+.stat-art {
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-art::after {
+  position: absolute;
+  content: "";
+  width: 8rem;
+  height: 8rem;
+  right: -2.5rem;
+  bottom: -4.5rem;
+  border: 1.5rem solid rgb(255 255 255 / 54%);
+  border-radius: 999px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
 }
