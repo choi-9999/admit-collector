@@ -342,7 +342,7 @@ export default function AdmitCollectorApp() {
   return (
     <div className="min-h-screen bg-white font-sans text-slate-900 dark:bg-gray-950 dark:text-gray-100">
       <header className="sticky top-0 z-50 border-b border-slate-100 bg-white/95 px-5 shadow-[0_2px_12px_rgba(7,29,73,0.05)] backdrop-blur-md dark:border-gray-800 dark:bg-gray-900/95">
-        <div className="mx-auto flex h-[72px] max-w-6xl items-center justify-between">
+        <div className="flex h-[72px] w-full items-center justify-between">
           <div className="flex items-center gap-12">
             <button onClick={() => setTab("upload")} className="flex items-center gap-2 text-left" aria-label="홈으로">
               <div className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-[#071d49] text-[#3f9fdb]">
@@ -409,7 +409,7 @@ export default function AdmitCollectorApp() {
       </header>
 
       <section className="air-hero relative px-4 pb-16 pt-10 dark:from-slate-900 dark:via-gray-900 dark:to-slate-950 md:px-8 md:pb-20">
-        <div className="mx-auto max-w-6xl">
+        <div className="w-full">
           {/* 대한항공 항공권 예매 / 나의 여행 / 체크인 / 출도착 탭바 (위젯 카드 위에 이음새 연결) */}
           <div className="grid grid-cols-3 overflow-hidden rounded-t-lg border border-b-0 border-white/60 bg-white/55 backdrop-blur-sm">
             <button
@@ -602,7 +602,7 @@ export default function AdmitCollectorApp() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-4 py-10 md:px-8 md:py-14">
+      <section className="w-full px-4 py-10 md:px-8 md:py-14">
         <div className="air-banner mb-12 flex min-h-28 flex-col items-center justify-center px-6 py-7 text-center text-[#071d49] dark:bg-gray-900 dark:text-sky-300">
           <div>
             <h3 className="text-sm font-bold">새로워진 합격자 취합 서비스를 한눈에</h3>
@@ -673,7 +673,7 @@ export default function AdmitCollectorApp() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-4 py-10 md:px-8">
+      <section className="w-full px-4 py-10 md:px-8">
         <div className="bg-white dark:bg-gray-900">
           <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 pb-4 dark:border-gray-800">
             <div>
@@ -798,7 +798,7 @@ export default function AdmitCollectorApp() {
 
       {/* 8. 관리자 센터 탭일 때 매니저 모듈 */}
       {tab === "admin" && (
-        <section className="mx-auto max-w-7xl px-4 py-6 md:px-8">
+        <section className="w-full px-4 py-6 md:px-8">
           <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:bg-gray-900">
             <UniversityManager
               universities={universities}
@@ -810,7 +810,7 @@ export default function AdmitCollectorApp() {
       )}
 
       <section className="mt-10 bg-[#dff2fb] px-4 py-10 dark:bg-slate-900 md:px-8">
-        <div className="mx-auto max-w-6xl">
+        <div className="w-full">
         <h3 className="mb-5 text-sm font-bold text-[#071d49] dark:text-sky-300">
           합격자 관리를 위한 빠른 메뉴
         </h3>
@@ -886,7 +886,7 @@ export default function AdmitCollectorApp() {
 
       {/* 11. 대한항공 멀티컬럼 푸터 */}
       <footer className="border-t border-slate-100 bg-white px-6 py-12 text-[10px] text-slate-500 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400">
-        <div className="mx-auto max-w-6xl">
+        <div className="w-full">
           <div className="grid grid-cols-2 gap-8 md:grid-cols-5">
             <div>
               <h5 className="font-bold text-[#071d49] dark:text-sky-300">회사소개</h5>
