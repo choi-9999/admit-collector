@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useMemo, useState, useEffect } from "react";
+import Image from "next/image";
 import { AdmitRow, AdmitStatus, isUniversitiesMap } from "@/types/admit";
 import { BRANCHES, INIT_UNIVERSITIES, HOWTO_URL } from "@/constants/masterData";
 import { buildExportComparator, toApplicant } from "@/utils/comparator";
@@ -341,41 +342,47 @@ export default function AdmitCollectorApp() {
 
   return (
     <div className="min-h-screen bg-white font-sans text-slate-900 dark:bg-gray-950 dark:text-gray-100">
-      <header className="sticky top-0 z-50 border-b border-slate-100 bg-white/95 px-5 shadow-[0_2px_12px_rgba(7,29,73,0.05)] backdrop-blur-md dark:border-gray-800 dark:bg-gray-900/95 md:px-10 xl:px-12">
-        <div className="flex h-[72px] w-full items-center justify-between">
-          <div className="flex items-center gap-12">
-            <button onClick={() => setTab("upload")} className="flex items-center gap-2 text-left" aria-label="홈으로">
-              <div className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-[#071d49] text-[#3f9fdb]">
-                <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4" aria-hidden="true">
-                  <path d="M5 13.5c2.2-5.8 8.6-7.6 13.8-4.4-1.3 5.8-7.9 9.4-13.8 4.4Z" stroke="currentColor" strokeWidth="2" />
-                  <path d="M6.2 15.7c3 2.6 8.2 2.6 11.2-.3" stroke="#071d49" strokeWidth="2" strokeLinecap="round" />
-                </svg>
-              </div>
-              <span className="text-[17px] font-extrabold tracking-[-0.05em] text-[#071d49] dark:text-white">
-                ETOOS 247 <span className="ml-1 text-[11px] font-semibold tracking-normal text-[#3f9fdb]">ADMIT</span>
-              </span>
+      <header className="sticky top-0 z-50 border-b border-white/10 bg-[#09061d]/95 px-5 shadow-[0_4px_18px_rgba(9,6,29,0.2)] backdrop-blur-md md:px-10 xl:px-12">
+        <div className="relative flex h-[68px] w-full items-center justify-between">
+          <div className="flex shrink-0 items-center gap-4">
+            <button onClick={() => setTab("upload")} className="flex items-center text-left" aria-label="홈으로">
+              <Image
+                src="/etoos247-bi.png"
+                alt="이투스247학원"
+                width={330}
+                height={111}
+                priority
+                className="h-8 w-auto brightness-0 invert"
+              />
             </button>
-            <nav className="hidden items-center gap-8 text-[13px] font-bold text-[#071d49] dark:text-gray-200 md:flex">
-              <button
-                onClick={() => setTab("upload")}
-                className={classNames("hover:text-[#3f9fdb]", tab === "upload" && "text-[#3f9fdb]")}
-              >
-                합격자 등록
-              </button>
-              <button
-                onClick={() => setTab("status")}
-                className={classNames("hover:text-[#3f9fdb]", tab === "status" && "text-[#3f9fdb]")}
-              >
-                합격 현황
-              </button>
-              <button
-                onClick={() => (isAdmin ? setTab("admin") : alert("관리자 로그인이 필요합니다."))}
-                className={classNames("hover:text-[#3f9fdb]", tab === "admin" && "text-[#3f9fdb]")}
-              >
-                운영 관리
-              </button>
-            </nav>
+            <span className="h-5 w-px bg-white/25" aria-hidden="true" />
+            <span className="hidden whitespace-nowrap text-[13px] font-semibold text-[#9fd9f6] lg:inline">
+              합격자 관리 시스템
+            </span>
           </div>
+
+          <nav className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-9 text-[13px] font-bold text-white md:flex">
+            <button
+              onClick={() => setTab("upload")}
+              className={classNames("hover:text-[#62c6f2]", tab === "upload" && "text-[#62c6f2]")}
+            >
+              합격자 등록
+            </button>
+            <button
+              onClick={() => setTab("status")}
+              className={classNames("hover:text-[#62c6f2]", tab === "status" && "text-[#62c6f2]")}
+            >
+              합격 현황
+            </button>
+            {isAdmin && (
+              <button
+                onClick={() => setTab("admin")}
+                className={classNames("hover:text-[#62c6f2]", tab === "admin" && "text-[#62c6f2]")}
+              >
+                대시보드
+              </button>
+            )}
+          </nav>
 
           <div className="flex items-center gap-3">
             <div className="relative hidden lg:block">
@@ -384,22 +391,22 @@ export default function AdmitCollectorApp() {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="이름 또는 대학 검색"
                 aria-label="합격자 검색"
-                className="w-48 rounded-full border border-slate-200 bg-white px-4 py-2 text-[11px] font-medium text-[#071d49] placeholder:text-slate-400 focus:border-[#3f9fdb] focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                className="w-48 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-[11px] font-medium text-white placeholder:text-white/45 focus:border-[#62c6f2] focus:bg-white/15 focus:outline-none"
               />
-              <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400" aria-hidden="true">⌕</span>
+              <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-white/50" aria-hidden="true">⌕</span>
             </div>
 
             {isAdmin ? (
               <button
                 onClick={handleLogout}
-                className="rounded-full border border-[#071d49] bg-white px-5 py-2 text-[11px] font-bold text-[#071d49] hover:bg-[#071d49] hover:text-white dark:border-sky-400 dark:bg-gray-800 dark:text-sky-300"
+                className="rounded-full border border-white/55 bg-transparent px-5 py-2 text-[11px] font-bold text-white hover:border-white hover:bg-white hover:text-[#09061d]"
               >
                 로그아웃
               </button>
             ) : (
               <button
                 onClick={() => setShowLogin(true)}
-                className="rounded-full border border-[#071d49] bg-white px-5 py-2 text-[11px] font-bold text-[#071d49] hover:bg-[#071d49] hover:text-white dark:border-sky-400 dark:bg-gray-800 dark:text-sky-300"
+                className="rounded-full border border-white/55 bg-transparent px-5 py-2 text-[11px] font-bold text-white hover:border-white hover:bg-white hover:text-[#09061d]"
               >
                 로그인
               </button>
@@ -411,7 +418,12 @@ export default function AdmitCollectorApp() {
       <section className="air-hero relative px-5 pb-16 pt-10 dark:from-slate-900 dark:via-gray-900 dark:to-slate-950 md:px-10 md:pb-20 xl:px-12">
         <div className="w-full">
           {/* 대한항공 항공권 예매 / 나의 여행 / 체크인 / 출도착 탭바 (위젯 카드 위에 이음새 연결) */}
-          <div className="grid grid-cols-3 overflow-hidden rounded-t-lg border border-b-0 border-white/60 bg-white/55 backdrop-blur-sm">
+          <div
+            className={classNames(
+              "grid overflow-hidden rounded-t-lg border border-b-0 border-white/60 bg-white/55 backdrop-blur-sm",
+              isAdmin ? "grid-cols-3" : "grid-cols-2"
+            )}
+          >
             <button
               onClick={() => setTab("upload")}
               className={classNames(
@@ -426,7 +438,8 @@ export default function AdmitCollectorApp() {
             <button
               onClick={() => setTab("status")}
               className={classNames(
-                "flex items-center justify-center gap-2 border-r border-slate-200/70 px-5 py-4 text-xs font-bold",
+                "flex items-center justify-center gap-2 px-5 py-4 text-xs font-bold",
+                isAdmin && "border-r border-slate-200/70",
                 tab === "status"
                   ? "bg-white text-[#071d49] dark:bg-gray-900 dark:text-white"
                   : "text-[#425570] hover:bg-white/80 dark:bg-gray-800/50 dark:text-gray-300"
@@ -434,17 +447,19 @@ export default function AdmitCollectorApp() {
             >
               <span aria-hidden="true">♙</span> 등록 현황
             </button>
-            <button
-              onClick={() => (isAdmin ? setTab("admin") : alert("관리자 로그인이 필요합니다."))}
-              className={classNames(
-                "flex items-center justify-center gap-2 px-5 py-4 text-xs font-bold",
-                tab === "admin"
-                  ? "bg-white text-[#071d49] dark:bg-gray-900 dark:text-white"
-                  : "text-[#425570] hover:bg-white/80 dark:bg-gray-800/50 dark:text-gray-300"
-              )}
-            >
-              <span aria-hidden="true">▣</span> 운영 관리
-            </button>
+            {isAdmin && (
+              <button
+                onClick={() => setTab("admin")}
+                className={classNames(
+                  "flex items-center justify-center gap-2 px-5 py-4 text-xs font-bold",
+                  tab === "admin"
+                    ? "bg-white text-[#071d49] dark:bg-gray-900 dark:text-white"
+                    : "text-[#425570] hover:bg-white/80 dark:bg-gray-800/50 dark:text-gray-300"
+                )}
+              >
+                <span aria-hidden="true">▣</span> 대시보드
+              </button>
+            )}
           </div>
 
           <div className="rounded-b-xl bg-white p-5 shadow-[0_12px_38px_rgba(7,29,73,0.08)] dark:bg-gray-900 md:p-7">
