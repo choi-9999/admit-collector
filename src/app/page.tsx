@@ -418,7 +418,7 @@ export default function AdmitCollectorApp() {
       <section className="air-hero relative px-5 pb-16 pt-10 dark:from-slate-900 dark:via-gray-900 dark:to-slate-950 md:px-10 md:pb-20 xl:px-12">
         <div className="w-full">
           {/* 대한항공 항공권 예매 / 나의 여행 / 체크인 / 출도착 탭바 (위젯 카드 위에 이음새 연결) */}
-          <div className="relative z-10 mx-auto -mb-px w-64 overflow-hidden rounded-t-2xl border border-b-0 border-white/70 bg-white shadow-[0_-4px_18px_rgba(7,29,73,0.05)]">
+          <div className="relative z-10 -mb-px w-64 overflow-hidden rounded-t-2xl border border-b-0 border-white/70 bg-white shadow-[0_-4px_18px_rgba(7,29,73,0.05)]">
             <button
               onClick={() => setTab("upload")}
               className={classNames(
