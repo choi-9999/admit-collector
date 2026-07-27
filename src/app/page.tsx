@@ -418,16 +418,11 @@ export default function AdmitCollectorApp() {
       <section className="air-hero relative px-5 pb-16 pt-10 dark:from-slate-900 dark:via-gray-900 dark:to-slate-950 md:px-10 md:pb-20 xl:px-12">
         <div className="w-full">
           {/* 대한항공 항공권 예매 / 나의 여행 / 체크인 / 출도착 탭바 (위젯 카드 위에 이음새 연결) */}
-          <div
-            className={classNames(
-              "grid overflow-hidden rounded-t-lg border border-b-0 border-white/60 bg-white/55 backdrop-blur-sm",
-              isAdmin ? "grid-cols-3" : "grid-cols-2"
-            )}
-          >
+          <div className="grid grid-cols-1 overflow-hidden rounded-t-lg border border-b-0 border-white/60 bg-white/55 backdrop-blur-sm">
             <button
               onClick={() => setTab("upload")}
               className={classNames(
-                "flex items-center justify-center gap-2 border-r border-slate-200/70 px-5 py-4 text-xs font-bold",
+                "flex items-center justify-center gap-2 px-5 py-4 text-xs font-bold",
                 tab === "upload"
                   ? "bg-white text-[#071d49] dark:bg-gray-900 dark:text-white"
                   : "text-[#425570] hover:bg-white/80 dark:bg-gray-800/50 dark:text-gray-300"
@@ -435,31 +430,6 @@ export default function AdmitCollectorApp() {
             >
               <span aria-hidden="true">✈</span> 합격자 등록
             </button>
-            <button
-              onClick={() => setTab("status")}
-              className={classNames(
-                "flex items-center justify-center gap-2 px-5 py-4 text-xs font-bold",
-                isAdmin && "border-r border-slate-200/70",
-                tab === "status"
-                  ? "bg-white text-[#071d49] dark:bg-gray-900 dark:text-white"
-                  : "text-[#425570] hover:bg-white/80 dark:bg-gray-800/50 dark:text-gray-300"
-              )}
-            >
-              <span aria-hidden="true">♙</span> 등록 현황
-            </button>
-            {isAdmin && (
-              <button
-                onClick={() => setTab("admin")}
-                className={classNames(
-                  "flex items-center justify-center gap-2 px-5 py-4 text-xs font-bold",
-                  tab === "admin"
-                    ? "bg-white text-[#071d49] dark:bg-gray-900 dark:text-white"
-                    : "text-[#425570] hover:bg-white/80 dark:bg-gray-800/50 dark:text-gray-300"
-                )}
-              >
-                <span aria-hidden="true">▣</span> 대시보드
-              </button>
-            )}
           </div>
 
           <div className="rounded-b-xl bg-white p-5 shadow-[0_12px_38px_rgba(7,29,73,0.08)] dark:bg-gray-900 md:p-7">
@@ -543,12 +513,12 @@ export default function AdmitCollectorApp() {
                     {/* PUS 부산 (학생 성명) */}
                     <div className="flex-1 px-4 py-2">
                       <div className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
-                        학생 성명 (PUS)
+                        학생 성명
                       </div>
                       <input
                         value={name}
                         onChange={(e) => setName(e.target.value)}
-                        placeholder="부산 / 홍길동"
+                        placeholder="홍길동"
                         className="w-full bg-transparent text-lg font-bold text-[#071d49] placeholder:font-normal placeholder:text-slate-300 focus:outline-none dark:text-gray-100"
                       />
                     </div>
@@ -570,11 +540,11 @@ export default function AdmitCollectorApp() {
                     {/* To 도착지 (합격 대학) */}
                     <div className="flex-1">
                       <Combobox
-                        label="합격 대학 (To)"
+                        label="합격 대학"
                         value={univ}
                         setValue={setUniv}
                         suggestions={univSuggestions}
-                        placeholder="도착지 / 서울대"
+                        placeholder="서울대"
                         required
                         restrictToList
                         subLabel={univ ? `코드 ${universities[univ]?.code ?? ""}` : undefined}
@@ -585,11 +555,11 @@ export default function AdmitCollectorApp() {
                   {/* Column 2: 학과 (출발일 가는날 ~ 오는날 위치) (3열) */}
                   <div className="lg:col-span-3">
                     <Combobox
-                      label="학과 (출발일)"
+                      label="학과"
                       value={dept}
                       setValue={setDept}
                       suggestions={deptSuggestions}
-                      placeholder="📅 경영학과 선택"
+                      placeholder="의예과 선택"
                       required
                       subLabel={dept && univ ? `코드 ${(universities[univ]?.depts ?? {})[dept] ?? "000"}` : undefined}
                     />
