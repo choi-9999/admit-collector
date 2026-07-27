@@ -418,11 +418,11 @@ export default function AdmitCollectorApp() {
       <section className="air-hero relative px-5 pb-16 pt-10 dark:from-slate-900 dark:via-gray-900 dark:to-slate-950 md:px-10 md:pb-20 xl:px-12">
         <div className="w-full">
           {/* 대한항공 항공권 예매 / 나의 여행 / 체크인 / 출도착 탭바 (위젯 카드 위에 이음새 연결) */}
-          <div className="grid grid-cols-1 overflow-hidden rounded-t-lg border border-b-0 border-white/60 bg-white/55 backdrop-blur-sm">
+          <div className="relative z-10 mx-auto -mb-px w-64 overflow-hidden rounded-t-2xl border border-b-0 border-white/70 bg-white shadow-[0_-4px_18px_rgba(7,29,73,0.05)]">
             <button
               onClick={() => setTab("upload")}
               className={classNames(
-                "flex items-center justify-center gap-2 px-5 py-4 text-xs font-bold",
+                "flex w-full items-center justify-center gap-2 px-5 py-4 text-xs font-bold",
                 tab === "upload"
                   ? "bg-white text-[#071d49] dark:bg-gray-900 dark:text-white"
                   : "text-[#425570] hover:bg-white/80 dark:bg-gray-800/50 dark:text-gray-300"
@@ -432,7 +432,7 @@ export default function AdmitCollectorApp() {
             </button>
           </div>
 
-          <div className="rounded-b-xl bg-white p-5 shadow-[0_12px_38px_rgba(7,29,73,0.08)] dark:bg-gray-900 md:p-7">
+          <div className="rounded-xl bg-white p-5 shadow-[0_12px_38px_rgba(7,29,73,0.08)] dark:bg-gray-900 md:p-7">
             {/* 서브 옵션 바 (예매/마일리지 예매, 왕복/편도, 가까운 날짜 함께 조회 라인) */}
             <div className="mb-5 flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 pb-4 dark:border-gray-800">
               <div className="flex flex-wrap items-center gap-3">
@@ -509,42 +509,28 @@ export default function AdmitCollectorApp() {
               <div className="rounded-lg border border-slate-200 bg-white dark:border-gray-800 dark:bg-gray-900/80">
                 <div className="grid grid-cols-1 divide-y divide-slate-100 dark:divide-gray-800 lg:grid-cols-12 lg:divide-x lg:divide-y-0">
                   {/* Column 1: PUS ⇄ To (학생 성명 / 대학) (4열) */}
-                  <div className="flex items-center justify-between lg:col-span-4">
+                  <div className="grid grid-cols-2 divide-x divide-slate-100 dark:divide-gray-800 lg:col-span-4">
                     {/* PUS 부산 (학생 성명) */}
-                    <div className="flex-1 px-4 py-2">
-                      <div className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
+                    <div className="flex min-h-[72px] flex-col justify-center px-4 py-2">
+                      <div className="text-[10px] font-bold tracking-wide text-slate-500">
                         학생 성명
                       </div>
                       <input
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         placeholder="홍길동"
-                        className="w-full bg-transparent text-lg font-bold text-[#071d49] placeholder:font-normal placeholder:text-slate-300 focus:outline-none dark:text-gray-100"
+                        className="w-full bg-transparent text-base font-bold leading-6 text-[#071d49] placeholder:font-normal placeholder:text-slate-300 focus:outline-none dark:text-gray-100"
                       />
                     </div>
 
-                    {/* ⇄ Swap Circle Button */}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const temp = name;
-                        setName(univ);
-                        setUniv(temp);
-                      }}
-                      title="입력 교환"
-                      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-400 hover:border-[#3f9fdb] hover:text-[#3f9fdb]"
-                    >
-                      ⇄
-                    </button>
-
                     {/* To 도착지 (합격 대학) */}
-                    <div className="flex-1">
+                    <div>
                       <Combobox
                         label="합격 대학"
                         value={univ}
                         setValue={setUniv}
                         suggestions={univSuggestions}
-                        placeholder="서울대"
+                        placeholder="서울대학교"
                         required
                         restrictToList
                         subLabel={univ ? `코드 ${universities[univ]?.code ?? ""}` : undefined}
@@ -559,7 +545,7 @@ export default function AdmitCollectorApp() {
                       value={dept}
                       setValue={setDept}
                       suggestions={deptSuggestions}
-                      placeholder="의예과 선택"
+                      placeholder="의예과"
                       required
                       subLabel={dept && univ ? `코드 ${(universities[univ]?.depts ?? {})[dept] ?? "000"}` : undefined}
                     />

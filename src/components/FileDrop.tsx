@@ -38,7 +38,7 @@ export function FileDrop({
   };
 
   return (
-    <div className="relative flex flex-col justify-center px-4 py-2">
+    <div className="relative flex min-h-[72px] flex-col justify-center px-4 py-2">
       <div className="flex items-center justify-between">
         <label className="text-[10px] font-bold tracking-wide text-slate-500">
           합격증 첨부 <span className="text-[#3f9fdb]">*</span>

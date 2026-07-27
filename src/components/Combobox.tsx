@@ -36,7 +36,7 @@ export function Combobox({
   }, [suggestions, value]);
 
   return (
-    <div className="relative flex flex-col justify-center px-4 py-2">
+    <div className="relative flex min-h-[72px] flex-col justify-center px-4 py-2">
       <div className="flex items-center justify-between">
         <label className="text-[10px] font-bold tracking-wide text-slate-500">
           {label} {required && <span className="text-[#3f9fdb]">*</span>}
@@ -80,7 +80,7 @@ export function Combobox({
           }
         }}
         placeholder={placeholder}
-        className="w-full bg-transparent text-base font-bold text-[#071d49] placeholder:font-normal placeholder:text-slate-300 focus:outline-none dark:text-gray-100"
+        className="w-full bg-transparent text-base font-bold leading-6 text-[#071d49] placeholder:font-normal placeholder:text-slate-300 focus:outline-none dark:text-gray-100"
       />
 
       {open && (
