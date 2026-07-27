@@ -21,21 +21,11 @@ function classNames(...xs: Array<string | false | null | undefined>) {
 }
 
 export default function AdmitCollectorApp() {
-  // 테마 (다크/라이트)
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  // 기본 테마는 라이트 모드로 고정
   useEffect(() => {
-    const saved = localStorage.getItem('theme') as 'light' | 'dark' | null;
-    const initial = saved ?? 'light';
-    setTheme(initial);
-    document.documentElement.classList.toggle('dark', initial === 'dark');
+    localStorage.setItem("theme", "light");
+    document.documentElement.classList.remove("dark");
   }, []);
-
-  const toggleTheme = () => {
-    const next = theme === 'dark' ? 'light' : 'dark';
-    setTheme(next);
-    document.documentElement.classList.toggle('dark', next === 'dark');
-    localStorage.setItem('theme', next);
-  };
 
   // 권한/로그인
   const [isAdmin, setIsAdmin] = useState(false);
@@ -351,30 +341,7 @@ export default function AdmitCollectorApp() {
 
   return (
     <div className="min-h-screen bg-white font-sans text-slate-900 dark:bg-gray-950 dark:text-gray-100">
-      <div className="bg-white px-5 py-2 text-[10px] text-[#071d49] dark:bg-gray-900 dark:text-sky-300">
-        <div className="mx-auto flex max-w-6xl items-center justify-end gap-5 font-semibold">
-          <a href={HOWTO_URL} target="_blank" rel="noreferrer" className="hidden items-center gap-1 hover:text-[#3f9fdb] sm:flex">
-            <span aria-hidden="true">▣</span> 이벤트
-          </a>
-          <a href={HOWTO_URL} target="_blank" rel="noreferrer" className="hidden items-center gap-1 hover:text-[#3f9fdb] sm:flex">
-            <span aria-hidden="true">?</span> 자주 묻는 질문
-          </a>
-          <button onClick={toggleTheme} className="flex items-center gap-1 hover:text-[#3f9fdb]">
-            <span aria-hidden="true">◎</span> 대한민국 · 한국어
-          </button>
-          {isAdmin ? (
-            <button onClick={handleLogout} className="flex items-center gap-1 hover:text-[#3f9fdb]">
-              <span aria-hidden="true">♙</span> 로그아웃
-            </button>
-          ) : (
-            <button onClick={() => setShowLogin(true)} className="flex items-center gap-1 hover:text-[#3f9fdb]">
-              <span aria-hidden="true">♙</span> 로그인
-            </button>
-          )}
-        </div>
-      </div>
-
-      <header className="border-b border-slate-100 bg-white px-5 dark:border-gray-800 dark:bg-gray-900">
+      <header className="sticky top-0 z-50 border-b border-slate-100 bg-white/95 px-5 shadow-[0_2px_12px_rgba(7,29,73,0.05)] backdrop-blur-md dark:border-gray-800 dark:bg-gray-900/95">
         <div className="mx-auto flex h-[72px] max-w-6xl items-center justify-between">
           <div className="flex items-center gap-12">
             <button onClick={() => setTab("upload")} className="flex items-center gap-2 text-left" aria-label="홈으로">
