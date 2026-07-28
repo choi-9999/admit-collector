@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useMemo, useState } from "react";
 import type { AdmitRow } from "@/types/admit";
 import {
@@ -33,8 +34,13 @@ const GROUP_STYLES: Record<
   },
 };
 
-const SCHOOL_BRANDS: Record<string, { mark: string; from: string; to: string }> = {
-  서울대학교: { mark: "SNU", from: "#17365d", to: "#315f90" },
+const SCHOOL_BRANDS: Record<string, { mark: string; from: string; to: string; ci?: string }> = {
+  서울대학교: {
+    mark: "SNU",
+    from: "#17365d",
+    to: "#315f90",
+    ci: "/seoul-national-university.png",
+  },
   연세대학교: { mark: "YONSEI", from: "#003876", to: "#1765a8" },
   고려대학교: { mark: "KOREA", from: "#8b0029", to: "#b5214e" },
   성균관대학교: { mark: "SKKU", from: "#00573f", to: "#268267" },
@@ -77,9 +83,20 @@ function ScholarshipCard({ recipient }: { recipient: ScholarshipRecipient }) {
         background: `linear-gradient(135deg, ${brand.from}, ${brand.to})`,
       }}
     >
-      <div className="pointer-events-none absolute -right-3 top-7 rotate-[-8deg] text-[42px] font-black tracking-[-0.08em] text-white/10">
-        {brand.mark}
-      </div>
+      {brand.ci ? (
+        <Image
+          src={brand.ci}
+          alt=""
+          width={190}
+          height={190}
+          aria-hidden="true"
+          className="pointer-events-none absolute -right-4 top-2 h-[190px] w-[190px] object-contain opacity-[0.18] mix-blend-multiply"
+        />
+      ) : (
+        <div className="pointer-events-none absolute -right-3 top-7 rotate-[-8deg] text-[42px] font-black tracking-[-0.08em] text-white/10">
+          {brand.mark}
+        </div>
+      )}
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/35 to-transparent" />
 
       <div className="relative flex h-full flex-col">
