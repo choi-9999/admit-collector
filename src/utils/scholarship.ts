@@ -9,6 +9,7 @@ export type ScholarshipRecipient = {
   amount: number;
   rank: number;
   priority: number;
+  otherAdmissions: AdmitRow[];
 };
 
 const MAJOR_MEDICAL_SCHOOLS = [
@@ -130,6 +131,7 @@ export function matchScholarship(row: AdmitRow): ScholarshipRecipient | null {
       amount: 2_000_000,
       rank: 3,
       priority: orderIn(MAJOR_MEDICAL_SCHOOLS, university),
+      otherAdmissions: [],
     };
   }
 
@@ -154,6 +156,7 @@ export function matchScholarship(row: AdmitRow): ScholarshipRecipient | null {
       amount: 700_000,
       rank: 2,
       priority: platinumPriority,
+      otherAdmissions: [],
     };
   }
 
@@ -176,6 +179,7 @@ export function matchScholarship(row: AdmitRow): ScholarshipRecipient | null {
       amount: 500_000,
       rank: 1,
       priority: supremePriority,
+      otherAdmissions: [],
     };
   }
 
@@ -184,8 +188,16 @@ export function matchScholarship(row: AdmitRow): ScholarshipRecipient | null {
 
 export function selectScholarshipRecipients(rows: AdmitRow[]) {
   const bestByStudent = new Map<string, ScholarshipRecipient>();
+  const admissionsByStudent = new Map<string, AdmitRow[]>();
 
   rows.forEach((row) => {
+    if (row.status !== "반려") {
+      const studentKey = `${compact(row.branch)}|${compact(row.name)}`;
+      const currentAdmissions = admissionsByStudent.get(studentKey) ?? [];
+      currentAdmissions.push(row);
+      admissionsByStudent.set(studentKey, currentAdmissions);
+    }
+
     const matched = matchScholarship(row);
     if (!matched) return;
 
@@ -206,11 +218,35 @@ export function selectScholarshipRecipients(rows: AdmitRow[]) {
     }
   });
 
-  return [...bestByStudent.values()].sort(
+  return [...bestByStudent.values()]
+    .map((recipient) => {
+      const selectedKey = `${normalizeUniversity(recipient.row.university)}|${compact(recipient.row.dept)}`;
+      const seen = new Set<string>();
+      const otherAdmissions = (admissionsByStudent.get(recipient.studentKey) ?? [])
+        .filter((row) => {
+          const key = `${normalizeUniversity(row.university)}|${compact(row.dept)}`;
+          if (key === selectedKey || seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        })
+        .sort((a, b) => {
+          const aMatch = matchScholarship(a);
+          const bMatch = matchScholarship(b);
+          return (
+            (bMatch?.rank ?? 0) - (aMatch?.rank ?? 0) ||
+            (aMatch?.priority ?? Number.MAX_SAFE_INTEGER) -
+              (bMatch?.priority ?? Number.MAX_SAFE_INTEGER) ||
+            a.university.localeCompare(b.university, "ko")
+          );
+        });
+
+      return { ...recipient, otherAdmissions };
+    })
+    .sort(
     (a, b) =>
       b.rank - a.rank ||
       a.priority - b.priority ||
       a.row.university.localeCompare(b.row.university, "ko") ||
       a.row.name.localeCompare(b.row.name, "ko")
-  );
+    );
 }
