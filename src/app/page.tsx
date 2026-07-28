@@ -22,6 +22,20 @@ function classNames(...xs: Array<string | false | null | undefined>) {
   return xs.filter(Boolean).join(" ");
 }
 
+const UNIVERSITY_CIS: Record<string, string> = {
+  서울대학교: "/seoul-national-university.png",
+  연세대학교: "/yonsei-university.png",
+  고려대학교: "/korea-university.png",
+  성균관대학교: "/sungkyunkwan-university.png",
+  가톨릭대학교: "/catholic-university.webp",
+  울산대학교: "/ulsan-university.gif",
+  경희대학교: "/kyung-hee-university.png",
+  이화여자대학교: "/ewha-womans-university.webp",
+  중앙대학교: "/chung-ang-university.webp",
+  숙명여자대학교: "/sookmyung-womens-university.png",
+  한양대학교: "/hanyang-university.png",
+};
+
 type RegistrationMode = "single" | "bulk";
 type BatchEntryStatus = "idle" | "uploading" | "error";
 type BatchEntry = {
@@ -494,6 +508,8 @@ export default function AdmitCollectorApp() {
   }, [rows, isAdmin, viewAllBranches, branch, statusFilter, searchQuery]);
 
   const stats = useMemo(() => computeStats(filteredRows), [filteredRows]);
+  const topUniversity = stats.topUniversities[0];
+  const topUniversityCi = topUniversity ? UNIVERSITY_CIS[topUniversity.name] : undefined;
 
   const exportCSV = (onlyApproved: boolean = true) => {
     const target = onlyApproved
@@ -972,44 +988,52 @@ export default function AdmitCollectorApp() {
               <h4 className="mt-1 text-[13px] font-bold text-[#071d49] dark:text-white">
                 총 합격증 제출 실적: {stats.total}건
               </h4>
-              <p className="mt-1 text-[10px] leading-5 text-slate-500 dark:text-gray-400">
-                {branch ?? "전체"} 지점 등록 실적이 실시간으로 가공되어 집계됩니다.
-              </p>
             </div>
           </article>
 
           <article className="overflow-hidden rounded-md border border-slate-200 bg-white shadow-[0_2px_10px_rgba(7,29,73,0.04)] dark:border-gray-800 dark:bg-gray-900">
             <div className="stat-art flex h-40 items-center justify-center bg-gradient-to-br from-[#e8f8f4] via-[#bce9dc] to-[#72c7b1]">
-              <div className="relative z-10 flex h-24 w-24 items-center justify-center rounded-full border-[12px] border-white/70 text-2xl font-bold text-white shadow-lg" aria-hidden="true">
-                {stats.approvedRate}%
+              <div className="relative z-10 flex h-28 w-28 items-center justify-center rounded-2xl bg-white/80 p-3 shadow-lg backdrop-blur-sm">
+                {topUniversityCi && topUniversity ? (
+                  <Image
+                    src={topUniversityCi}
+                    alt={`${topUniversity.name} CI`}
+                    width={112}
+                    height={112}
+                    unoptimized={topUniversityCi.endsWith(".gif")}
+                    className="h-full w-full object-contain"
+                  />
+                ) : (
+                  <span className="text-xl font-black text-[#315d81]" aria-hidden="true">
+                    {topUniversity?.name.replace("대학교", "").slice(0, 3) || "UNI"}
+                  </span>
+                )}
               </div>
             </div>
             <div className="p-4">
-              <span className="text-[10px] font-semibold text-slate-500">검토 및 승인율</span>
+              <span className="text-[10px] font-semibold text-slate-500">최다 합격 대학</span>
               <h4 className="mt-1 text-[13px] font-bold text-[#071d49] dark:text-white">
-                승인 완료율: {stats.approvedRate}% ({stats.byStatus["승인"]}건)
+                {topUniversity ? `${topUniversity.name} · ${topUniversity.count}건` : "데이터 준비중"}
               </h4>
-              <p className="mt-1 text-[10px] leading-5 text-slate-500 dark:text-gray-400">
-                관리자 검토를 통해 승인된 데이터만 CSV 파일로 정상 추출됩니다.
-              </p>
             </div>
           </article>
 
           <article className="overflow-hidden rounded-md border border-slate-200 bg-white shadow-[0_2px_10px_rgba(7,29,73,0.04)] dark:border-gray-800 dark:bg-gray-900">
             <div className="stat-art flex h-40 items-center justify-center bg-gradient-to-br from-[#eef2ff] via-[#cbd5f4] to-[#7890ce]">
-              <div className="relative z-10 rotate-[-7deg] rounded-md bg-[#071d49] px-7 py-5 text-center text-white shadow-xl" aria-hidden="true">
-                <span className="block text-[9px] tracking-[0.25em] text-[#89d1f2]">ADMIT PASS</span>
-                <span className="mt-2 block text-xl font-bold">247</span>
+              <div className="relative z-10 flex h-28 w-36 items-center justify-center" aria-hidden="true">
+                <span className="absolute left-1 h-16 w-16 rounded-2xl border border-white/60 bg-white/30 shadow-md" />
+                <span className="absolute right-1 h-16 w-16 rounded-2xl border border-white/60 bg-white/30 shadow-md" />
+                <span className="relative flex h-24 w-24 flex-col items-center justify-center rounded-2xl bg-[#071d49] text-white shadow-xl">
+                  <strong className="text-3xl font-black">{stats.universityCount}</strong>
+                  <span className="mt-1 text-[8px] font-bold tracking-[0.14em] text-[#89d1f2]">UNIVERSITIES</span>
+                </span>
               </div>
             </div>
             <div className="p-4">
-              <span className="text-[10px] font-semibold text-slate-500">주요 대학 실적</span>
+              <span className="text-[10px] font-semibold text-slate-500">합격 대학 다양성</span>
               <h4 className="mt-1 text-[13px] font-bold text-[#071d49] dark:text-white">
-                상위 대학: {stats.topUniversities[0]?.name || "데이터 준비중"}
+                총 {stats.universityCount}개 대학 합격
               </h4>
-              <p className="mt-1 text-[10px] leading-5 text-slate-500 dark:text-gray-400">
-                의약학 계열 및 서울 주요 대학 합격자 자동 분류 정렬 포함.
-              </p>
             </div>
           </article>
         </div>
