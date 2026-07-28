@@ -113,11 +113,15 @@ function ScholarshipCard({ recipient }: { recipient: ScholarshipRecipient }) {
         {recipient.otherAdmissions.length === 0 ? (
           <p className="mt-auto text-[11px] font-medium text-white/65">추가로 등록된 합격 대학이 없습니다.</p>
         ) : (
-          <ul className="mt-1.5 space-y-px">
+          <ul className="mt-2">
             {recipient.otherAdmissions.slice(0, 5).map((admission) => (
-              <li key={`${admission.id}-${admission.university}-${admission.dept}`} className="border-b border-white/10 py-px last:border-0">
-                <p className="truncate text-[10px] font-black leading-3">{admission.university}</p>
-                <p className="truncate text-[9px] leading-3 text-white/65">{admission.dept} · {admission.track}</p>
+              <li
+                key={`${admission.id}-${admission.university}-${admission.dept}`}
+                className="grid grid-cols-[minmax(0,1.3fr)_minmax(0,0.9fr)_auto] items-center gap-x-2 border-b border-white/10 py-1.5 last:border-0"
+              >
+                <p className="truncate text-[11px] font-black leading-4">{admission.university}</p>
+                <p className="truncate border-l border-white/20 pl-2 text-[10px] font-medium leading-4 text-white/80">{admission.dept}</p>
+                <p className="border-l border-white/20 pl-2 text-[10px] font-bold leading-4 text-[#89d1f2]">{admission.track}</p>
               </li>
             ))}
           </ul>
