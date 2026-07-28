@@ -262,7 +262,10 @@ export function ScholarshipSection({ rows }: ScholarshipSectionProps) {
 
   return (
     <>
-      <section className="mb-12 overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-[0_12px_38px_rgba(7,29,73,0.08)]">
+      <section
+        id="scholarship-section"
+        className="mb-12 scroll-mt-24 overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-[0_12px_38px_rgba(7,29,73,0.08)]"
+      >
       <div className="flex flex-col gap-4 border-b border-slate-100 px-5 py-5 sm:flex-row sm:items-center sm:justify-between md:px-7">
         <div className="flex flex-wrap items-center gap-3">
           <div className="relative">
