@@ -579,7 +579,7 @@ export default function AdmitCollectorApp() {
   };
 
   return (
-    <div className="min-h-screen bg-white font-sans text-slate-900 dark:bg-gray-950 dark:text-gray-100">
+    <div className="page-font-up min-h-screen bg-white font-sans text-slate-900 dark:bg-gray-950 dark:text-gray-100">
       <header className="sticky top-0 z-50 border-b border-slate-100 bg-white/95 px-5 shadow-[0_2px_12px_rgba(7,29,73,0.06)] backdrop-blur-md md:px-10 xl:px-[100px]">
         <div className="relative flex h-[68px] w-full items-center justify-between">
           <div className="flex shrink-0 items-center gap-4">

@@ -34,19 +34,91 @@ body {
   letter-spacing: -0.01em;
 }
 
-.text-\[9px\] {
-  font-size: 10px;
+.page-font-up {
+  font-size: 17.5px;
 }
 
-.text-\[10px\] {
+.page-font-up :where(.text-xs):not(.scholarship-card *) {
+  font-size: 13.25px;
+}
+
+.page-font-up :where(.text-sm):not(.scholarship-card *) {
+  font-size: 15.5px;
+}
+
+.page-font-up :where(.text-base):not(.scholarship-card *) {
+  font-size: 17.5px;
+}
+
+.page-font-up :where(.text-lg):not(.scholarship-card *) {
+  font-size: 19.5px;
+}
+
+.page-font-up :where(.text-xl):not(.scholarship-card *) {
+  font-size: 22px;
+}
+
+.page-font-up :where(.text-2xl):not(.scholarship-card *) {
+  font-size: 26px;
+}
+
+.page-font-up :where(.text-3xl):not(.scholarship-card *) {
+  font-size: 33px;
+}
+
+.page-font-up :where(.text-4xl):not(.scholarship-card *) {
+  font-size: 39px;
+}
+
+.page-font-up :where([class~="text-[9px]"]):not(.scholarship-card *) {
   font-size: 11px;
 }
 
-.text-\[11px\] {
+.page-font-up :where([class~="text-[10px]"]):not(.scholarship-card *) {
   font-size: 12px;
 }
 
-.text-\[13px\] {
+.page-font-up :where([class~="text-[11px]"]):not(.scholarship-card *) {
+  font-size: 13px;
+}
+
+.page-font-up :where([class~="text-[13px]"]):not(.scholarship-card *) {
+  font-size: 15px;
+}
+
+.scholarship-card {
+  font-size: 16.5px;
+}
+
+.scholarship-card .text-xs {
+  font-size: 12.375px;
+}
+
+.scholarship-card .text-sm {
+  font-size: 14.4375px;
+}
+
+.scholarship-card .text-base {
+  font-size: 16.5px;
+}
+
+.scholarship-card .text-lg {
+  font-size: 18.5625px;
+}
+
+.scholarship-card [class~="text-[9px]"] {
+  font-size: 10px;
+}
+
+.scholarship-card [class~="text-[10px]"] {
+  font-size: 11px;
+}
+
+.scholarship-card [class~="text-[11px]"] {
+  font-size: 12px;
+}
+
+.scholarship-card [class~="text-[13px]"] {
   font-size: 14px;
 }
 
