@@ -1002,7 +1002,7 @@ export default function AdmitCollectorApp() {
       </section>
 
       <section className="w-full px-5 py-10 md:px-10 md:py-14 xl:px-[60px]">
-        {tab === "upload" && <ScholarshipSection rows={rows} />}
+        <ScholarshipSection rows={rows} />
 
         <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
           <article className="overflow-hidden rounded-md border border-slate-200 bg-white shadow-[0_2px_10px_rgba(7,29,73,0.04)] dark:border-gray-800 dark:bg-gray-900">
