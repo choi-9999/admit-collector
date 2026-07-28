@@ -20,6 +20,12 @@ type AdmissionsTooltipState = {
   left: number;
 };
 
+type NoticeTooltipState = {
+  top: number;
+  left: number;
+  width: number;
+};
+
 const GROUP_STYLES: Record<
   ScholarshipGroup,
   { label: string; badge: string; dot: string }
@@ -209,6 +215,7 @@ function ScholarshipCard({ recipient }: { recipient: ScholarshipRecipient }) {
 export function ScholarshipSection({ rows }: ScholarshipSectionProps) {
   const [listView, setListView] = useState(false);
   const [admissionsTooltip, setAdmissionsTooltip] = useState<AdmissionsTooltipState | null>(null);
+  const [noticeTooltip, setNoticeTooltip] = useState<NoticeTooltipState | null>(null);
   const recipients = useMemo(() => selectScholarshipRecipients(rows), [rows]);
   const totalAmount = recipients.reduce((sum, item) => sum + item.amount, 0);
   const carouselItems = useMemo(() => {
@@ -237,29 +244,48 @@ export function ScholarshipSection({ rows }: ScholarshipSectionProps) {
     setAdmissionsTooltip({ recipient, top, left });
   };
 
+  const showNoticeTooltip = (element: HTMLElement) => {
+    const rect = element.getBoundingClientRect();
+    const width = Math.min(480, window.innerWidth - 24);
+    const estimatedHeight = 430;
+    const belowTop = rect.bottom + 10;
+    const top = belowTop + estimatedHeight <= window.innerHeight - 12
+      ? belowTop
+      : Math.max(12, Math.min(rect.top - estimatedHeight - 10, window.innerHeight - estimatedHeight - 12));
+    const left = Math.min(
+      Math.max(12, rect.left),
+      Math.max(12, window.innerWidth - width - 12),
+    );
+
+    setNoticeTooltip({ top, left, width });
+  };
+
   return (
     <>
       <section className="mb-12 overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-[0_12px_38px_rgba(7,29,73,0.08)]">
       <div className="flex flex-col gap-4 border-b border-slate-100 px-5 py-5 sm:flex-row sm:items-center sm:justify-between md:px-7">
         <div className="flex flex-wrap items-center gap-3">
-          <details className="group relative">
-            <summary
-              className="flex cursor-help list-none items-center gap-1.5 text-left text-base font-black text-[#071d49] [&::-webkit-details-marker]:hidden"
+          <div className="relative">
+            <button
+              type="button"
+              className="flex cursor-help items-center gap-1.5 text-left text-base font-black text-[#071d49] outline-none focus-visible:ring-2 focus-visible:ring-[#4da8dd] focus-visible:ring-offset-2"
               aria-describedby="scholarship-notice"
+              onMouseEnter={(event) => showNoticeTooltip(event.currentTarget)}
+              onMouseLeave={() => setNoticeTooltip(null)}
+              onMouseDown={(event) => event.preventDefault()}
+              onFocus={(event) => {
+                if (event.currentTarget.matches(":focus-visible")) {
+                  showNoticeTooltip(event.currentTarget);
+                }
+              }}
+              onBlur={() => setNoticeTooltip(null)}
             >
               2027 총 1억 장학금 대상자
               <span className="flex h-4 w-4 items-center justify-center rounded-full border border-[#8ba3b8] text-[9px] font-black text-[#52728e]">
                 i
               </span>
-            </summary>
-            <div
-              id="scholarship-notice"
-              role="tooltip"
-              className="invisible absolute left-0 top-full z-30 mt-2 w-[min(340px,calc(100vw-72px))] -translate-y-1 rounded-xl bg-[#071d49] px-4 py-3 text-[11px] font-medium leading-5 text-white opacity-0 shadow-xl transition group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100 group-open:visible group-open:translate-y-0 group-open:opacity-100"
-            >
-              자동 선정된 장학금 대상자로 최종 확정 상태가 아닙니다. 자세한 내용은 추후 본사 담당자가 안내할 예정입니다.
-            </div>
-          </details>
+            </button>
+          </div>
 
           <span className="rounded-full bg-[#eaf7fd] px-3 py-1 text-[10px] font-bold text-[#1676ad]">
             대상자 {recipients.length}명
@@ -354,6 +380,53 @@ export function ScholarshipSection({ rows }: ScholarshipSectionProps) {
         </div>
       )}
       </section>
+      {noticeTooltip && typeof document !== "undefined" && createPortal(
+        <div
+          id="scholarship-notice"
+          role="tooltip"
+          className="pointer-events-none fixed z-[110] max-h-[calc(100vh-24px)] overflow-y-auto rounded-2xl bg-[#071d49] p-5 text-left text-white shadow-[0_20px_50px_rgba(7,29,73,0.32)]"
+          style={{
+            top: noticeTooltip.top,
+            left: noticeTooltip.left,
+            width: noticeTooltip.width,
+          }}
+        >
+          <span className="block text-[10px] font-black tracking-[0.12em] text-[#89d1f2]">
+            SCHOLARSHIP NOTICE
+          </span>
+          <span className="mt-1 block text-sm font-black">2027 총 1억 장학금 안내</span>
+
+          <span className="mt-3 block rounded-xl bg-white/10 px-3.5 py-3 text-[11px] font-bold leading-5">
+            <strong className="block">자동 선정된 장학금 대상자로 최종 확정 상태가 아닙니다.</strong>
+            <strong className="block">자세한 내용은 추후 본사 담당자가 안내할 예정입니다.</strong>
+          </span>
+
+          <span className="mt-4 block text-[11px] font-medium leading-[1.65] text-white/85">
+            <strong className="mb-1 block text-xs text-white">지급 기준</strong>
+            총 1억 장학금은 재원기간별 장학금 차등 지급 없이 각 구간별 최대 200만 원·70만 원·50만 원을 지급합니다.
+          </span>
+
+          <span className="mt-4 block text-[11px] font-medium leading-[1.65] text-white/85">
+            <strong className="mb-1 block text-xs text-white">충족 조건</strong>
+            <span className="block pl-1">1. 본인의 홍보대사 활동 동의</span>
+            <span className="block pl-4 text-[10px] text-white/60">합격 수기 및 인터뷰의 마케팅 활용 등</span>
+            <span className="mt-1 block pl-1">2. 재원기간 만 3개월 이상 등록생</span>
+            <span className="mt-1 block pl-1">3. 해당 대학에 최종 합격한 학생</span>
+            <span className="block pl-4 text-[10px] text-white/60">최종 합격증 제출 필수</span>
+          </span>
+
+          <span className="mt-4 block border-t border-white/10 pt-3 text-[11px] font-medium leading-[1.7] text-white/85">
+            <span className="block">• 중복 지급 제외</span>
+            <span className="block">• 제세공과금 본인 부담</span>
+            <span className="block">• 지급 시기: 3월 중 최종 선발 후, 4월 중 지급 예정</span>
+          </span>
+
+          <span className="mt-3 block rounded-lg bg-[#0d2a5e] px-3 py-2.5 text-[10px] font-medium leading-4 text-white/70">
+            장학금은 총 1억 원 내에서 그룹별 순차 지급 방식으로 진행되며, 최종 선발 인원 및 예산 상황에 따라 지급 금액이 조정될 수 있습니다.
+          </span>
+        </div>,
+        document.body,
+      )}
       {admissionsTooltip && typeof document !== "undefined" && createPortal(
         <div
           role="tooltip"
