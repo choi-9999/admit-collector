@@ -1003,25 +1003,26 @@ export default function AdmitCollectorApp() {
 
       <section className="w-full px-5 py-10 md:px-10 md:py-14 xl:px-[60px]">
         <ScholarshipSection rows={rows} />
+      </section>
 
-        <div className="mt-8 bg-[#dff2fb] px-5 py-7 dark:bg-slate-900 md:px-7">
-          <div className="flex gap-4 overflow-x-auto pb-1 md:justify-center">
-            <article className="flex h-36 w-52 shrink-0 flex-col items-center justify-center rounded-md bg-white/90 px-5 text-center shadow-[0_3px_12px_rgba(7,29,73,0.06)] dark:bg-gray-900">
+      <section className="w-full bg-[#dff2fb] px-5 py-8 dark:bg-slate-900 md:px-10 xl:px-[60px]">
+          <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3">
+            <article className="flex min-h-28 flex-col items-center justify-center rounded-md bg-white/70 p-4 text-center dark:bg-gray-900">
               <span className="text-xs font-bold text-[#315d81] dark:text-sky-300">총 제출 건</span>
-              <strong className="mt-4 text-4xl font-black text-[#071d49] dark:text-white">
+              <strong className="mt-3 text-3xl font-black text-[#071d49] dark:text-white">
                 {stats.total}
               </strong>
             </article>
 
-            <article className="flex h-36 w-52 shrink-0 flex-col items-center justify-center rounded-md bg-white/90 px-5 text-center shadow-[0_3px_12px_rgba(7,29,73,0.06)] dark:bg-gray-900">
+            <article className="flex min-h-28 flex-col items-center justify-center rounded-md bg-white/70 p-4 text-center dark:bg-gray-900">
               <span className="text-xs font-bold text-[#315d81] dark:text-sky-300">최다 합격 대학</span>
-              <div className="mt-3 flex h-16 w-20 items-center justify-center">
+              <div className="mt-3 flex h-12 w-16 items-center justify-center">
                 {topUniversityCi && topUniversity ? (
                   <Image
                     src={topUniversityCi}
                     alt={`${topUniversity.name} CI`}
-                    width={80}
-                    height={64}
+                    width={64}
+                    height={48}
                     unoptimized={topUniversityCi.endsWith(".gif")}
                     className="h-full w-full object-contain"
                   />
@@ -1044,15 +1045,14 @@ export default function AdmitCollectorApp() {
                 if (stats.universities.length > 0) showUniversityTooltip(event.currentTarget);
               }}
               onBlur={() => setUniversityTooltip(null)}
-              className="flex h-36 w-52 shrink-0 flex-col items-center justify-center rounded-md bg-white/90 px-5 text-center shadow-[0_3px_12px_rgba(7,29,73,0.06)] outline-none focus-visible:ring-2 focus-visible:ring-[#4da8dd] focus-visible:ring-offset-2 dark:bg-gray-900"
+              className="flex min-h-28 flex-col items-center justify-center rounded-md bg-white/70 p-4 text-center outline-none focus-visible:ring-2 focus-visible:ring-[#4da8dd] focus-visible:ring-offset-2 dark:bg-gray-900"
             >
               <span className="text-xs font-bold text-[#315d81] dark:text-sky-300">합격 대학 다양성</span>
-              <strong className="mt-4 text-4xl font-black text-[#071d49] dark:text-white">
+              <strong className="mt-3 text-3xl font-black text-[#071d49] dark:text-white">
                 {stats.universityCount}
               </strong>
             </article>
           </div>
-        </div>
       </section>
 
       <section
