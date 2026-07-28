@@ -105,23 +105,22 @@ function ScholarshipCard({ recipient }: { recipient: ScholarshipRecipient }) {
         </div>
       </div>
 
-      <div className="pointer-events-none absolute inset-0 z-20 flex translate-y-2 flex-col bg-[#071d49]/95 p-5 opacity-0 backdrop-blur-sm transition duration-200 group-hover:translate-y-0 group-hover:opacity-100 group-focus:translate-y-0 group-focus:opacity-100">
-        <p className="text-[10px] font-bold tracking-[0.08em] text-[#89d1f2]">OTHER ADMISSIONS</p>
-        <h4 className="mt-1 text-sm font-black">중복 합격 대학</h4>
+      <div className="pointer-events-none absolute inset-0 z-20 flex translate-y-2 flex-col bg-[#071d49]/95 p-4 opacity-0 backdrop-blur-sm transition duration-200 group-hover:translate-y-0 group-hover:opacity-100 group-focus:translate-y-0 group-focus:opacity-100">
+        <div className="flex items-baseline gap-2">
+          <h4 className="text-sm font-black">중복 합격 대학</h4>
+          <p className="text-[8px] font-bold tracking-[0.08em] text-[#89d1f2]">OTHER ADMISSIONS</p>
+        </div>
         {recipient.otherAdmissions.length === 0 ? (
           <p className="mt-auto text-[11px] font-medium text-white/65">추가로 등록된 합격 대학이 없습니다.</p>
         ) : (
-          <ul className="mt-3 space-y-2 overflow-hidden">
-            {recipient.otherAdmissions.slice(0, 4).map((admission) => (
-              <li key={`${admission.id}-${admission.university}-${admission.dept}`} className="border-b border-white/10 pb-2 last:border-0">
-                <p className="truncate text-[11px] font-black">{admission.university}</p>
-                <p className="mt-0.5 truncate text-[10px] text-white/65">{admission.dept} · {admission.track}</p>
+          <ul className="mt-1.5 space-y-px">
+            {recipient.otherAdmissions.slice(0, 5).map((admission) => (
+              <li key={`${admission.id}-${admission.university}-${admission.dept}`} className="border-b border-white/10 py-px last:border-0">
+                <p className="truncate text-[10px] font-black leading-3">{admission.university}</p>
+                <p className="truncate text-[9px] leading-3 text-white/65">{admission.dept} · {admission.track}</p>
               </li>
             ))}
           </ul>
-        )}
-        {recipient.otherAdmissions.length > 4 && (
-          <p className="mt-auto text-[10px] font-bold text-[#89d1f2]">외 {recipient.otherAdmissions.length - 4}건</p>
         )}
       </div>
     </article>
