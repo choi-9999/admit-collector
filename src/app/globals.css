@@ -10,6 +10,10 @@
   --air-line: #dfe8ef;
 }
 
+html {
+  font-size: 16.5px;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -28,6 +32,22 @@ body {
   font-family: var(--font-noto-sans-kr), "Noto Sans KR", "Malgun Gothic",
     Arial, Helvetica, sans-serif;
   letter-spacing: -0.01em;
+}
+
+.text-\[9px\] {
+  font-size: 10px;
+}
+
+.text-\[10px\] {
+  font-size: 11px;
+}
+
+.text-\[11px\] {
+  font-size: 12px;
+}
+
+.text-\[13px\] {
+  font-size: 14px;
 }
 
 button,

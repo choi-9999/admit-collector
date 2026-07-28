@@ -600,10 +600,6 @@ export default function AdmitCollectorApp() {
             >
               <span aria-hidden="true">✈</span> 합격자 등록
             </button>
-            <span
-              className="pointer-events-none absolute -right-6 bottom-0 h-6 w-6 bg-white [clip-path:polygon(0_0,0_100%,100%_100%)] dark:bg-gray-900"
-              aria-hidden="true"
-            />
           </div>
 
           <div className="rounded-b-xl rounded-tr-xl bg-white p-5 shadow-[0_12px_38px_rgba(7,29,73,0.08)] dark:bg-gray-900 md:p-7">
@@ -673,9 +669,9 @@ export default function AdmitCollectorApp() {
             {/* 5. 대한항공 시그니처 1줄 수평 수집 폼 행 (PUS ⇄ To Departure / Date / Passenger / Class / Search CTA) */}
             {tab === "upload" && registrationMode === "single" && (
               <div className="rounded-lg border border-slate-200 bg-white dark:border-gray-800 dark:bg-gray-900/80">
-                <div className="grid grid-cols-1 divide-y divide-slate-100 dark:divide-gray-800 lg:grid-cols-12 lg:divide-x lg:divide-y-0">
+                <div className="grid grid-cols-1 divide-y divide-slate-100 dark:divide-gray-800 lg:grid-cols-[repeat(18,minmax(0,1fr))] lg:divide-x lg:divide-y-0">
                   {/* Column 1: PUS ⇄ To (학생 성명 / 대학) (4열) */}
-                  <div className="grid grid-cols-2 divide-x divide-slate-100 dark:divide-gray-800 lg:col-span-4">
+                  <div className="grid grid-cols-2 divide-x divide-slate-100 dark:divide-gray-800 lg:col-span-6">
                     {/* PUS 부산 (학생 성명) */}
                     <div className="flex min-h-[72px] flex-col justify-center px-4 py-2">
                       <div className="text-[10px] font-bold tracking-wide text-slate-500">
@@ -705,7 +701,7 @@ export default function AdmitCollectorApp() {
                   </div>
 
                   {/* Column 2: 학과 (2열) */}
-                  <div className="lg:col-span-2">
+                  <div className="lg:col-span-3">
                     <Combobox
                       label="학과"
                       value={dept}
@@ -751,12 +747,12 @@ export default function AdmitCollectorApp() {
                   </div>
 
                   {/* Column 4: 합격증 첨부 (2열) */}
-                  <div className="lg:col-span-2">
+                  <div className="lg:col-span-4">
                     <FileDrop file={file} setFile={setFile} error={fileError} />
                   </div>
 
                   {/* Column 5: 대한항공 시그니처 Sky Blue 알약 검색 버튼 (2열) */}
-                  <div className="flex items-center justify-center p-3 lg:col-span-2">
+                  <div className="flex items-center justify-center p-3 lg:col-span-3">
                     <button
                       onClick={handleSubmit}
                       disabled={submitting}
@@ -819,8 +815,8 @@ export default function AdmitCollectorApp() {
                         </button>
                       </div>
 
-                      <div className="grid grid-cols-1 divide-y divide-slate-100 dark:divide-gray-800 lg:grid-cols-12 lg:divide-x lg:divide-y-0">
-                        <div className="flex min-h-[72px] flex-col justify-center px-4 py-2 lg:col-span-2">
+                      <div className="grid grid-cols-1 divide-y divide-slate-100 dark:divide-gray-800 lg:grid-cols-[repeat(18,minmax(0,1fr))] lg:divide-x lg:divide-y-0">
+                        <div className="flex min-h-[72px] flex-col justify-center px-4 py-2 lg:col-span-3">
                           <div className="text-[10px] font-bold tracking-wide text-slate-500">
                             학생 성명 <span className="text-[#3f9fdb]">*</span>
                           </div>
@@ -833,7 +829,7 @@ export default function AdmitCollectorApp() {
                           />
                         </div>
 
-                        <div className="lg:col-span-3">
+                        <div className="lg:col-span-4">
                           <Combobox
                             label="합격 대학"
                             value={entry.univ}
@@ -846,7 +842,7 @@ export default function AdmitCollectorApp() {
                           />
                         </div>
 
-                        <div className="lg:col-span-2">
+                        <div className="lg:col-span-3">
                           <Combobox
                             label="학과"
                             value={entry.dept}
@@ -886,7 +882,7 @@ export default function AdmitCollectorApp() {
                           </div>
                         </div>
 
-                        <div className="lg:col-span-3">
+                        <div className="lg:col-span-6">
                           <FileDrop
                             file={entry.file}
                             setFile={(nextFile) => updateBatchEntry(entry.id, { file: nextFile })}
