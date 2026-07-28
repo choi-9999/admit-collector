@@ -94,7 +94,6 @@ export default function AdmitCollectorApp() {
 
   // 제출된 행
   const [rows, setRows] = useState<AdmitRow[]>([]);
-  const [scholarshipRows, setScholarshipRows] = useState<AdmitRow[]>([]);
   const [editRow, setEditRow] = useState<AdmitRow | null>(null);
   const [previewRow, setPreviewRow] = useState<AdmitRow | null>(null);
 
@@ -152,16 +151,6 @@ export default function AdmitCollectorApp() {
       if (json?.ok) setRows(json.rows);
     })();
   }, [branch, isAdmin, viewAllBranches, tab]);
-
-  // 장학금 대상자는 선택 지점과 관계없이 전체 합격자에서 자동 선정
-  useEffect(() => {
-    fetch("/api/admits", { cache: "no-store" })
-      .then((res) => res.json())
-      .then((json) => {
-        if (json?.ok) setScholarshipRows(json.rows);
-      })
-      .catch((err) => console.warn("장학금 대상자 목록 로드 실패", err));
-  }, [tab]);
 
   const univSuggestions = useMemo(() => Object.keys(universities), [universities]);
   const deptSuggestions = useMemo(() => {
@@ -281,7 +270,6 @@ export default function AdmitCollectorApp() {
         certificate: file,
       });
       setRows((rs) => [result.saved, ...rs]);
-      setScholarshipRows((rs) => [result.saved, ...rs]);
       setName("");
       setUniv("");
       setDept("");
@@ -398,7 +386,6 @@ export default function AdmitCollectorApp() {
 
     if (savedRows.length > 0) {
       setRows((current) => [...savedRows.reverse(), ...current]);
-      setScholarshipRows((current) => [...savedRows, ...current]);
     }
 
     if (succeededIds.size === validated.length) {
@@ -441,19 +428,9 @@ export default function AdmitCollectorApp() {
           r.id === id ? { ...r, status: s, rejectReason: s === "반려" ? (reason || r.rejectReason) : undefined } : r
         )
       );
-      setScholarshipRows((rs) =>
-        rs.map((r) =>
-          r.id === id ? { ...r, status: s, rejectReason: s === "반려" ? (reason || r.rejectReason) : undefined } : r
-        )
-      );
       pushToast(`✅ 상태가 '${s}'(으)로 변경되었습니다.`);
     } catch (e) {
       setRows((rs) =>
-        rs.map((r) =>
-          r.id === id ? { ...r, status: s, rejectReason: s === "반려" ? (reason || r.rejectReason) : undefined } : r
-        )
-      );
-      setScholarshipRows((rs) =>
         rs.map((r) =>
           r.id === id ? { ...r, status: s, rejectReason: s === "반려" ? (reason || r.rejectReason) : undefined } : r
         )
@@ -945,23 +922,11 @@ export default function AdmitCollectorApp() {
               </div>
             )}
           </div>
-          {tab === "upload" && <ScholarshipSection rows={scholarshipRows} />}
         </div>
       </section>
 
       <section className="w-full px-5 py-10 md:px-10 md:py-14 xl:px-[60px]">
-        <div className="air-banner mb-12 flex min-h-28 flex-col items-center justify-center px-6 py-7 text-center text-[#071d49] dark:bg-gray-900 dark:text-sky-300">
-          <div>
-            <h3 className="text-sm font-bold">새로워진 합격자 취합 서비스를 한눈에</h3>
-            <p className="mt-2 text-[11px] font-medium text-slate-500 dark:text-gray-400">지점 실적과 증빙 합격증을 안전하게 등록하고 실시간으로 확인해 보세요.</p>
-          </div>
-          <button
-            onClick={() => setTab("status")}
-            className="mt-4 rounded-full border border-[#071d49] bg-white/40 px-5 py-2 text-[10px] font-bold text-[#071d49] hover:bg-[#071d49] hover:text-white dark:bg-gray-800 dark:text-sky-300"
-          >
-            합격 현황 바로가기
-          </button>
-        </div>
+        {tab === "upload" && <ScholarshipSection rows={rows} />}
 
         <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
           <article className="overflow-hidden rounded-md border border-slate-200 bg-white shadow-[0_2px_10px_rgba(7,29,73,0.04)] dark:border-gray-800 dark:bg-gray-900">
@@ -1330,9 +1295,6 @@ export default function AdmitCollectorApp() {
             }
 
             setRows((rs) => rs.map((r) => (r.id === editRow.id ? { ...r, ...patch } : r)));
-            setScholarshipRows((rs) =>
-              rs.map((r) => (r.id === editRow.id ? { ...r, ...patch } : r))
-            );
             setEditRow(null);
             pushToast("✅ 항목이 수정되었습니다.");
           }}
