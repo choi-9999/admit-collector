@@ -2,6 +2,7 @@
 
 import React, { useMemo, useState, useEffect } from "react";
 import Image from "next/image";
+import { createPortal } from "react-dom";
 import { AdmitRow, AdmitStatus, isUniversitiesMap } from "@/types/admit";
 import { BRANCHES, INIT_UNIVERSITIES, HOWTO_URL } from "@/constants/masterData";
 import { buildExportComparator, toApplicant } from "@/utils/comparator";
@@ -47,6 +48,13 @@ type BatchEntry = {
   file?: File;
   status: BatchEntryStatus;
   error?: string;
+};
+
+type UniversityTooltipState = {
+  top: number;
+  left: number;
+  width: number;
+  columns: number;
 };
 
 function createBatchEntry(): BatchEntry {
@@ -133,6 +141,7 @@ export default function AdmitCollectorApp() {
   // Toast
   type ToastItem = { id: string; msg: string };
   const [toasts, setToasts] = useState<ToastItem[]>([]);
+  const [universityTooltip, setUniversityTooltip] = useState<UniversityTooltipState | null>(null);
 
   const pushToast = (msg: string, ms = 2400) => {
     const id = Math.random().toString(36).slice(2);
@@ -161,6 +170,24 @@ export default function AdmitCollectorApp() {
   const goToTop = () => {
     setTab("upload");
     window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const showUniversityTooltip = (element: HTMLElement) => {
+    const rect = element.getBoundingClientRect();
+    const width = Math.min(440, window.innerWidth - 24);
+    const columns = width >= 420 ? 2 : 1;
+    const estimatedHeight = 70 + Math.ceil(stats.universities.length / columns) * 30;
+    const tooltipHeight = Math.min(estimatedHeight, window.innerHeight - 24);
+    const belowTop = rect.bottom + 10;
+    const top = belowTop + tooltipHeight <= window.innerHeight - 12
+      ? belowTop
+      : Math.max(12, rect.top - tooltipHeight - 10);
+    const left = Math.min(
+      Math.max(12, rect.right - width),
+      Math.max(12, window.innerWidth - width - 12),
+    );
+
+    setUniversityTooltip({ top, left, width, columns });
   };
 
   // 로그인 영구화
@@ -508,7 +535,10 @@ export default function AdmitCollectorApp() {
   }, [rows, isAdmin, viewAllBranches, branch, statusFilter, searchQuery]);
 
   const stats = useMemo(() => computeStats(filteredRows), [filteredRows]);
-  const topUniversity = stats.topUniversities[0];
+  const topUniversity = useMemo(
+    () => computeStats(filteredRows.filter((row) => row.status !== "반려")).topUniversities[0],
+    [filteredRows],
+  );
   const topUniversityCi = topUniversity ? UNIVERSITY_CIS[topUniversity.name] : undefined;
 
   const exportCSV = (onlyApproved: boolean = true) => {
@@ -977,15 +1007,14 @@ export default function AdmitCollectorApp() {
         <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
           <article className="overflow-hidden rounded-md border border-slate-200 bg-white shadow-[0_2px_10px_rgba(7,29,73,0.04)] dark:border-gray-800 dark:bg-gray-900">
             <div className="stat-art flex h-40 items-center justify-center bg-gradient-to-br from-[#dff5fe] via-[#a8def5] to-[#6dbde6]">
-              <div className="relative z-10 flex h-20 w-24 items-end justify-center gap-2 rounded-md bg-white/75 p-4 shadow-lg backdrop-blur-sm" aria-hidden="true">
-                <span className="h-5 w-3 rounded-t bg-[#8cccea]" />
-                <span className="h-9 w-3 rounded-t bg-[#50a8d7]" />
-                <span className="h-12 w-3 rounded-t bg-[#071d49]" />
+              <div className="relative z-10 flex h-24 w-28 flex-col items-center justify-center rounded-2xl bg-white/80 text-[#071d49] shadow-lg backdrop-blur-sm" aria-hidden="true">
+                <strong className="text-4xl font-black">{stats.total}</strong>
+                <span className="mt-1 text-[8px] font-bold tracking-[0.14em] text-[#1676ad]">SUBMISSIONS</span>
               </div>
             </div>
             <div className="p-4">
               <span className="text-[10px] font-semibold text-slate-500">통계 한눈에 보기</span>
-              <h4 className="mt-1 text-[13px] font-bold text-[#071d49] dark:text-white">
+              <h4 className="mt-1 text-base font-black text-[#071d49] dark:text-white">
                 총 합격증 제출 실적: {stats.total}건
               </h4>
             </div>
@@ -1012,13 +1041,25 @@ export default function AdmitCollectorApp() {
             </div>
             <div className="p-4">
               <span className="text-[10px] font-semibold text-slate-500">최다 합격 대학</span>
-              <h4 className="mt-1 text-[13px] font-bold text-[#071d49] dark:text-white">
-                {topUniversity ? `${topUniversity.name} · ${topUniversity.count}건` : "데이터 준비중"}
+              <h4 className="mt-1 text-base font-black text-[#071d49] dark:text-white">
+                {topUniversity?.name || "데이터 준비중"}
               </h4>
             </div>
           </article>
 
-          <article className="overflow-hidden rounded-md border border-slate-200 bg-white shadow-[0_2px_10px_rgba(7,29,73,0.04)] dark:border-gray-800 dark:bg-gray-900">
+          <article
+            tabIndex={stats.universities.length > 0 ? 0 : undefined}
+            aria-describedby={stats.universities.length > 0 ? "university-diversity-tooltip" : undefined}
+            onMouseEnter={(event) => {
+              if (stats.universities.length > 0) showUniversityTooltip(event.currentTarget);
+            }}
+            onMouseLeave={() => setUniversityTooltip(null)}
+            onFocus={(event) => {
+              if (stats.universities.length > 0) showUniversityTooltip(event.currentTarget);
+            }}
+            onBlur={() => setUniversityTooltip(null)}
+            className="overflow-hidden rounded-md border border-slate-200 bg-white shadow-[0_2px_10px_rgba(7,29,73,0.04)] outline-none focus-visible:ring-2 focus-visible:ring-[#4da8dd] focus-visible:ring-offset-2 dark:border-gray-800 dark:bg-gray-900"
+          >
             <div className="stat-art flex h-40 items-center justify-center bg-gradient-to-br from-[#eef2ff] via-[#cbd5f4] to-[#7890ce]">
               <div className="relative z-10 flex h-28 w-36 items-center justify-center" aria-hidden="true">
                 <span className="absolute left-1 h-16 w-16 rounded-2xl border border-white/60 bg-white/30 shadow-md" />
@@ -1031,7 +1072,7 @@ export default function AdmitCollectorApp() {
             </div>
             <div className="p-4">
               <span className="text-[10px] font-semibold text-slate-500">합격 대학 다양성</span>
-              <h4 className="mt-1 text-[13px] font-bold text-[#071d49] dark:text-white">
+              <h4 className="mt-1 text-base font-black text-[#071d49] dark:text-white">
                 총 {stats.universityCount}개 대학 합격
               </h4>
             </div>
@@ -1360,6 +1401,38 @@ export default function AdmitCollectorApp() {
 
       {previewRow && (
         <FilePreviewModal row={previewRow} onClose={() => setPreviewRow(null)} />
+      )}
+
+      {universityTooltip && typeof document !== "undefined" && createPortal(
+        <div
+          id="university-diversity-tooltip"
+          role="tooltip"
+          className="pointer-events-none fixed z-[110] max-h-[calc(100vh-24px)] overflow-y-auto rounded-2xl bg-[#071d49] p-4 text-left text-white shadow-[0_20px_50px_rgba(7,29,73,0.32)]"
+          style={{
+            top: universityTooltip.top,
+            left: universityTooltip.left,
+            width: universityTooltip.width,
+          }}
+        >
+          <span className="block text-[10px] font-black tracking-[0.12em] text-[#89d1f2]">
+            ADMITTED UNIVERSITIES
+          </span>
+          <strong className="mt-1 block text-sm">합격 대학 {stats.universityCount}곳</strong>
+          <span
+            className="mt-3 grid gap-x-4 gap-y-2"
+            style={{ gridTemplateColumns: `repeat(${universityTooltip.columns}, minmax(0, 1fr))` }}
+          >
+            {stats.universities.map((university) => (
+              <span
+                key={university}
+                className="truncate border-t border-white/10 pt-2 text-[11px] font-bold text-white/85"
+              >
+                {university}
+              </span>
+            ))}
+          </span>
+        </div>,
+        document.body,
       )}
 
       {/* Toast Container */}
