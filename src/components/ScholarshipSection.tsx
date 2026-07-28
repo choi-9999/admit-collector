@@ -71,7 +71,8 @@ function ScholarshipCard({ recipient }: { recipient: ScholarshipRecipient }) {
 
   return (
     <article
-      className="scholarship-card relative h-[210px] w-[310px] shrink-0 overflow-hidden rounded-2xl p-5 text-white shadow-[0_12px_28px_rgba(7,29,73,0.16)]"
+      tabIndex={0}
+      className="scholarship-card group relative h-[210px] w-[310px] shrink-0 overflow-hidden rounded-2xl p-5 text-white shadow-[0_12px_28px_rgba(7,29,73,0.16)] outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2"
       style={{
         background: `linear-gradient(135deg, ${brand.from}, ${brand.to})`,
       }}
@@ -102,6 +103,26 @@ function ScholarshipCard({ recipient }: { recipient: ScholarshipRecipient }) {
             </span>
           </div>
         </div>
+      </div>
+
+      <div className="pointer-events-none absolute inset-0 z-20 flex translate-y-2 flex-col bg-[#071d49]/95 p-5 opacity-0 backdrop-blur-sm transition duration-200 group-hover:translate-y-0 group-hover:opacity-100 group-focus:translate-y-0 group-focus:opacity-100">
+        <p className="text-[10px] font-bold tracking-[0.08em] text-[#89d1f2]">OTHER ADMISSIONS</p>
+        <h4 className="mt-1 text-sm font-black">중복 합격 대학</h4>
+        {recipient.otherAdmissions.length === 0 ? (
+          <p className="mt-auto text-[11px] font-medium text-white/65">추가로 등록된 합격 대학이 없습니다.</p>
+        ) : (
+          <ul className="mt-3 space-y-2 overflow-hidden">
+            {recipient.otherAdmissions.slice(0, 4).map((admission) => (
+              <li key={`${admission.id}-${admission.university}-${admission.dept}`} className="border-b border-white/10 pb-2 last:border-0">
+                <p className="truncate text-[11px] font-black">{admission.university}</p>
+                <p className="mt-0.5 truncate text-[10px] text-white/65">{admission.dept} · {admission.track}</p>
+              </li>
+            ))}
+          </ul>
+        )}
+        {recipient.otherAdmissions.length > 4 && (
+          <p className="mt-auto text-[10px] font-bold text-[#89d1f2]">외 {recipient.otherAdmissions.length - 4}건</p>
+        )}
       </div>
     </article>
   );
@@ -197,7 +218,25 @@ export function ScholarshipSection({ rows }: ScholarshipSectionProps) {
                       >
                         <span className="font-bold text-[#071d49]">{recipient.row.university}</span>
                         <span>{recipient.row.dept}</span>
-                        <span className="font-bold">{recipient.row.name}</span>
+                        <span className="relative w-fit">
+                          <span
+                            tabIndex={recipient.otherAdmissions.length > 0 ? 0 : undefined}
+                            className={recipient.otherAdmissions.length > 0 ? "group cursor-help border-b border-dotted border-slate-400 font-bold outline-none" : "font-bold"}
+                          >
+                            {recipient.row.name}
+                            {recipient.otherAdmissions.length > 0 && (
+                              <span className="invisible absolute left-0 top-full z-30 mt-2 w-64 translate-y-1 rounded-xl bg-[#071d49] p-3 text-left text-white opacity-0 shadow-xl transition group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 group-focus:visible group-focus:translate-y-0 group-focus:opacity-100">
+                                <span className="block text-[10px] font-black text-[#89d1f2]">중복 합격 대학</span>
+                                {recipient.otherAdmissions.map((admission) => (
+                                  <span key={`${admission.id}-${admission.university}-${admission.dept}`} className="mt-2 block border-t border-white/10 pt-2">
+                                    <span className="block text-[11px] font-black">{admission.university}</span>
+                                    <span className="mt-0.5 block text-[10px] font-medium text-white/65">{admission.dept} · {admission.track}</span>
+                                  </span>
+                                ))}
+                              </span>
+                            )}
+                          </span>
+                        </span>
                         <span>{recipient.row.track}</span>
                         <span className="text-right font-black text-[#1676ad]">{formatAmount(recipient.amount)}</span>
                       </div>
