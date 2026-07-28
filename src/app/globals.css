@@ -143,11 +143,40 @@ select {
   border-radius: 999px;
 }
 
+.scholarship-carousel {
+  overflow: hidden;
+  mask-image: linear-gradient(to right, transparent, black 3%, black 97%, transparent);
+}
+
+.scholarship-track {
+  animation: scholarship-roll 36s linear infinite;
+  will-change: transform;
+}
+
+.scholarship-carousel:hover .scholarship-track,
+.scholarship-carousel:focus-within .scholarship-track {
+  animation-play-state: paused;
+}
+
+@keyframes scholarship-roll {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(calc(-50% - 0.625rem));
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
+  }
+
+  .scholarship-track {
+    animation: none;
   }
 }

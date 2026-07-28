@@ -16,6 +16,7 @@ import { LoginForm } from "@/components/LoginForm";
 import { UniversityManager } from "@/components/UniversityManager";
 import { EditRowModal } from "@/components/EditRowModal";
 import { FilePreviewModal } from "@/components/FilePreviewModal";
+import { ScholarshipSection } from "@/components/ScholarshipSection";
 
 function classNames(...xs: Array<string | false | null | undefined>) {
   return xs.filter(Boolean).join(" ");
@@ -93,6 +94,7 @@ export default function AdmitCollectorApp() {
 
   // 제출된 행
   const [rows, setRows] = useState<AdmitRow[]>([]);
+  const [scholarshipRows, setScholarshipRows] = useState<AdmitRow[]>([]);
   const [editRow, setEditRow] = useState<AdmitRow | null>(null);
   const [previewRow, setPreviewRow] = useState<AdmitRow | null>(null);
 
@@ -150,6 +152,16 @@ export default function AdmitCollectorApp() {
       if (json?.ok) setRows(json.rows);
     })();
   }, [branch, isAdmin, viewAllBranches, tab]);
+
+  // 장학금 대상자는 선택 지점과 관계없이 전체 합격자에서 자동 선정
+  useEffect(() => {
+    fetch("/api/admits", { cache: "no-store" })
+      .then((res) => res.json())
+      .then((json) => {
+        if (json?.ok) setScholarshipRows(json.rows);
+      })
+      .catch((err) => console.warn("장학금 대상자 목록 로드 실패", err));
+  }, [tab]);
 
   const univSuggestions = useMemo(() => Object.keys(universities), [universities]);
   const deptSuggestions = useMemo(() => {
@@ -269,6 +281,7 @@ export default function AdmitCollectorApp() {
         certificate: file,
       });
       setRows((rs) => [result.saved, ...rs]);
+      setScholarshipRows((rs) => [result.saved, ...rs]);
       setName("");
       setUniv("");
       setDept("");
@@ -385,6 +398,7 @@ export default function AdmitCollectorApp() {
 
     if (savedRows.length > 0) {
       setRows((current) => [...savedRows.reverse(), ...current]);
+      setScholarshipRows((current) => [...savedRows, ...current]);
     }
 
     if (succeededIds.size === validated.length) {
@@ -427,9 +441,19 @@ export default function AdmitCollectorApp() {
           r.id === id ? { ...r, status: s, rejectReason: s === "반려" ? (reason || r.rejectReason) : undefined } : r
         )
       );
+      setScholarshipRows((rs) =>
+        rs.map((r) =>
+          r.id === id ? { ...r, status: s, rejectReason: s === "반려" ? (reason || r.rejectReason) : undefined } : r
+        )
+      );
       pushToast(`✅ 상태가 '${s}'(으)로 변경되었습니다.`);
     } catch (e) {
       setRows((rs) =>
+        rs.map((r) =>
+          r.id === id ? { ...r, status: s, rejectReason: s === "반려" ? (reason || r.rejectReason) : undefined } : r
+        )
+      );
+      setScholarshipRows((rs) =>
         rs.map((r) =>
           r.id === id ? { ...r, status: s, rejectReason: s === "반려" ? (reason || r.rejectReason) : undefined } : r
         )
@@ -921,6 +945,7 @@ export default function AdmitCollectorApp() {
               </div>
             )}
           </div>
+          {tab === "upload" && <ScholarshipSection rows={scholarshipRows} />}
         </div>
       </section>
 
@@ -1305,6 +1330,9 @@ export default function AdmitCollectorApp() {
             }
 
             setRows((rs) => rs.map((r) => (r.id === editRow.id ? { ...r, ...patch } : r)));
+            setScholarshipRows((rs) =>
+              rs.map((r) => (r.id === editRow.id ? { ...r, ...patch } : r))
+            );
             setEditRow(null);
             pushToast("✅ 항목이 수정되었습니다.");
           }}
