@@ -8,17 +8,18 @@ export type ScholarshipRecipient = {
   group: ScholarshipGroup;
   amount: number;
   rank: number;
+  priority: number;
 };
 
-const MAJOR_MEDICAL_SCHOOLS = new Set([
+const MAJOR_MEDICAL_SCHOOLS = [
   "서울대학교",
   "연세대학교",
   "가톨릭대학교",
   "성균관대학교",
   "울산대학교",
-]);
+];
 
-const TOP_PHARMACY_SCHOOLS = new Set([
+const TOP_PHARMACY_SCHOOLS = [
   "서울대학교",
   "연세대학교",
   "이화여자대학교",
@@ -29,14 +30,14 @@ const TOP_PHARMACY_SCHOOLS = new Set([
   "고려대학교",
   "숙명여자대학교",
   "한양대학교",
-]);
+];
 
-const SUPREME_SCHOOLS = new Set([
+const SUPREME_SCHOOLS = [
   "한국과학기술원",
   "포항공과대학교",
   "연세대학교",
   "고려대학교",
-]);
+];
 
 const UNIVERSITY_ALIASES: Record<string, string> = {
   서울대: "서울대학교",
@@ -109,6 +110,11 @@ function isVeterinary(dept: string) {
   return compact(dept).includes("수의예");
 }
 
+function orderIn(list: string[], university: string) {
+  const index = list.indexOf(university);
+  return index === -1 ? list.length : index;
+}
+
 export function matchScholarship(row: AdmitRow): ScholarshipRecipient | null {
   if (row.status === "반려") return null;
 
@@ -116,29 +122,61 @@ export function matchScholarship(row: AdmitRow): ScholarshipRecipient | null {
   const dept = row.dept;
   const studentKey = `${compact(row.branch)}|${compact(row.name)}`;
 
-  if (MAJOR_MEDICAL_SCHOOLS.has(university) && isMedical(dept)) {
-    return { studentKey, row, group: "메이저", amount: 2_000_000, rank: 3 };
+  if (MAJOR_MEDICAL_SCHOOLS.includes(university) && isMedical(dept)) {
+    return {
+      studentKey,
+      row,
+      group: "메이저",
+      amount: 2_000_000,
+      rank: 3,
+      priority: orderIn(MAJOR_MEDICAL_SCHOOLS, university),
+    };
   }
 
-  const isPlatinum =
-    isMedical(dept) ||
-    isDental(dept) ||
-    (university === "경희대학교" && isOrientalMedicine(dept)) ||
-    (TOP_PHARMACY_SCHOOLS.has(university) && isPharmacy(dept)) ||
-    university === "서울대학교";
-
-  if (isPlatinum) {
-    return { studentKey, row, group: "플래티넘", amount: 700_000, rank: 2 };
+  let platinumPriority: number | null = null;
+  if (isMedical(dept)) {
+    platinumPriority = 0;
+  } else if (isDental(dept)) {
+    platinumPriority = 100;
+  } else if (university === "경희대학교" && isOrientalMedicine(dept)) {
+    platinumPriority = 200;
+  } else if (TOP_PHARMACY_SCHOOLS.includes(university) && isPharmacy(dept)) {
+    platinumPriority = 300 + orderIn(TOP_PHARMACY_SCHOOLS, university);
+  } else if (university === "서울대학교") {
+    platinumPriority = 400;
   }
 
-  const isSupreme =
-    isOrientalMedicine(dept) ||
-    isPharmacy(dept) ||
-    isVeterinary(dept) ||
-    SUPREME_SCHOOLS.has(university);
+  if (platinumPriority !== null) {
+    return {
+      studentKey,
+      row,
+      group: "플래티넘",
+      amount: 700_000,
+      rank: 2,
+      priority: platinumPriority,
+    };
+  }
 
-  if (isSupreme) {
-    return { studentKey, row, group: "슈프림", amount: 500_000, rank: 1 };
+  let supremePriority: number | null = null;
+  if (isOrientalMedicine(dept)) {
+    supremePriority = 0;
+  } else if (isPharmacy(dept)) {
+    supremePriority = 100;
+  } else if (isVeterinary(dept)) {
+    supremePriority = 200;
+  } else if (SUPREME_SCHOOLS.includes(university)) {
+    supremePriority = 300 + orderIn(SUPREME_SCHOOLS, university);
+  }
+
+  if (supremePriority !== null) {
+    return {
+      studentKey,
+      row,
+      group: "슈프림",
+      amount: 500_000,
+      rank: 1,
+      priority: supremePriority,
+    };
   }
 
   return null;
@@ -152,7 +190,18 @@ export function selectScholarshipRecipients(rows: AdmitRow[]) {
     if (!matched) return;
 
     const current = bestByStudent.get(matched.studentKey);
-    if (!current || matched.rank > current.rank) {
+    const higherGroup = !current || matched.rank > current.rank;
+    const higherWithinGroup =
+      current &&
+      matched.rank === current.rank &&
+      (matched.priority < current.priority ||
+        (matched.priority === current.priority &&
+          normalizeUniversity(matched.row.university).localeCompare(
+            normalizeUniversity(current.row.university),
+            "ko"
+          ) < 0));
+
+    if (higherGroup || higherWithinGroup) {
       bestByStudent.set(matched.studentKey, matched);
     }
   });
@@ -160,6 +209,7 @@ export function selectScholarshipRecipients(rows: AdmitRow[]) {
   return [...bestByStudent.values()].sort(
     (a, b) =>
       b.rank - a.rank ||
+      a.priority - b.priority ||
       a.row.university.localeCompare(b.row.university, "ko") ||
       a.row.name.localeCompare(b.row.name, "ko")
   );
