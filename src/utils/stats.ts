@@ -14,10 +14,11 @@ export function computeStats(rows: AdmitRow[]) {
 
   const approvedRate = total ? Math.round((byStatus["승인"] * 100) / total) : 0;
   const universityCount = Object.keys(byUniv).length;
+  const universities = Object.keys(byUniv).sort((a, b) => a.localeCompare(b, "ko"));
   const topUniversities = Object.entries(byUniv)
     .sort((a, b) => b[1] - a[1])
     .slice(0, 5)
     .map(([name, count]) => ({ name, count }));
 
-  return { total, byStatus, byTrack, approvedRate, universityCount, topUniversities };
+  return { total, byStatus, byTrack, approvedRate, universityCount, universities, topUniversities };
 }
