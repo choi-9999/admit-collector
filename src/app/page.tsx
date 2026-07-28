@@ -744,7 +744,7 @@ export default function AdmitCollectorApp() {
             </div>
 
             {/* 5. 대한항공 시그니처 1줄 수평 수집 폼 행 (PUS ⇄ To Departure / Date / Passenger / Class / Search CTA) */}
-            {tab === "upload" && registrationMode === "single" && (
+            {registrationMode === "single" && (
               <div className="rounded-lg border border-slate-200 bg-white dark:border-gray-800 dark:bg-gray-900/80">
                 <div className="grid grid-cols-1 divide-y divide-slate-100 dark:divide-gray-800 lg:grid-cols-[repeat(18,minmax(0,1fr))] lg:divide-x lg:divide-y-0">
                   {/* Column 1: PUS ⇄ To (학생 성명 / 대학) (4열) */}
@@ -842,7 +842,7 @@ export default function AdmitCollectorApp() {
               </div>
             )}
 
-            {tab === "upload" && registrationMode === "bulk" && (
+            {registrationMode === "bulk" && (
               <div className="space-y-3">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <p className="text-[11px] font-medium text-slate-500 dark:text-gray-400">
