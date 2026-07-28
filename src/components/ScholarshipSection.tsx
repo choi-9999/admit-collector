@@ -41,11 +41,36 @@ const SCHOOL_BRANDS: Record<string, { mark: string; from: string; to: string; ci
     to: "#315f90",
     ci: "/seoul-national-university.png",
   },
-  연세대학교: { mark: "YONSEI", from: "#003876", to: "#1765a8" },
-  고려대학교: { mark: "KOREA", from: "#8b0029", to: "#b5214e" },
-  성균관대학교: { mark: "SKKU", from: "#00573f", to: "#268267" },
-  가톨릭대학교: { mark: "CUK", from: "#6d2a78", to: "#9854a2" },
-  울산대학교: { mark: "UOU", from: "#005a9c", to: "#318ac3" },
+  연세대학교: {
+    mark: "YONSEI",
+    from: "#003876",
+    to: "#1765a8",
+    ci: "/yonsei-university.png",
+  },
+  고려대학교: {
+    mark: "KOREA",
+    from: "#8b0029",
+    to: "#b5214e",
+    ci: "/korea-university.png",
+  },
+  성균관대학교: {
+    mark: "SKKU",
+    from: "#00573f",
+    to: "#268267",
+    ci: "/sungkyunkwan-university.png",
+  },
+  가톨릭대학교: {
+    mark: "CUK",
+    from: "#6d2a78",
+    to: "#9854a2",
+    ci: "/catholic-university.webp",
+  },
+  울산대학교: {
+    mark: "UOU",
+    from: "#005a9c",
+    to: "#318ac3",
+    ci: "/ulsan-university.gif",
+  },
   이화여자대학교: { mark: "EWHA", from: "#00664f", to: "#2c9279" },
   중앙대학교: { mark: "CAU", from: "#005aab", to: "#3189ca" },
   경희대학교: { mark: "KHU", from: "#8b1831", to: "#b7475e" },
@@ -90,6 +115,7 @@ function ScholarshipCard({ recipient }: { recipient: ScholarshipRecipient }) {
           width={190}
           height={190}
           aria-hidden="true"
+          unoptimized={brand.ci.endsWith(".gif")}
           className="pointer-events-none absolute -right-4 top-2 h-[190px] w-[190px] object-contain opacity-[0.18] mix-blend-multiply"
         />
       ) : (
