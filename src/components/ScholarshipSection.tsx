@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import type { AdmitRow } from "@/types/admit";
 import {
   ScholarshipGroup,
@@ -11,6 +12,12 @@ import {
 
 type ScholarshipSectionProps = {
   rows: AdmitRow[];
+};
+
+type AdmissionsTooltipState = {
+  recipient: ScholarshipRecipient;
+  top: number;
+  left: number;
 };
 
 const GROUP_STYLES: Record<
@@ -201,6 +208,7 @@ function ScholarshipCard({ recipient }: { recipient: ScholarshipRecipient }) {
 
 export function ScholarshipSection({ rows }: ScholarshipSectionProps) {
   const [listView, setListView] = useState(false);
+  const [admissionsTooltip, setAdmissionsTooltip] = useState<AdmissionsTooltipState | null>(null);
   const recipients = useMemo(() => selectScholarshipRecipients(rows), [rows]);
   const totalAmount = recipients.reduce((sum, item) => sum + item.amount, 0);
   const carouselItems = useMemo(() => {
@@ -211,8 +219,27 @@ export function ScholarshipSection({ rows }: ScholarshipSectionProps) {
   }, [recipients]);
   const carouselDuration = Math.max(70, (carouselItems.length / 2) * 11);
 
+  const showAdmissionsTooltip = (element: HTMLElement, recipient: ScholarshipRecipient) => {
+    if (recipient.otherAdmissions.length === 0) return;
+
+    const rect = element.getBoundingClientRect();
+    const tooltipWidth = 256;
+    const tooltipHeight = 40 + recipient.otherAdmissions.length * 44;
+    const belowTop = rect.bottom + 8;
+    const top = belowTop + tooltipHeight <= window.innerHeight - 12
+      ? belowTop
+      : Math.max(12, rect.top - tooltipHeight - 8);
+    const left = Math.min(
+      Math.max(12, rect.left),
+      Math.max(12, window.innerWidth - tooltipWidth - 12),
+    );
+
+    setAdmissionsTooltip({ recipient, top, left });
+  };
+
   return (
-    <section className="mb-12 overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-[0_12px_38px_rgba(7,29,73,0.08)]">
+    <>
+      <section className="mb-12 overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-[0_12px_38px_rgba(7,29,73,0.08)]">
       <div className="flex flex-col gap-4 border-b border-slate-100 px-5 py-5 sm:flex-row sm:items-center sm:justify-between md:px-7">
         <div className="flex flex-wrap items-center gap-3">
           <details className="group relative">
@@ -292,20 +319,13 @@ export function ScholarshipSection({ rows }: ScholarshipSectionProps) {
                         <span className="relative w-fit">
                           <span
                             tabIndex={recipient.otherAdmissions.length > 0 ? 0 : undefined}
-                            className={recipient.otherAdmissions.length > 0 ? "group cursor-help border-b border-dotted border-slate-400 font-bold outline-none" : "font-bold"}
+                            onMouseEnter={(event) => showAdmissionsTooltip(event.currentTarget, recipient)}
+                            onMouseLeave={() => setAdmissionsTooltip(null)}
+                            onFocus={(event) => showAdmissionsTooltip(event.currentTarget, recipient)}
+                            onBlur={() => setAdmissionsTooltip(null)}
+                            className={recipient.otherAdmissions.length > 0 ? "cursor-help border-b border-dotted border-slate-400 font-bold outline-none" : "font-bold"}
                           >
                             {recipient.row.name}
-                            {recipient.otherAdmissions.length > 0 && (
-                              <span className="invisible absolute left-0 top-full z-30 mt-2 w-64 translate-y-1 rounded-xl bg-[#071d49] p-3 text-left text-white opacity-0 shadow-xl transition group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 group-focus:visible group-focus:translate-y-0 group-focus:opacity-100">
-                                <span className="block text-[10px] font-black text-[#89d1f2]">중복 합격 대학</span>
-                                {recipient.otherAdmissions.map((admission) => (
-                                  <span key={`${admission.id}-${admission.university}-${admission.dept}`} className="mt-2 block border-t border-white/10 pt-2">
-                                    <span className="block text-[11px] font-black">{admission.university}</span>
-                                    <span className="mt-0.5 block text-[10px] font-medium text-white/65">{admission.dept} · {admission.track}</span>
-                                  </span>
-                                ))}
-                              </span>
-                            )}
                           </span>
                         </span>
                         <span>{recipient.row.track}</span>
@@ -333,6 +353,28 @@ export function ScholarshipSection({ rows }: ScholarshipSectionProps) {
           </div>
         </div>
       )}
-    </section>
+      </section>
+      {admissionsTooltip && typeof document !== "undefined" && createPortal(
+        <div
+          role="tooltip"
+          className="pointer-events-none fixed z-[100] w-64 rounded-xl bg-[#071d49] p-3 text-left text-white shadow-[0_16px_40px_rgba(7,29,73,0.3)]"
+          style={{ top: admissionsTooltip.top, left: admissionsTooltip.left }}
+        >
+          <span className="block text-[10px] font-black text-[#89d1f2]">중복 합격 대학</span>
+          {admissionsTooltip.recipient.otherAdmissions.map((admission) => (
+            <span
+              key={`${admission.id}-${admission.university}-${admission.dept}`}
+              className="mt-2 block border-t border-white/10 pt-2"
+            >
+              <span className="block text-[11px] font-black">{admission.university}</span>
+              <span className="mt-0.5 block text-[10px] font-medium text-white/65">
+                {admission.dept} · {admission.track}
+              </span>
+            </span>
+          ))}
+        </div>,
+        document.body,
+      )}
+    </>
   );
 }
