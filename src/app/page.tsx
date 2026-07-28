@@ -669,7 +669,7 @@ export default function AdmitCollectorApp() {
             <button
               onClick={() => setTab("upload")}
               className={classNames(
-                "relative z-10 flex w-full items-center justify-center gap-2 rounded-tl-2xl rounded-tr-xl px-5 py-4 text-xs font-bold",
+                "relative z-10 flex w-full items-center justify-center gap-2 rounded-tl-2xl rounded-tr-xl px-5 py-4 text-xl font-black",
                 tab === "upload"
                   ? "bg-white text-[#071d49] dark:bg-gray-900 dark:text-white"
                   : "text-[#425570] hover:bg-white/80 dark:bg-gray-800/50 dark:text-gray-300"
@@ -1062,7 +1062,7 @@ export default function AdmitCollectorApp() {
         <div className="bg-white dark:bg-gray-900">
           <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 pb-4 dark:border-gray-800">
             <div>
-              <h3 className="text-lg font-bold text-[#071d49] dark:text-white">알려드립니다</h3>
+              <h3 className="text-xl font-black text-[#071d49] dark:text-white">합격 현황</h3>
               <p className="mt-1 text-[10px] text-slate-500">실시간 지점별 합격 등록 내역</p>
             </div>
 
