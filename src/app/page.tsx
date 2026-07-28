@@ -21,6 +21,30 @@ function classNames(...xs: Array<string | false | null | undefined>) {
   return xs.filter(Boolean).join(" ");
 }
 
+type RegistrationMode = "single" | "bulk";
+type BatchEntryStatus = "idle" | "uploading" | "error";
+type BatchEntry = {
+  id: string;
+  name: string;
+  univ: string;
+  dept: string;
+  track: "수시" | "정시";
+  file?: File;
+  status: BatchEntryStatus;
+  error?: string;
+};
+
+function createBatchEntry(): BatchEntry {
+  return {
+    id: Math.random().toString(36).slice(2),
+    name: "",
+    univ: "",
+    dept: "",
+    track: "수시",
+    status: "idle",
+  };
+}
+
 export default function AdmitCollectorApp() {
   // 기본 테마는 라이트 모드로 고정
   useEffect(() => {
@@ -88,6 +112,8 @@ export default function AdmitCollectorApp() {
   const [file, setFile] = useState<File | undefined>(undefined);
   const [fileError, setFileError] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [registrationMode, setRegistrationMode] = useState<RegistrationMode>("single");
+  const [batchEntries, setBatchEntries] = useState<BatchEntry[]>(() => [createBatchEntry()]);
 
   // Toast
   type ToastItem = { id: string; msg: string };
@@ -138,6 +164,80 @@ export default function AdmitCollectorApp() {
     return { universityCode, deptCode };
   };
 
+  const uploadAdmission = async ({
+    applicantName,
+    universityName,
+    departmentName,
+    admissionTrack,
+    certificate,
+  }: {
+    applicantName: string;
+    universityName: string;
+    departmentName: string;
+    admissionTrack: "수시" | "정시";
+    certificate: File;
+  }) => {
+    const selectedBranch = branch;
+    if (!selectedBranch) throw new Error("지점을 먼저 선택해 주세요.");
+
+    const { universityCode, deptCode } = getCodes(universityName, departmentName);
+    const now = new Date();
+    const yyyy = now.getFullYear();
+    const mm = String(now.getMonth() + 1).padStart(2, "0");
+    const dd = String(now.getDate()).padStart(2, "0");
+    const folder = `admit/${selectedBranch}/${yyyy}/${mm}/${dd}`;
+    const suffix = Math.random().toString(36).slice(2, 8);
+    const baseName = `${applicantName}_${universityName}_${yyyy}${mm}${dd}_${suffix}`.replace(/[^\w\-가-힣._]/g, "_");
+
+    const formData = new FormData();
+    formData.append("file", certificate);
+    formData.append("folder", folder);
+    formData.append("publicId", baseName);
+
+    const up = await fetch("/api/upload/cloudinary", {
+      method: "POST",
+      body: formData,
+    });
+    if (!up.ok) {
+      const errJson = await up.json().catch(() => ({}));
+      console.error("Upload error:", errJson);
+      throw new Error(errJson.error || "파일 업로드에 실패했습니다.");
+    }
+
+    const upJson: {
+      ok: boolean;
+      message?: string;
+      file: { secure_url: string; public_id: string };
+    } = await up.json();
+    const cloud = upJson.file;
+
+    const metaRes = await fetch("/api/admits", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: applicantName,
+        university: universityName,
+        universityCode,
+        dept: departmentName,
+        deptCode,
+        track: admissionTrack,
+        branch: selectedBranch,
+        fileUrl: cloud.secure_url,
+        filePublicId: cloud.public_id,
+      }),
+    });
+    const metaJson = await metaRes.json();
+    if (!metaRes.ok || !metaJson?.ok) {
+      console.error("Meta save error:", metaJson);
+      throw new Error("서버 저장에 실패했습니다.");
+    }
+
+    return {
+      saved: metaJson.row as AdmitRow,
+      message: upJson.message,
+    };
+  };
+
   const handleSubmit = async () => {
     setFileError(false);
 
@@ -160,83 +260,153 @@ export default function AdmitCollectorApp() {
     }
 
     setSubmitting(true);
-    const { universityCode, deptCode } = getCodes(univ.trim(), dept.trim());
-
-    const now = new Date();
-    const yyyy = now.getFullYear();
-    const mm = String(now.getMonth() + 1).padStart(2, "0");
-    const dd = String(now.getDate()).padStart(2, "0");
-    const folder = `admit/${branch}/${yyyy}/${mm}/${dd}`;
-
-    const baseName = `${name.trim()}_${univ.trim()}_${yyyy}${mm}${dd}`.replace(/[^\w\-가-힣._]/g, "_");
-
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("folder", folder);
-    formData.append("publicId", baseName);
-
     try {
-      const up = await fetch("/api/upload/cloudinary", {
-        method: "POST",
-        body: formData,
+      const result = await uploadAdmission({
+        applicantName: name.trim(),
+        universityName: univ.trim(),
+        departmentName: dept.trim(),
+        admissionTrack: track,
+        certificate: file,
       });
-
-      if (!up.ok) {
-        const errJson = await up.json().catch(() => ({}));
-        console.error("Upload error:", errJson);
-        alert(errJson.error || "파일 업로드에 실패했습니다.");
-        setSubmitting(false);
-        return;
-      }
-
-      const upJson: {
-        ok: boolean;
-        message?: string;
-        file: { secure_url: string; public_id: string };
-      } = await up.json();
-
-      const cloud = upJson.file;
-
-      const metaRes = await fetch("/api/admits", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: name.trim(),
-          university: univ.trim(),
-          universityCode,
-          dept: dept.trim(),
-          deptCode,
-          track,
-          branch,
-          fileUrl: cloud.secure_url,
-          filePublicId: cloud.public_id,
-        }),
-      });
-
-      const metaJson = await metaRes.json();
-      if (!metaRes.ok || !metaJson?.ok) {
-        console.error("Meta save error:", metaJson);
-        alert("서버 저장에 실패했습니다.");
-        setSubmitting(false);
-        return;
-      }
-
-      const saved = metaJson.row as AdmitRow;
-      setRows((rs) => [saved, ...rs]);
-
+      setRows((rs) => [result.saved, ...rs]);
       setName("");
       setUniv("");
       setDept("");
       setTrack("수시");
       setFile(undefined);
-
-      pushToast(upJson.message || "✅ 제출이 완료되었습니다. 검토가 진행됩니다.");
+      pushToast(result.message || "✅ 제출이 완료되었습니다. 검토가 진행됩니다.");
     } catch (err) {
       console.error("❌ Submit exception:", err);
-      alert("업로드 중 오류가 발생했습니다. 네트워크를 확인해 주세요.");
+      alert(err instanceof Error ? err.message : "업로드 중 오류가 발생했습니다. 네트워크를 확인해 주세요.");
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const updateBatchEntry = (id: string, patch: Partial<BatchEntry>) => {
+    setBatchEntries((entries) =>
+      entries.map((entry) =>
+        entry.id === id
+          ? { ...entry, ...patch, status: patch.status ?? "idle", error: patch.error }
+          : entry
+      )
+    );
+  };
+
+  const addBatchEntry = () => {
+    if (batchEntries.length >= 20) {
+      alert("한 번에 최대 20명까지 등록할 수 있습니다.");
+      return;
+    }
+    setBatchEntries((entries) => [...entries, createBatchEntry()]);
+  };
+
+  const removeBatchEntry = (id: string) => {
+    if (submitting) return;
+    setBatchEntries((entries) =>
+      entries.length === 1 ? [createBatchEntry()] : entries.filter((entry) => entry.id !== id)
+    );
+  };
+
+  const handleBatchSubmit = async () => {
+    if (!branch) {
+      alert("지점을 먼저 선택해 주세요.");
+      return;
+    }
+
+    const duplicateKeys = new Set<string>();
+    let hasValidationError = false;
+    const validated: BatchEntry[] = batchEntries.map((entry) => {
+      const applicantName = entry.name.trim();
+      const universityName = entry.univ.trim();
+      const departmentName = entry.dept.trim();
+      let error = "";
+
+      if (!applicantName || !universityName || !departmentName) {
+        error = "성명, 대학, 학과를 모두 입력해 주세요.";
+      } else if (!universities[universityName]) {
+        error = "대학 목록에서 합격 대학을 선택해 주세요.";
+      } else if (!entry.file) {
+        error = "합격증 파일을 첨부해 주세요.";
+      }
+
+      const duplicateKey = `${applicantName}|${universityName}|${departmentName}`;
+      if (!error && duplicateKeys.has(duplicateKey)) {
+        error = "동일한 학생·대학·학과가 중복되었습니다.";
+      }
+      duplicateKeys.add(duplicateKey);
+      if (error) hasValidationError = true;
+
+      return {
+        ...entry,
+        name: applicantName,
+        univ: universityName,
+        dept: departmentName,
+        status: error ? "error" : "idle",
+        error: error || undefined,
+      };
+    });
+
+    setBatchEntries(validated);
+    if (hasValidationError) {
+      alert("확인이 필요한 학생 행이 있습니다.");
+      return;
+    }
+
+    setSubmitting(true);
+    const savedRows: AdmitRow[] = [];
+    const succeededIds = new Set<string>();
+    const failureMessages = new Map<string, string>();
+
+    for (const entry of validated) {
+      setBatchEntries((entries) =>
+        entries.map((item) =>
+          item.id === entry.id ? { ...item, status: "uploading", error: undefined } : item
+        )
+      );
+
+      try {
+        const result = await uploadAdmission({
+          applicantName: entry.name,
+          universityName: entry.univ,
+          departmentName: entry.dept,
+          admissionTrack: entry.track,
+          certificate: entry.file!,
+        });
+        savedRows.push(result.saved);
+        succeededIds.add(entry.id);
+      } catch (err) {
+        failureMessages.set(
+          entry.id,
+          err instanceof Error ? err.message : "등록 중 오류가 발생했습니다."
+        );
+      }
+    }
+
+    if (savedRows.length > 0) {
+      setRows((current) => [...savedRows.reverse(), ...current]);
+    }
+
+    if (succeededIds.size === validated.length) {
+      setBatchEntries([createBatchEntry()]);
+      pushToast(`✅ ${succeededIds.size}명의 합격자가 일괄 등록되었습니다.`);
+    } else {
+      setBatchEntries(
+        validated
+          .filter((entry) => !succeededIds.has(entry.id))
+          .map((entry) => ({
+            ...entry,
+            status: "error",
+            error: failureMessages.get(entry.id) || "등록 결과를 확인해 주세요.",
+          }))
+      );
+      pushToast(
+        `⚠️ ${succeededIds.size}명 등록 완료, ${validated.length - succeededIds.size}명 확인 필요`,
+        4000
+      );
+    }
+
+    setSubmitting(false);
   };
 
   const setRowStatus = async (id: string, s: AdmitStatus, reason?: string) => {
@@ -471,17 +641,37 @@ export default function AdmitCollectorApp() {
 
               {/* 우측 일반 / 일괄 등록 선택 */}
               <div className="flex rounded-full bg-[#f3f6f9] p-1 dark:bg-gray-800">
-                <button type="button" className="rounded-full bg-[#071d49] px-4 py-1.5 text-[11px] font-bold text-white">
+                <button
+                  type="button"
+                  onClick={() => setRegistrationMode("single")}
+                  disabled={submitting}
+                  className={classNames(
+                    "rounded-full px-4 py-1.5 text-[11px] font-bold",
+                    registrationMode === "single"
+                      ? "bg-[#071d49] text-white"
+                      : "text-slate-500 hover:text-[#071d49] dark:text-gray-400"
+                  )}
+                >
                   일반 등록
                 </button>
-                <button type="button" className="rounded-full px-4 py-1.5 text-[11px] font-semibold text-slate-500 hover:text-[#071d49] dark:text-gray-400">
+                <button
+                  type="button"
+                  onClick={() => setRegistrationMode("bulk")}
+                  disabled={submitting}
+                  className={classNames(
+                    "rounded-full px-4 py-1.5 text-[11px] font-bold",
+                    registrationMode === "bulk"
+                      ? "bg-[#071d49] text-white"
+                      : "text-slate-500 hover:text-[#071d49] dark:text-gray-400"
+                  )}
+                >
                   일괄 등록
                 </button>
               </div>
             </div>
 
             {/* 5. 대한항공 시그니처 1줄 수평 수집 폼 행 (PUS ⇄ To Departure / Date / Passenger / Class / Search CTA) */}
-            {tab === "upload" && (
+            {tab === "upload" && registrationMode === "single" && (
               <div className="rounded-lg border border-slate-200 bg-white dark:border-gray-800 dark:bg-gray-900/80">
                 <div className="grid grid-cols-1 divide-y divide-slate-100 dark:divide-gray-800 lg:grid-cols-12 lg:divide-x lg:divide-y-0">
                   {/* Column 1: PUS ⇄ To (학생 성명 / 대학) (4열) */}
@@ -575,6 +765,162 @@ export default function AdmitCollectorApp() {
                       {submitting ? "제출 중..." : "합격증 등록"}
                     </button>
                   </div>
+                </div>
+              </div>
+            )}
+
+            {tab === "upload" && registrationMode === "bulk" && (
+              <div className="space-y-3">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <p className="text-[11px] font-medium text-slate-500 dark:text-gray-400">
+                    학생별 정보를 입력하고 각 행에 해당 합격증을 첨부해 주세요.
+                  </p>
+                  <span className="rounded-full bg-[#eaf7fd] px-3 py-1 text-[10px] font-bold text-[#1676ad]">
+                    총 {batchEntries.length}명
+                  </span>
+                </div>
+
+                {batchEntries.map((entry, index) => {
+                  const entryDepartments = entry.univ
+                    ? Object.keys(universities[entry.univ]?.depts ?? {})
+                    : [];
+
+                  return (
+                    <div
+                      key={entry.id}
+                      className={classNames(
+                        "overflow-visible rounded-xl border bg-white dark:bg-gray-900/80",
+                        entry.status === "error"
+                          ? "border-rose-300"
+                          : entry.status === "uploading"
+                            ? "border-[#3f9fdb]"
+                            : "border-slate-200 dark:border-gray-800"
+                      )}
+                    >
+                      <div className="flex items-center justify-between border-b border-slate-100 px-4 py-2 dark:border-gray-800">
+                        <div className="flex items-center gap-2">
+                          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#071d49] text-[10px] font-bold text-white">
+                            {index + 1}
+                          </span>
+                          <span className="text-[11px] font-bold text-[#071d49] dark:text-sky-300">
+                            학생 {index + 1}
+                          </span>
+                          {entry.status === "uploading" && (
+                            <span className="text-[10px] font-bold text-[#3f9fdb]">등록 중...</span>
+                          )}
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => removeBatchEntry(entry.id)}
+                          disabled={submitting}
+                          className="rounded-full px-3 py-1 text-[10px] font-bold text-slate-400 hover:bg-rose-50 hover:text-rose-500 disabled:opacity-40"
+                        >
+                          삭제
+                        </button>
+                      </div>
+
+                      <div className="grid grid-cols-1 divide-y divide-slate-100 dark:divide-gray-800 lg:grid-cols-12 lg:divide-x lg:divide-y-0">
+                        <div className="flex min-h-[72px] flex-col justify-center px-4 py-2 lg:col-span-2">
+                          <div className="text-[10px] font-bold tracking-wide text-slate-500">
+                            학생 성명 <span className="text-[#3f9fdb]">*</span>
+                          </div>
+                          <input
+                            value={entry.name}
+                            onChange={(e) => updateBatchEntry(entry.id, { name: e.target.value })}
+                            disabled={submitting}
+                            placeholder="홍길동"
+                            className="w-full bg-transparent text-base font-bold leading-6 text-[#071d49] placeholder:font-normal placeholder:text-slate-300 focus:outline-none disabled:opacity-60 dark:text-gray-100"
+                          />
+                        </div>
+
+                        <div className="lg:col-span-3">
+                          <Combobox
+                            label="합격 대학"
+                            value={entry.univ}
+                            setValue={(value) => updateBatchEntry(entry.id, { univ: value, dept: "" })}
+                            suggestions={univSuggestions}
+                            placeholder="서울대학교"
+                            required
+                            restrictToList
+                            subLabel={entry.univ ? `코드 ${universities[entry.univ]?.code ?? ""}` : undefined}
+                          />
+                        </div>
+
+                        <div className="lg:col-span-2">
+                          <Combobox
+                            label="학과"
+                            value={entry.dept}
+                            setValue={(value) => updateBatchEntry(entry.id, { dept: value })}
+                            suggestions={entryDepartments}
+                            placeholder="의예과"
+                            required
+                            subLabel={
+                              entry.dept && entry.univ
+                                ? `코드 ${(universities[entry.univ]?.depts ?? {})[entry.dept] ?? "000"}`
+                                : undefined
+                            }
+                          />
+                        </div>
+
+                        <div className="flex min-h-[72px] flex-col justify-center px-4 py-2 lg:col-span-2">
+                          <div className="text-[10px] font-bold tracking-wide text-slate-500">
+                            전형 유형 <span className="text-[#3f9fdb]">*</span>
+                          </div>
+                          <div className="mt-1 flex w-fit rounded-full bg-[#f3f6f9] p-0.5 dark:bg-gray-800">
+                            {(["수시", "정시"] as const).map((option) => (
+                              <button
+                                key={option}
+                                type="button"
+                                onClick={() => updateBatchEntry(entry.id, { track: option })}
+                                disabled={submitting}
+                                className={classNames(
+                                  "rounded-full px-3 py-1 text-[11px] font-bold",
+                                  entry.track === option
+                                    ? "bg-[#e5f5fc] text-[#1676ad]"
+                                    : "text-slate-500 hover:bg-slate-100 dark:text-gray-400"
+                                )}
+                              >
+                                {option}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div className="lg:col-span-3">
+                          <FileDrop
+                            file={entry.file}
+                            setFile={(nextFile) => updateBatchEntry(entry.id, { file: nextFile })}
+                            error={false}
+                          />
+                        </div>
+                      </div>
+
+                      {entry.error && (
+                        <div className="border-t border-rose-100 bg-rose-50 px-4 py-2 text-[10px] font-bold text-rose-600">
+                          {entry.error}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+
+                <div className="flex flex-col-reverse justify-between gap-3 pt-2 sm:flex-row sm:items-center">
+                  <button
+                    type="button"
+                    onClick={addBatchEntry}
+                    disabled={submitting || batchEntries.length >= 20}
+                    className="rounded-full border border-dashed border-[#3f9fdb] bg-white px-5 py-2.5 text-[11px] font-bold text-[#1676ad] hover:bg-[#eaf7fd] disabled:cursor-not-allowed disabled:opacity-45"
+                  >
+                    + 학생 추가
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleBatchSubmit}
+                    disabled={submitting}
+                    className="rounded-full bg-[#4da8dd] px-8 py-3 text-xs font-bold text-white shadow-[0_4px_12px_rgba(63,159,219,0.24)] hover:bg-[#2789c3] disabled:opacity-50"
+                  >
+                    {submitting ? "일괄 등록 중..." : `총 ${batchEntries.length}명 일괄 등록`}
+                  </button>
                 </div>
               </div>
             )}
