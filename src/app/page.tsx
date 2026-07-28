@@ -1004,31 +1004,24 @@ export default function AdmitCollectorApp() {
       <section className="w-full px-5 py-10 md:px-10 md:py-14 xl:px-[60px]">
         <ScholarshipSection rows={rows} />
 
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
-          <article className="overflow-hidden rounded-md border border-slate-200 bg-white shadow-[0_2px_10px_rgba(7,29,73,0.04)] dark:border-gray-800 dark:bg-gray-900">
-            <div className="stat-art flex h-40 items-center justify-center bg-gradient-to-br from-[#dff5fe] via-[#a8def5] to-[#6dbde6]">
-              <div className="relative z-10 flex h-24 w-28 flex-col items-center justify-center rounded-2xl bg-white/80 text-[#071d49] shadow-lg backdrop-blur-sm" aria-hidden="true">
-                <strong className="text-4xl font-black">{stats.total}</strong>
-                <span className="mt-1 text-[8px] font-bold tracking-[0.14em] text-[#1676ad]">SUBMISSIONS</span>
-              </div>
-            </div>
-            <div className="p-4">
-              <span className="text-[10px] font-semibold text-slate-500">통계 한눈에 보기</span>
-              <h4 className="mt-1 text-base font-black text-[#071d49] dark:text-white">
-                총 합격증 제출 실적: {stats.total}건
-              </h4>
-            </div>
-          </article>
+        <div className="mt-8 bg-[#dff2fb] px-5 py-7 dark:bg-slate-900 md:px-7">
+          <div className="flex gap-4 overflow-x-auto pb-1 md:justify-center">
+            <article className="flex h-36 w-52 shrink-0 flex-col items-center justify-center rounded-md bg-white/90 px-5 text-center shadow-[0_3px_12px_rgba(7,29,73,0.06)] dark:bg-gray-900">
+              <span className="text-xs font-bold text-[#315d81] dark:text-sky-300">총 제출 건</span>
+              <strong className="mt-4 text-4xl font-black text-[#071d49] dark:text-white">
+                {stats.total}
+              </strong>
+            </article>
 
-          <article className="overflow-hidden rounded-md border border-slate-200 bg-white shadow-[0_2px_10px_rgba(7,29,73,0.04)] dark:border-gray-800 dark:bg-gray-900">
-            <div className="stat-art flex h-40 items-center justify-center bg-gradient-to-br from-[#e8f8f4] via-[#bce9dc] to-[#72c7b1]">
-              <div className="relative z-10 flex h-28 w-28 items-center justify-center rounded-2xl bg-white/80 p-3 shadow-lg backdrop-blur-sm">
+            <article className="flex h-36 w-52 shrink-0 flex-col items-center justify-center rounded-md bg-white/90 px-5 text-center shadow-[0_3px_12px_rgba(7,29,73,0.06)] dark:bg-gray-900">
+              <span className="text-xs font-bold text-[#315d81] dark:text-sky-300">최다 합격 대학</span>
+              <div className="mt-3 flex h-16 w-20 items-center justify-center">
                 {topUniversityCi && topUniversity ? (
                   <Image
                     src={topUniversityCi}
                     alt={`${topUniversity.name} CI`}
-                    width={112}
-                    height={112}
+                    width={80}
+                    height={64}
                     unoptimized={topUniversityCi.endsWith(".gif")}
                     className="h-full w-full object-contain"
                   />
@@ -1038,45 +1031,27 @@ export default function AdmitCollectorApp() {
                   </span>
                 )}
               </div>
-            </div>
-            <div className="p-4">
-              <span className="text-[10px] font-semibold text-slate-500">최다 합격 대학</span>
-              <h4 className="mt-1 text-base font-black text-[#071d49] dark:text-white">
-                {topUniversity?.name || "데이터 준비중"}
-              </h4>
-            </div>
-          </article>
+            </article>
 
-          <article
-            tabIndex={stats.universities.length > 0 ? 0 : undefined}
-            aria-describedby={stats.universities.length > 0 ? "university-diversity-tooltip" : undefined}
-            onMouseEnter={(event) => {
-              if (stats.universities.length > 0) showUniversityTooltip(event.currentTarget);
-            }}
-            onMouseLeave={() => setUniversityTooltip(null)}
-            onFocus={(event) => {
-              if (stats.universities.length > 0) showUniversityTooltip(event.currentTarget);
-            }}
-            onBlur={() => setUniversityTooltip(null)}
-            className="overflow-hidden rounded-md border border-slate-200 bg-white shadow-[0_2px_10px_rgba(7,29,73,0.04)] outline-none focus-visible:ring-2 focus-visible:ring-[#4da8dd] focus-visible:ring-offset-2 dark:border-gray-800 dark:bg-gray-900"
-          >
-            <div className="stat-art flex h-40 items-center justify-center bg-gradient-to-br from-[#eef2ff] via-[#cbd5f4] to-[#7890ce]">
-              <div className="relative z-10 flex h-28 w-36 items-center justify-center" aria-hidden="true">
-                <span className="absolute left-1 h-16 w-16 rounded-2xl border border-white/60 bg-white/30 shadow-md" />
-                <span className="absolute right-1 h-16 w-16 rounded-2xl border border-white/60 bg-white/30 shadow-md" />
-                <span className="relative flex h-24 w-24 flex-col items-center justify-center rounded-2xl bg-[#071d49] text-white shadow-xl">
-                  <strong className="text-3xl font-black">{stats.universityCount}</strong>
-                  <span className="mt-1 text-[8px] font-bold tracking-[0.14em] text-[#89d1f2]">UNIVERSITIES</span>
-                </span>
-              </div>
-            </div>
-            <div className="p-4">
-              <span className="text-[10px] font-semibold text-slate-500">합격 대학 다양성</span>
-              <h4 className="mt-1 text-base font-black text-[#071d49] dark:text-white">
-                총 {stats.universityCount}개 대학 합격
-              </h4>
-            </div>
-          </article>
+            <article
+              tabIndex={stats.universities.length > 0 ? 0 : undefined}
+              aria-describedby={stats.universities.length > 0 ? "university-diversity-tooltip" : undefined}
+              onMouseEnter={(event) => {
+                if (stats.universities.length > 0) showUniversityTooltip(event.currentTarget);
+              }}
+              onMouseLeave={() => setUniversityTooltip(null)}
+              onFocus={(event) => {
+                if (stats.universities.length > 0) showUniversityTooltip(event.currentTarget);
+              }}
+              onBlur={() => setUniversityTooltip(null)}
+              className="flex h-36 w-52 shrink-0 flex-col items-center justify-center rounded-md bg-white/90 px-5 text-center shadow-[0_3px_12px_rgba(7,29,73,0.06)] outline-none focus-visible:ring-2 focus-visible:ring-[#4da8dd] focus-visible:ring-offset-2 dark:bg-gray-900"
+            >
+              <span className="text-xs font-bold text-[#315d81] dark:text-sky-300">합격 대학 다양성</span>
+              <strong className="mt-4 text-4xl font-black text-[#071d49] dark:text-white">
+                {stats.universityCount}
+              </strong>
+            </article>
+          </div>
         </div>
       </section>
 
