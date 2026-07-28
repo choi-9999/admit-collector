@@ -271,7 +271,7 @@ export function ScholarshipSection({ rows }: ScholarshipSectionProps) {
           <div className="relative">
             <button
               type="button"
-              className="flex cursor-help items-center gap-1.5 text-left text-base font-black text-[#071d49] outline-none focus-visible:ring-2 focus-visible:ring-[#4da8dd] focus-visible:ring-offset-2"
+              className="flex cursor-help items-center gap-1.5 text-left text-xl font-black text-[#071d49] outline-none focus-visible:ring-2 focus-visible:ring-[#4da8dd] focus-visible:ring-offset-2"
               aria-describedby="scholarship-notice"
               onMouseEnter={(event) => showNoticeTooltip(event.currentTarget)}
               onMouseLeave={() => setNoticeTooltip(null)}
