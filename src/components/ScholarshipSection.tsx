@@ -109,7 +109,6 @@ function ScholarshipCard({ recipient }: { recipient: ScholarshipRecipient }) {
 
 export function ScholarshipSection({ rows }: ScholarshipSectionProps) {
   const [listView, setListView] = useState(false);
-  const [showInfo, setShowInfo] = useState(false);
   const recipients = useMemo(() => selectScholarshipRecipients(rows), [rows]);
   const totalAmount = recipients.reduce((sum, item) => sum + item.amount, 0);
   const carouselItems = useMemo(() => {
@@ -123,37 +122,24 @@ export function ScholarshipSection({ rows }: ScholarshipSectionProps) {
     <section className="mt-6 overflow-hidden rounded-2xl border border-white/75 bg-white/95 shadow-[0_12px_38px_rgba(7,29,73,0.08)] backdrop-blur-sm">
       <div className="flex flex-col gap-4 border-b border-slate-100 px-5 py-5 sm:flex-row sm:items-center sm:justify-between md:px-7">
         <div className="flex flex-wrap items-center gap-3">
-          <div
-            className="group relative"
-            onMouseEnter={() => setShowInfo(true)}
-            onMouseLeave={() => setShowInfo(false)}
-          >
-            <button
-              type="button"
-              className="flex items-center gap-1.5 text-left text-base font-black text-[#071d49]"
+          <details className="group relative">
+            <summary
+              className="flex cursor-help list-none items-center gap-1.5 text-left text-base font-black text-[#071d49] [&::-webkit-details-marker]:hidden"
               aria-describedby="scholarship-notice"
-              aria-expanded={showInfo}
-              onClick={() => setShowInfo(true)}
-              onFocus={() => setShowInfo(true)}
-              onBlur={() => setShowInfo(false)}
             >
               2027 총 1억 장학금 대상자
               <span className="flex h-4 w-4 items-center justify-center rounded-full border border-[#8ba3b8] text-[9px] font-black text-[#52728e]">
                 i
               </span>
-            </button>
+            </summary>
             <div
               id="scholarship-notice"
               role="tooltip"
-              className={`
-                absolute left-0 top-full z-30 mt-2 w-[min(340px,calc(100vw-72px))] rounded-xl bg-[#071d49] px-4 py-3
-                text-[11px] font-medium leading-5 text-white shadow-xl transition
-                ${showInfo ? "visible translate-y-0 opacity-100" : "invisible -translate-y-1 opacity-0"}
-              `}
+              className="invisible absolute left-0 top-full z-30 mt-2 w-[min(340px,calc(100vw-72px))] -translate-y-1 rounded-xl bg-[#071d49] px-4 py-3 text-[11px] font-medium leading-5 text-white opacity-0 shadow-xl transition group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100 group-open:visible group-open:translate-y-0 group-open:opacity-100"
             >
               자동 선정된 장학금 대상자로 최종 확정 상태가 아닙니다. 자세한 내용은 추후 본사 담당자가 안내할 예정입니다.
             </div>
-          </div>
+          </details>
 
           <span className="rounded-full bg-[#eaf7fd] px-3 py-1 text-[10px] font-bold text-[#1676ad]">
             대상자 {recipients.length}명
