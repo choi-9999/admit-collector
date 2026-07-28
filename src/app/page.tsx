@@ -714,7 +714,7 @@ export default function AdmitCollectorApp() {
                   </div>
 
                   {/* Column 3: 수시 / 정시 전형 선택 (2열) */}
-                  <div className="flex min-h-[72px] flex-col justify-center px-4 py-2 lg:col-span-2">
+                  <div className="flex min-h-[72px] flex-col justify-center px-3 py-2 lg:col-span-2">
                     <div className="text-[10px] font-bold tracking-wide text-slate-500">
                       전형 유형 <span className="text-[#3f9fdb]">*</span>
                     </div>
@@ -723,7 +723,7 @@ export default function AdmitCollectorApp() {
                         type="button"
                         onClick={() => setTrack("수시")}
                         className={classNames(
-                          "rounded-full px-3 py-1 text-[11px] font-bold",
+                          "whitespace-nowrap rounded-full px-2 py-1 text-[11px] font-bold",
                           track === "수시"
                             ? "bg-[#e5f5fc] text-[#1676ad]"
                             : "text-slate-500 hover:bg-slate-100 dark:text-gray-400"
@@ -735,7 +735,7 @@ export default function AdmitCollectorApp() {
                         type="button"
                         onClick={() => setTrack("정시")}
                         className={classNames(
-                          "rounded-full px-3 py-1 text-[11px] font-bold",
+                          "whitespace-nowrap rounded-full px-2 py-1 text-[11px] font-bold",
                           track === "정시"
                             ? "bg-[#e5f5fc] text-[#1676ad]"
                             : "text-slate-500 hover:bg-slate-100 dark:text-gray-400"
@@ -858,7 +858,7 @@ export default function AdmitCollectorApp() {
                           />
                         </div>
 
-                        <div className="flex min-h-[72px] flex-col justify-center px-4 py-2 lg:col-span-2">
+                        <div className="flex min-h-[72px] flex-col justify-center px-3 py-2 lg:col-span-2">
                           <div className="text-[10px] font-bold tracking-wide text-slate-500">
                             전형 유형 <span className="text-[#3f9fdb]">*</span>
                           </div>
@@ -870,7 +870,7 @@ export default function AdmitCollectorApp() {
                                 onClick={() => updateBatchEntry(entry.id, { track: option })}
                                 disabled={submitting}
                                 className={classNames(
-                                  "rounded-full px-3 py-1 text-[11px] font-bold",
+                                  "whitespace-nowrap rounded-full px-2 py-1 text-[11px] font-bold",
                                   entry.track === option
                                     ? "bg-[#e5f5fc] text-[#1676ad]"
                                     : "text-slate-500 hover:bg-slate-100 dark:text-gray-400"
