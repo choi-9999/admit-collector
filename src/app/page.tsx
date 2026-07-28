@@ -580,7 +580,7 @@ export default function AdmitCollectorApp() {
 
   return (
     <div className="min-h-screen bg-white font-sans text-slate-900 dark:bg-gray-950 dark:text-gray-100">
-      <header className="sticky top-0 z-50 border-b border-slate-100 bg-white/95 px-5 shadow-[0_2px_12px_rgba(7,29,73,0.06)] backdrop-blur-md md:px-10 xl:px-[60px]">
+      <header className="sticky top-0 z-50 border-b border-slate-100 bg-white/95 px-5 shadow-[0_2px_12px_rgba(7,29,73,0.06)] backdrop-blur-md md:px-10 xl:px-[100px]">
         <div className="relative flex h-[68px] w-full items-center justify-between">
           <div className="flex shrink-0 items-center gap-4">
             <button onClick={goToTop} className="flex items-center text-left" aria-label="화면 최상단으로 이동">
@@ -661,7 +661,7 @@ export default function AdmitCollectorApp() {
 
       <section
         id="registration-section"
-        className="air-hero relative scroll-mt-20 px-5 pb-16 pt-10 dark:from-slate-900 dark:via-gray-900 dark:to-slate-950 md:px-10 md:pb-20 xl:px-[60px]"
+        className="air-hero relative scroll-mt-20 px-5 pb-16 pt-10 dark:from-slate-900 dark:via-gray-900 dark:to-slate-950 md:px-10 md:pb-20 xl:px-[100px]"
       >
         <div className="w-full">
           {/* 대한항공 항공권 예매 / 나의 여행 / 체크인 / 출도착 탭바 (위젯 카드 위에 이음새 연결) */}
@@ -1001,11 +1001,11 @@ export default function AdmitCollectorApp() {
         </div>
       </section>
 
-      <section className="w-full px-5 py-10 md:px-10 md:py-14 xl:px-[60px]">
+      <section className="w-full px-5 py-10 md:px-10 md:py-14 xl:px-[100px]">
         <ScholarshipSection rows={rows} />
       </section>
 
-      <section className="w-full bg-[#dff2fb] px-5 py-8 dark:bg-slate-900 md:px-10 xl:px-[60px]">
+      <section className="w-full bg-[#dff2fb] px-5 py-8 dark:bg-slate-900 md:px-10 xl:px-[100px]">
           <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3">
             <article className="flex min-h-28 flex-col items-center justify-center rounded-md bg-white/70 p-4 text-center dark:bg-gray-900">
               <span className="text-xs font-bold text-[#315d81] dark:text-sky-300">총 제출 건</span>
@@ -1057,7 +1057,7 @@ export default function AdmitCollectorApp() {
 
       <section
         id="status-section"
-        className="w-full scroll-mt-20 px-5 py-10 md:px-10 xl:px-[60px]"
+        className="w-full scroll-mt-20 px-5 py-10 md:px-10 xl:px-[100px]"
       >
         <div className="bg-white dark:bg-gray-900">
           <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 pb-4 dark:border-gray-800">
@@ -1183,7 +1183,7 @@ export default function AdmitCollectorApp() {
 
       {/* 8. 관리자 센터 탭일 때 매니저 모듈 */}
       {tab === "admin" && (
-        <section className="w-full px-5 py-6 md:px-10 xl:px-[60px]">
+        <section className="w-full px-5 py-6 md:px-10 xl:px-[100px]">
           <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:bg-gray-900">
             <UniversityManager
               universities={universities}
@@ -1194,7 +1194,7 @@ export default function AdmitCollectorApp() {
         </section>
       )}
 
-      <section className="mt-10 bg-[#dff2fb] px-5 py-10 dark:bg-slate-900 md:px-10 xl:px-[60px]">
+      <section className="mt-10 bg-[#dff2fb] px-5 py-10 dark:bg-slate-900 md:px-10 xl:px-[100px]">
         <div className="w-full">
         <h3 className="mb-5 text-sm font-bold text-[#071d49] dark:text-sky-300">
           합격자 관리를 위한 빠른 메뉴
@@ -1270,7 +1270,7 @@ export default function AdmitCollectorApp() {
       </a>
 
       {/* 11. 대한항공 멀티컬럼 푸터 */}
-      <footer className="border-t border-slate-100 bg-white px-5 py-12 text-[10px] text-slate-500 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 md:px-10 xl:px-[60px]">
+      <footer className="border-t border-slate-100 bg-white px-5 py-12 text-[10px] text-slate-500 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 md:px-10 xl:px-[100px]">
         <div className="w-full">
           <div className="grid grid-cols-2 gap-8 md:grid-cols-5">
             <div>
