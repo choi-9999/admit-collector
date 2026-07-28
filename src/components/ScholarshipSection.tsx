@@ -117,9 +117,10 @@ export function ScholarshipSection({ rows }: ScholarshipSectionProps) {
     const loop = Array.from({ length: repeats }, () => recipients).flat();
     return [...loop, ...loop];
   }, [recipients]);
+  const carouselDuration = Math.max(70, (carouselItems.length / 2) * 11);
 
   return (
-    <section className="mt-6 overflow-hidden rounded-2xl border border-white/75 bg-white/95 shadow-[0_12px_38px_rgba(7,29,73,0.08)] backdrop-blur-sm">
+    <section className="mb-12 overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-[0_12px_38px_rgba(7,29,73,0.08)]">
       <div className="flex flex-col gap-4 border-b border-slate-100 px-5 py-5 sm:flex-row sm:items-center sm:justify-between md:px-7">
         <div className="flex flex-wrap items-center gap-3">
           <details className="group relative">
@@ -209,7 +210,10 @@ export function ScholarshipSection({ rows }: ScholarshipSectionProps) {
         </div>
       ) : (
         <div className="scholarship-carousel py-6">
-          <div className="scholarship-track flex w-max gap-5 px-5">
+          <div
+            className="scholarship-track flex w-max gap-5 px-5"
+            style={{ animationDuration: `${carouselDuration}s` }}
+          >
             {carouselItems.map((recipient, index) => (
               <ScholarshipCard
                 key={`${recipient.studentKey}-${recipient.row.id}-${index}`}
