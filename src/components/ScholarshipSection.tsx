@@ -37,38 +37,38 @@ const GROUP_STYLES: Record<
 const SCHOOL_BRANDS: Record<string, { mark: string; from: string; to: string; ci?: string }> = {
   서울대학교: {
     mark: "SNU",
-    from: "#17365d",
-    to: "#315f90",
+    from: "#1a2d56",
+    to: "#5a6885",
     ci: "/seoul-national-university.png",
   },
   연세대학교: {
     mark: "YONSEI",
     from: "#003876",
-    to: "#1765a8",
+    to: "#47709c",
     ci: "/yonsei-university.png",
   },
   고려대학교: {
     mark: "KOREA",
     from: "#8b0029",
-    to: "#b5214e",
+    to: "#ab4765",
     ci: "/korea-university.png",
   },
   성균관대학교: {
     mark: "SKKU",
-    from: "#00573f",
-    to: "#268267",
+    from: "#093c71",
+    to: "#4e7399",
     ci: "/sungkyunkwan-university.png",
   },
   가톨릭대학교: {
     mark: "CUK",
-    from: "#6d2a78",
-    to: "#9854a2",
+    from: "#0c2e86",
+    to: "#5069a8",
     ci: "/catholic-university.webp",
   },
   울산대학교: {
     mark: "UOU",
-    from: "#005a9c",
-    to: "#318ac3",
+    from: "#00a563",
+    to: "#47be8f",
     ci: "/ulsan-university.gif",
   },
   이화여자대학교: { mark: "EWHA", from: "#00664f", to: "#2c9279" },
@@ -116,7 +116,7 @@ function ScholarshipCard({ recipient }: { recipient: ScholarshipRecipient }) {
           height={190}
           aria-hidden="true"
           unoptimized={brand.ci.endsWith(".gif")}
-          className="pointer-events-none absolute -right-4 top-2 h-[190px] w-[190px] object-contain opacity-[0.18] mix-blend-multiply"
+          className="pointer-events-none absolute -right-4 top-2 h-[190px] w-[190px] object-contain opacity-[0.32] mix-blend-multiply"
         />
       ) : (
         <div className="pointer-events-none absolute -right-3 top-7 rotate-[-8deg] text-[42px] font-black tracking-[-0.08em] text-white/10">
