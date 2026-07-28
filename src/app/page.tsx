@@ -128,6 +128,27 @@ export default function AdmitCollectorApp() {
     }, ms);
   };
 
+  const scrollToSection = (
+    sectionId: "registration-section" | "scholarship-section" | "status-section",
+    nextTab?: "upload" | "status",
+  ) => {
+    if (nextTab) setTab(nextTab);
+
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        document.getElementById(sectionId)?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      });
+    });
+  };
+
+  const goToTop = () => {
+    setTab("upload");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   // 로그인 영구화
   useEffect(() => {
     const tk = localStorage.getItem("admit_token");
@@ -516,7 +537,7 @@ export default function AdmitCollectorApp() {
       <header className="sticky top-0 z-50 border-b border-slate-100 bg-white/95 px-5 shadow-[0_2px_12px_rgba(7,29,73,0.06)] backdrop-blur-md md:px-10 xl:px-[60px]">
         <div className="relative flex h-[68px] w-full items-center justify-between">
           <div className="flex shrink-0 items-center gap-4">
-            <button onClick={() => setTab("upload")} className="flex items-center text-left" aria-label="홈으로">
+            <button onClick={goToTop} className="flex items-center text-left" aria-label="화면 최상단으로 이동">
               <Image
                 src="/etoos247-bi.png"
                 alt="이투스247학원"
@@ -534,13 +555,19 @@ export default function AdmitCollectorApp() {
 
           <nav className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-9 text-[13px] font-bold text-[#071d49] md:flex">
             <button
-              onClick={() => setTab("upload")}
+              onClick={() => scrollToSection("registration-section", "upload")}
               className={classNames("hover:text-[#3f9fdb]", tab === "upload" && "text-[#3f9fdb]")}
             >
               합격자 등록
             </button>
             <button
-              onClick={() => setTab("status")}
+              onClick={() => scrollToSection("scholarship-section", "upload")}
+              className="hover:text-[#3f9fdb]"
+            >
+              총 1억 장학금
+            </button>
+            <button
+              onClick={() => scrollToSection("status-section", "status")}
               className={classNames("hover:text-[#3f9fdb]", tab === "status" && "text-[#3f9fdb]")}
             >
               합격 현황
@@ -586,7 +613,10 @@ export default function AdmitCollectorApp() {
         </div>
       </header>
 
-      <section className="air-hero relative px-5 pb-16 pt-10 dark:from-slate-900 dark:via-gray-900 dark:to-slate-950 md:px-10 md:pb-20 xl:px-[60px]">
+      <section
+        id="registration-section"
+        className="air-hero relative scroll-mt-20 px-5 pb-16 pt-10 dark:from-slate-900 dark:via-gray-900 dark:to-slate-950 md:px-10 md:pb-20 xl:px-[60px]"
+      >
         <div className="w-full">
           {/* 대한항공 항공권 예매 / 나의 여행 / 체크인 / 출도착 탭바 (위젯 카드 위에 이음새 연결) */}
           <div className="relative z-10 -mb-px w-60 rounded-tl-2xl rounded-tr-xl bg-white shadow-[0_-4px_18px_rgba(7,29,73,0.05)]">
@@ -985,7 +1015,10 @@ export default function AdmitCollectorApp() {
         </div>
       </section>
 
-      <section className="w-full px-5 py-10 md:px-10 xl:px-[60px]">
+      <section
+        id="status-section"
+        className="w-full scroll-mt-20 px-5 py-10 md:px-10 xl:px-[60px]"
+      >
         <div className="bg-white dark:bg-gray-900">
           <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 pb-4 dark:border-gray-800">
             <div>
