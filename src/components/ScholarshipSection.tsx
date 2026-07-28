@@ -133,7 +133,7 @@ export function ScholarshipSection({ rows }: ScholarshipSectionProps) {
               className="flex items-center gap-1.5 text-left text-base font-black text-[#071d49]"
               aria-describedby="scholarship-notice"
               aria-expanded={showInfo}
-              onClick={() => setShowInfo((current) => !current)}
+              onClick={() => setShowInfo(true)}
               onFocus={() => setShowInfo(true)}
               onBlur={() => setShowInfo(false)}
             >
