@@ -8,7 +8,7 @@ import { BRANCHES, INIT_UNIVERSITIES, HOWTO_URL } from "@/constants/masterData";
 import { buildExportComparator, toApplicant } from "@/utils/comparator";
 import { buildCSV, downloadFile } from "@/utils/csv";
 import { computeStats } from "@/utils/stats";
-import { runCsvTests, runCsvExtraTests, runDashboardTests } from "@/utils/testRunners";
+import { runCsvExtraTests, runDashboardTests } from "@/utils/testRunners";
 
 import { Combobox } from "@/components/Combobox";
 import { FileDrop } from "@/components/FileDrop";
@@ -1193,71 +1193,6 @@ export default function AdmitCollectorApp() {
           </div>
         </section>
       )}
-
-      <section className="mt-10 bg-[#dff2fb] px-5 py-10 dark:bg-slate-900 md:px-10 xl:px-[100px]">
-        <div className="w-full">
-        <h3 className="mb-5 text-sm font-bold text-[#071d49] dark:text-sky-300">
-          합격자 관리를 위한 빠른 메뉴
-        </h3>
-        <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-5">
-          <button
-            onClick={() => exportCSV(true)}
-            className="flex min-h-24 flex-col items-center justify-center rounded-md bg-white/70 p-4 font-bold text-[#071d49] hover:bg-white hover:shadow-sm"
-          >
-            <span className="text-xl" aria-hidden="true">▥</span>
-            <span className="mt-2 text-[10px]">승인 CSV 추출</span>
-          </button>
-          <button
-            onClick={() => {
-              if (!isAdmin) {
-                alert("관리자 로그인이 필요합니다.");
-                setShowLogin(true);
-              } else {
-                setTab("admin");
-              }
-            }}
-            className="flex min-h-24 flex-col items-center justify-center rounded-md bg-white/70 p-4 font-bold text-[#071d49] hover:bg-white hover:shadow-sm"
-          >
-            <span className="text-xl" aria-hidden="true">▦</span>
-            <span className="mt-2 text-[10px]">대학/학과 코드</span>
-          </button>
-          <button
-            onClick={() => {
-              const cmp = buildExportComparator();
-              const sorted = rows
-                .map((r, idx) => ({ r, a: toApplicant(r), idx }))
-                .sort((x, y) => {
-                  const c = cmp(x.a, y.a);
-                  return c !== 0 ? c : x.idx - y.idx;
-                })
-                .map((x) => x.r);
-              console.log("[EXPORT PREVIEW] sorted", sorted);
-              alert("콘솔에서 입시 정렬 결과를 확인하세요 (F12 → Console)");
-            }}
-            className="flex min-h-24 flex-col items-center justify-center rounded-md bg-white/70 p-4 font-bold text-[#071d49] hover:bg-white hover:shadow-sm"
-          >
-            <span className="text-xl" aria-hidden="true">⇅</span>
-            <span className="mt-2 text-[10px]">정렬 미리보기</span>
-          </button>
-          <button
-            onClick={runCsvTests}
-            className="flex min-h-24 flex-col items-center justify-center rounded-md bg-white/70 p-4 font-bold text-[#071d49] hover:bg-white hover:shadow-sm"
-          >
-            <span className="text-xl" aria-hidden="true">✓</span>
-            <span className="mt-2 text-[10px]">유닛 테스트</span>
-          </button>
-          <a
-            href={HOWTO_URL}
-            target="_blank"
-            rel="noreferrer"
-            className="flex min-h-24 flex-col items-center justify-center rounded-md bg-white/70 p-4 font-bold text-[#071d49] hover:bg-white hover:shadow-sm"
-          >
-            <span className="text-xl" aria-hidden="true">▤</span>
-            <span className="mt-2 text-[10px]">이용 가이드</span>
-          </a>
-        </div>
-        </div>
-      </section>
 
       {/* 10. 플로팅 대한항공 AI 챗봇 오마주 버튼 (+ 이용 가이드) */}
       <a
