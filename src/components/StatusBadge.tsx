@@ -23,7 +23,7 @@ export function StatusBadge({ s, reason }: { s: AdmitStatus; reason?: string }) 
       <span className={classNames("h-2 w-2 rounded-full", dots[s])} />
       {s}
       {s === "반려" && !!reason && (
-        <span className="pointer-events-none absolute left-1/2 top-full z-30 mt-2 w-max max-w-xs -translate-x-1/2 whitespace-pre-wrap rounded-2xl bg-[#00256c] px-3.5 py-2.5 text-[11px] font-normal leading-relaxed text-white opacity-0 shadow-2xl transition-opacity duration-150 group-hover:opacity-100 dark:bg-gray-800">
+        <span className="pointer-events-none absolute left-0 top-full z-30 mt-2 w-max max-w-xs whitespace-pre-wrap rounded-2xl bg-[#00256c] px-3.5 py-2.5 text-[11px] font-normal leading-relaxed text-white opacity-0 shadow-2xl transition-opacity duration-150 group-hover:opacity-100 dark:bg-gray-800">
           <span className="font-bold text-[#93c5fd]">반려 사유:</span> {reason}
         </span>
       )}
