@@ -564,6 +564,8 @@ export default function AdmitCollectorApp() {
   const showManageColumn =
     isAdmin || filteredRows.some((row) => row.status === "대기중");
   const stats = useMemo(() => computeStats(filteredRows), [filteredRows]);
+  const submissionTotal =
+    stats.byStatus["승인"] + stats.byStatus["대기중"];
   const topUniversity = useMemo(
     () => computeStats(filteredRows.filter((row) => row.status !== "반려")).topUniversities[0],
     [filteredRows],
@@ -1039,13 +1041,13 @@ export default function AdmitCollectorApp() {
             <article className="flex min-h-28 flex-col items-center justify-center rounded-md bg-white/70 p-4 text-center dark:bg-gray-900">
               <span className="text-xs font-bold text-[#315d81] dark:text-sky-300">총 제출 건</span>
               <strong className="mt-3 text-3xl font-black text-[#071d49] dark:text-white">
-                {stats.total}
+                {submissionTotal}
               </strong>
             </article>
 
             <article className="flex min-h-28 flex-col items-center justify-center rounded-md bg-white/70 p-4 text-center dark:bg-gray-900">
               <span className="text-xs font-bold text-[#315d81] dark:text-sky-300">최다 합격 대학</span>
-              <div className="mt-3 flex h-12 w-16 items-center justify-center">
+              <div className="mt-3 flex h-12 w-full max-w-60 items-center justify-center px-2">
                 {topUniversityCi && topUniversity ? (
                   <Image
                     src={topUniversityCi}
@@ -1053,11 +1055,11 @@ export default function AdmitCollectorApp() {
                     width={64}
                     height={48}
                     unoptimized={topUniversityCi.endsWith(".gif")}
-                    className="h-full w-full object-contain"
+                    className="h-full w-16 object-contain"
                   />
                 ) : (
-                  <span className="text-xl font-black text-[#315d81]" aria-hidden="true">
-                    {topUniversity?.name.replace("대학교", "").slice(0, 3) || "UNI"}
+                  <span className="break-keep text-sm font-black leading-tight text-[#315d81] sm:text-base">
+                    {topUniversity?.name || "UNI"}
                   </span>
                 )}
               </div>
