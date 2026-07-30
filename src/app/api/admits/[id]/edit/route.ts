@@ -35,6 +35,8 @@ export async function PATCH(
     const { id } = await params;  // 🔹 여기: 한 번 await 해서 꺼내쓰기
 
     const body: EditBody = await req.json();
+    const isAdmin =
+      req.headers.get("authorization") === "Bearer admin_token_v1";
     const sheets = sheetsClient();
 
     // ✅ 전체 읽어서 id가 있는 행(인덱스) 찾기
@@ -61,6 +63,14 @@ export async function PATCH(
       return NextResponse.json(
         { ok: false, error: "not found" },
         { status: 404 },
+      );
+    }
+
+    const currentStatus = rows[targetIndex][idx.status] || "대기중";
+    if (!isAdmin && currentStatus !== "대기중") {
+      return NextResponse.json(
+        { ok: false, error: "대기중인 항목만 수정할 수 있습니다." },
+        { status: 403 },
       );
     }
 
@@ -105,10 +115,11 @@ export async function PATCH(
     });
 
     return NextResponse.json({ ok: true });
-  } catch (e: any) {
+  } catch (e: unknown) {
+    const message = e instanceof Error ? e.message : "edit failed";
     console.error("[PATCH /api/admits/:id/edit]", e);
     return NextResponse.json(
-      { ok: false, error: e.message },
+      { ok: false, error: message },
       { status: 500 },
     );
   }
