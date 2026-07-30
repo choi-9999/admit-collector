@@ -502,6 +502,33 @@ export default function AdmitCollectorApp() {
     }
   };
 
+  const deleteRow = async (row: AdmitRow) => {
+    const confirmed = confirm(
+      `'${row.name}' 학생의 합격 내역을 삭제하시겠습니까?\n삭제한 내용은 복구할 수 없습니다.`,
+    );
+    if (!confirmed) return;
+
+    try {
+      const res = await fetch(`/api/admits/${row.id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("admit_token") || ""}`,
+        },
+      });
+      const json = await res.json().catch(() => null);
+
+      if (!res.ok || !json?.ok) {
+        throw new Error(json?.error || `HTTP ${res.status}`);
+      }
+
+      setRows((current) => current.filter((item) => item.id !== row.id));
+      pushToast("✅ 합격 내역이 삭제되었습니다.");
+    } catch (error) {
+      alert("합격 내역을 삭제하지 못했습니다. 잠시 후 다시 시도해 주세요.");
+      console.error("delete error:", error);
+    }
+  };
+
   const upsertUniversity = (uName: string, code: string) => {
     setUniversities((m) => ({ ...m, [uName]: m[uName] ? { ...m[uName], code } : { code, depts: {} } }));
     pushToast(`✅ ${uName} 대학 정보가 저장되었습니다.`);
@@ -534,6 +561,8 @@ export default function AdmitCollectorApp() {
       });
   }, [rows, isAdmin, viewAllBranches, branch, statusFilter, searchQuery]);
 
+  const showManageColumn =
+    isAdmin || filteredRows.some((row) => row.status === "대기중");
   const stats = useMemo(() => computeStats(filteredRows), [filteredRows]);
   const topUniversity = useMemo(
     () => computeStats(filteredRows.filter((row) => row.status !== "반려")).topUniversities[0],
@@ -1106,13 +1135,13 @@ export default function AdmitCollectorApp() {
                   <th className="px-3 py-2">전형</th>
                   <th className="px-3 py-2">지점</th>
                   <th className="px-3 py-2">증빙 파일</th>
-                  {isAdmin && <th className="px-3 py-2 text-right">관리 조치</th>}
+                  {showManageColumn && <th className="px-3 py-2 text-right">관리 조치</th>}
                 </tr>
               </thead>
               <tbody>
                 {filteredRows.length === 0 ? (
                   <tr>
-                    <td colSpan={isAdmin ? 10 : 9} className="border-b border-slate-100 py-12 text-center text-xs font-medium text-slate-400">
+                    <td colSpan={showManageColumn ? 10 : 9} className="border-b border-slate-100 py-12 text-center text-xs font-medium text-slate-400">
                       등록된 데이터가 없습니다.
                     </td>
                   </tr>
@@ -1144,31 +1173,45 @@ export default function AdmitCollectorApp() {
                           <span className="text-slate-400">없음</span>
                         )}
                       </td>
-                      {isAdmin && (
+                      {showManageColumn && (
                         <td className="rounded-r-2xl px-3 py-4 text-right">
                           <div className="flex justify-end gap-1.5">
-                            <button
-                              onClick={() => setRowStatus(r.id, "승인")}
-                              className="rounded-full bg-[#e6f7ed] px-3 py-1 text-xs font-bold text-[#047857] hover:bg-[#10b981] hover:text-white transition-colors"
-                            >
-                              승인
-                            </button>
-                            <button
-                              onClick={async () => {
-                                const reason = prompt("반려 사유를 입력하세요 (필수)");
-                                if (!reason || !reason.trim()) return;
-                                await setRowStatus(r.id, "반려", reason.trim());
-                              }}
-                              className="rounded-full bg-[#ffeef0] px-3 py-1 text-xs font-bold text-[#be123c] hover:bg-[#f43f5e] hover:text-white transition-colors"
-                            >
-                              반려
-                            </button>
-                            <button
-                              onClick={() => setEditRow(r)}
-                              className="rounded-full bg-[#fff8e6] px-3 py-1 text-xs font-bold text-[#b45309] hover:bg-[#f59e0b] hover:text-white transition-colors"
-                            >
-                              수정
-                            </button>
+                            {isAdmin && (
+                              <>
+                                <button
+                                  onClick={() => setRowStatus(r.id, "승인")}
+                                  className="rounded-full bg-[#e6f7ed] px-3 py-1 text-xs font-bold text-[#047857] hover:bg-[#10b981] hover:text-white transition-colors"
+                                >
+                                  승인
+                                </button>
+                                <button
+                                  onClick={async () => {
+                                    const reason = prompt("반려 사유를 입력하세요 (필수)");
+                                    if (!reason || !reason.trim()) return;
+                                    await setRowStatus(r.id, "반려", reason.trim());
+                                  }}
+                                  className="rounded-full bg-[#ffeef0] px-3 py-1 text-xs font-bold text-[#be123c] hover:bg-[#f43f5e] hover:text-white transition-colors"
+                                >
+                                  반려
+                                </button>
+                              </>
+                            )}
+                            {(isAdmin || r.status === "대기중") && (
+                              <>
+                                <button
+                                  onClick={() => setEditRow(r)}
+                                  className="rounded-full bg-[#fff8e6] px-3 py-1 text-xs font-bold text-[#b45309] hover:bg-[#f59e0b] hover:text-white transition-colors"
+                                >
+                                  수정
+                                </button>
+                                <button
+                                  onClick={() => deleteRow(r)}
+                                  className="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600 transition-colors hover:bg-slate-700 hover:text-white"
+                                >
+                                  삭제
+                                </button>
+                              </>
+                            )}
                           </div>
                         </td>
                       )}
@@ -1376,7 +1419,10 @@ export default function AdmitCollectorApp() {
           onSave={async (patch) => {
             const res = await fetch(`/api/admits/${editRow.id}/edit`, {
               method: "PATCH",
-              headers: { "Content-Type": "application/json" },
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("admit_token") || ""}`,
+              },
               body: JSON.stringify(patch),
             });
 
