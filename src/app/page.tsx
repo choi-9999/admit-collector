@@ -1269,59 +1269,144 @@ export default function AdmitCollectorApp() {
         <span className="text-sm">✦</span> AI 도움말
       </a>
 
-      {/* 11. 대한항공 멀티컬럼 푸터 */}
-      <footer className="border-t border-slate-100 bg-white px-5 py-12 text-[10px] text-slate-500 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 md:px-10 xl:px-[100px]">
-        <div className="w-full">
-          <div className="grid grid-cols-2 gap-8 md:grid-cols-5">
-            <div>
-              <h5 className="font-bold text-[#071d49] dark:text-sky-300">회사소개</h5>
-              <ul className="mt-2 space-y-1.5 text-[11px] font-semibold">
-                <li>ETOOS ECI 소개</li>
-                <li>이투스247 학원</li>
-                <li>지점 네트워크</li>
-              </ul>
-            </div>
-            <div>
-              <h5 className="font-bold text-[#071d49] dark:text-sky-300">고객지원</h5>
-              <ul className="mt-2 space-y-1.5 text-[11px] font-semibold">
-                <li>공지사항</li>
-                <li>자주 묻는 질문</li>
-                <li>시스템 가이드</li>
-              </ul>
-            </div>
-            <div>
-              <h5 className="font-bold text-[#071d49] dark:text-sky-300">약관 및 규정</h5>
-              <ul className="mt-2 space-y-1.5 text-[11px] font-semibold">
-                <li className="font-black text-[#0077c8]">개인정보 처리방침</li>
-                <li>이용 약관</li>
-                <li>운영 및 고지사항</li>
-              </ul>
-            </div>
-            <div>
-              <h5 className="font-bold text-[#071d49] dark:text-sky-300">기타 안내</h5>
-              <ul className="mt-2 space-y-1.5 text-[11px] font-semibold">
-                <li>관리자 로그인</li>
-                <li>CSV 엑스포트 규칙</li>
-                <li>사이트맵</li>
-              </ul>
-            </div>
-            <div>
-              <h5 className="font-bold text-[#071d49] dark:text-sky-300">주요 지점</h5>
-              <ul className="mt-2 space-y-1.5 text-[11px] font-semibold">
-                <li>강남 / 마포 / 목동</li>
-                <li>분당 / 일산 / 대구</li>
-                <li>부산 / 광주 / 대전</li>
-              </ul>
-            </div>
+      {/* 11. 이투스247 브랜드 푸터 */}
+      <footer className="bg-[#dff2fb] px-5 py-10 text-[#315d81] md:px-10 md:py-12 xl:px-[100px]">
+        <div className="flex w-full flex-col gap-9 lg:flex-row lg:items-center lg:justify-between">
+          <div className="min-w-0">
+            <a
+              href="https://247.etoos.com/index.do"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center"
+              aria-label="이투스247학원 홈페이지"
+            >
+              <Image
+                src="/etoos247-bi.png"
+                alt="이투스247학원"
+                width={330}
+                height={111}
+                className="h-auto w-[112px] object-contain"
+              />
+            </a>
+            <p className="mt-5 text-[11px] font-semibold text-[#52728e]">
+              이투스에씨아이 주식회사 | 서울특별시 서초구 남부순환로 2547, 3층(서초동 1354-3)
+            </p>
+            <p className="mt-2 text-[10px] font-medium text-[#7b9aaf]">
+              Copyright © ETOOS ECI Co.,Ltd. All rights Reserved.
+            </p>
           </div>
 
-          <div className="mt-8 border-t border-slate-100 pt-6 dark:border-gray-800">
-            <p className="font-semibold text-[#071d49] dark:text-sky-300">
-              (주)이투스ECI | 대표: 이투스ECI | 주소: 서울특별시 강남구 테헤란로 | 전화: 1588-2001
-            </p>
-            <p className="mt-1 text-[11px] text-slate-400">
-              Copyright ⓒ ETOOS ECI Co.,Ltd. All Rights Reserved.
-            </p>
+          <div className="flex flex-col gap-5 lg:items-end">
+            <nav
+              aria-label="푸터 주요 링크"
+              className="flex flex-wrap items-center gap-x-6 gap-y-2 text-[11px] font-black text-[#315d81]"
+            >
+              <a
+                href="https://247.etoos.com/member/privacy.do?tab=privacy"
+                target="_blank"
+                rel="noreferrer"
+                className="hover:text-[#0077c8]"
+              >
+                개인정보처리방침
+              </a>
+              <a
+                href="https://247.etoos.com/member/privacy.do?tab=terms"
+                target="_blank"
+                rel="noreferrer"
+                className="hover:text-[#0077c8]"
+              >
+                이용약관
+              </a>
+              <a
+                href="https://247.etoos.com/franchise/inquiry.do"
+                target="_blank"
+                rel="noreferrer"
+                className="hover:text-[#0077c8]"
+              >
+                가맹문의
+              </a>
+              <a
+                href="https://247.etoos.com/cont/history.do"
+                target="_blank"
+                rel="noreferrer"
+                className="hover:text-[#0077c8]"
+              >
+                브랜드 소개
+              </a>
+            </nav>
+
+            <div className="flex flex-wrap items-center gap-3">
+              <a
+                href="https://www.youtube.com/@etoos247"
+                target="_blank"
+                rel="noreferrer"
+                aria-label="이투스247 유튜브"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-[#9fc7dc] bg-white/55 text-[#315d81] hover:border-[#0077c8] hover:bg-white hover:text-[#0077c8]"
+              >
+                <svg viewBox="0 0 24 24" className="h-4 w-4 fill-current" aria-hidden="true">
+                  <path d="M21.6 7.2a3 3 0 0 0-2.1-2.1C17.6 4.6 12 4.6 12 4.6s-5.6 0-7.5.5a3 3 0 0 0-2.1 2.1A31 31 0 0 0 2 12a31 31 0 0 0 .4 4.8 3 3 0 0 0 2.1 2.1c1.9.5 7.5.5 7.5.5s5.6 0 7.5-.5a3 3 0 0 0 2.1-2.1A31 31 0 0 0 22 12a31 31 0 0 0-.4-4.8ZM10 15.3V8.7l5.7 3.3-5.7 3.3Z" />
+                </svg>
+              </a>
+              <a
+                href="https://www.instagram.com/etoos247_official/"
+                target="_blank"
+                rel="noreferrer"
+                aria-label="이투스247 인스타그램"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-[#9fc7dc] bg-white/55 text-[#315d81] hover:border-[#0077c8] hover:bg-white hover:text-[#0077c8]"
+              >
+                <svg viewBox="0 0 24 24" className="h-4 w-4 fill-none stroke-current" strokeWidth="2" aria-hidden="true">
+                  <rect x="3" y="3" width="18" height="18" rx="5" />
+                  <circle cx="12" cy="12" r="4" />
+                  <circle cx="17.5" cy="6.5" r="1" className="fill-current stroke-none" />
+                </svg>
+              </a>
+              <a
+                href="https://blog.naver.com/etooseci247"
+                target="_blank"
+                rel="noreferrer"
+                aria-label="이투스247 네이버 블로그"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-[#9fc7dc] bg-white/55 text-sm font-black text-[#315d81] hover:border-[#0077c8] hover:bg-white hover:text-[#0077c8]"
+              >
+                N
+              </a>
+              <a
+                href="https://247.etoos.com/index.do"
+                target="_blank"
+                rel="noreferrer"
+                aria-label="이투스247 홈페이지"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-[#9fc7dc] bg-white/55 text-[#315d81] hover:border-[#0077c8] hover:bg-white hover:text-[#0077c8]"
+              >
+                <svg viewBox="0 0 24 24" className="h-4 w-4 fill-none stroke-current" strokeWidth="2" aria-hidden="true">
+                  <circle cx="12" cy="12" r="9" />
+                  <path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18" />
+                </svg>
+              </a>
+
+              <select
+                aria-label="패밀리 사이트"
+                defaultValue=""
+                onChange={(event) => {
+                  if (!event.target.value) return;
+                  window.open(event.target.value, "_blank", "noopener,noreferrer");
+                  event.currentTarget.value = "";
+                }}
+                className="h-9 min-w-[150px] rounded-md border border-[#9fc7dc] bg-white/55 px-4 text-[11px] font-bold text-[#315d81] outline-none hover:bg-white focus:border-[#0077c8]"
+              >
+                <option value="">패밀리 사이트</option>
+                <option value="https://247.etoos.com/index.do">이투스247학원</option>
+                <option value="https://intelligent-salk.vercel.app/">247기사송출</option>
+                <option value="https://etoos247-experience-info.vercel.app/">247체험단</option>
+              </select>
+
+              <button
+                type="button"
+                onClick={goToTop}
+                className="flex h-9 items-center gap-1 rounded-md border border-[#9fc7dc] bg-white/55 px-4 text-[11px] font-black text-[#315d81] hover:border-[#0077c8] hover:bg-white hover:text-[#0077c8]"
+                aria-label="화면 최상단으로 이동"
+              >
+                <span aria-hidden="true">↑</span> TOP
+              </button>
+            </div>
           </div>
         </div>
       </footer>
