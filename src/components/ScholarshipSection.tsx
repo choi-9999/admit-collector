@@ -222,6 +222,12 @@ const SCHOOL_BRANDS: Record<string, { mark: string; from: string; to: string; ci
     to: "#958b85",
     ci: "/dongguk-university.png",
   },
+  "동국대학교(WISE)": {
+    mark: "DONGGUK WISE",
+    from: "#665b54",
+    to: "#958b85",
+    ci: "/dongguk-university.png",
+  },
   동신대학교: {
     mark: "DONGSHIN",
     from: "#2b59aa",
