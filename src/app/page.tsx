@@ -756,7 +756,7 @@ export default function AdmitCollectorApp() {
                   >
                     {BRANCHES.map((b) => (
                       <option key={b} value={b}>
-                        {b} 지점
+                        {b.replace(/\s*지점$/, "")}
                       </option>
                     ))}
                   </select>
