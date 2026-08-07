@@ -322,6 +322,12 @@ function formatAmount(amount: number) {
   return `${Math.round(amount / 10_000).toLocaleString("ko-KR")}만원`;
 }
 
+function formatBranch(branch: string) {
+  const trimmed = branch.trim();
+  if (!trimmed) return "지점 미지정";
+  return trimmed.endsWith("지점") ? trimmed : `${trimmed} 지점`;
+}
+
 function ScholarshipCard({ recipient }: { recipient: ScholarshipRecipient }) {
   const brand = getBrand(recipient.row.university);
   const group = GROUP_STYLES[recipient.group];
@@ -367,9 +373,17 @@ function ScholarshipCard({ recipient }: { recipient: ScholarshipRecipient }) {
               <p className="text-[10px] text-white/65">장학 대상자</p>
               <p className="mt-0.5 text-base font-black">{recipient.row.name}</p>
             </div>
-            <span className="rounded-full border border-white/25 bg-white/10 px-2.5 py-1 text-[10px] font-bold backdrop-blur-sm">
-              {recipient.row.track}
-            </span>
+            <div className="flex max-w-[132px] flex-col items-end gap-1">
+              <span className="rounded-full border border-white/25 bg-white/10 px-2.5 py-1 text-[10px] font-bold backdrop-blur-sm">
+                {recipient.row.track}
+              </span>
+              <span
+                title={formatBranch(recipient.row.branch)}
+                className="max-w-full truncate rounded-full border border-white/20 bg-black/10 px-2.5 py-1 text-[9px] font-bold text-white/85 backdrop-blur-sm"
+              >
+                {formatBranch(recipient.row.branch)}
+              </span>
+            </div>
           </div>
         </div>
       </div>
@@ -518,18 +532,19 @@ export function ScholarshipSection({ rows }: ScholarshipSectionProps) {
                   <span className="text-[10px] font-semibold text-slate-400">{groupRecipients.length}명</span>
                 </div>
                 <div className="overflow-x-auto rounded-xl border border-slate-100">
-                  <div className="min-w-[720px]">
-                    <div className="grid grid-cols-[1.1fr_1.2fr_.8fr_.6fr_.7fr] bg-[#f7fafc] px-4 py-2.5 text-[10px] font-bold text-slate-500">
+                  <div className="min-w-[820px]">
+                    <div className="grid grid-cols-[1.1fr_1.2fr_.8fr_.75fr_.6fr_.7fr] bg-[#f7fafc] px-4 py-2.5 text-[10px] font-bold text-slate-500">
                       <span>합격 대학</span>
                       <span>학과</span>
                       <span>이름</span>
+                      <span>지점</span>
                       <span>전형</span>
                       <span className="text-right">장학금액</span>
                     </div>
                     {groupRecipients.map((recipient) => (
                       <div
                         key={`${recipient.studentKey}-${recipient.row.id}`}
-                        className="grid grid-cols-[1.1fr_1.2fr_.8fr_.6fr_.7fr] border-t border-slate-100 px-4 py-3 text-[11px] text-slate-600"
+                        className="grid grid-cols-[1.1fr_1.2fr_.8fr_.75fr_.6fr_.7fr] items-center border-t border-slate-100 px-4 py-3 text-[11px] text-slate-600"
                       >
                         <span className="font-bold text-[#071d49]">{recipient.row.university}</span>
                         <span>{recipient.row.dept}</span>
@@ -544,6 +559,9 @@ export function ScholarshipSection({ rows }: ScholarshipSectionProps) {
                           >
                             {recipient.row.name}
                           </span>
+                        </span>
+                        <span className="truncate font-semibold text-[#315d81]" title={formatBranch(recipient.row.branch)}>
+                          {formatBranch(recipient.row.branch)}
                         </span>
                         <span>{recipient.row.track}</span>
                         <span className="text-right font-black text-[#1676ad]">{formatAmount(recipient.amount)}</span>
