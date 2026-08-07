@@ -246,10 +246,66 @@ const SCHOOL_BRANDS: Record<string, { mark: string; from: string; to: string; ci
     to: "#6c91c7",
     ci: "/semyung-university.png",
   },
-  한국과학기술원: { mark: "KAIST", from: "#003b71", to: "#176ca5" },
-  KAIST: { mark: "KAIST", from: "#003b71", to: "#176ca5" },
-  포항공과대학교: { mark: "POSTECH", from: "#9a1737", to: "#c44e6a" },
-  POSTECH: { mark: "POSTECH", from: "#9a1737", to: "#c44e6a" },
+  건국대학교: {
+    mark: "KONKUK",
+    from: "#248f1c",
+    to: "#69ad64",
+    ci: "/konkuk-university.png",
+  },
+  경성대학교: {
+    mark: "KYUNGSUNG",
+    from: "#a97800",
+    to: "#cba546",
+    ci: "/kyungsung-university.png",
+  },
+  동덕여자대학교: {
+    mark: "DONGDUK",
+    from: "#87103d",
+    to: "#ad5778",
+    ci: "/dongduk-womens-university.png",
+  },
+  목포대학교: {
+    mark: "MNU",
+    from: "#009b99",
+    to: "#55b4b2",
+    ci: "/mokpo-national-university.png",
+  },
+  충남대학교: {
+    mark: "CNU",
+    from: "#0a479c",
+    to: "#5c7fb2",
+    ci: "/chungnam-national-university.png",
+  },
+  충북대학교: {
+    mark: "CBNU",
+    from: "#a50042",
+    to: "#c2527e",
+    ci: "/chungbuk-national-university.png",
+  },
+  한국과학기술원: {
+    mark: "KAIST",
+    from: "#0d5599",
+    to: "#5990be",
+    ci: "/kaist.png",
+  },
+  KAIST: {
+    mark: "KAIST",
+    from: "#0d5599",
+    to: "#5990be",
+    ci: "/kaist.png",
+  },
+  포항공과대학교: {
+    mark: "POSTECH",
+    from: "#a90052",
+    to: "#cb558e",
+    ci: "/postech.png",
+  },
+  POSTECH: {
+    mark: "POSTECH",
+    from: "#a90052",
+    to: "#cb558e",
+    ci: "/postech.png",
+  },
 };
 
 function getBrand(university: string) {
