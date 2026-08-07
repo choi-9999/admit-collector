@@ -57,6 +57,16 @@ const UNIVERSITY_CIS: Record<string, string> = {
   동신대학교: "/dongshin-university.png",
   상지대학교: "/sangji-university.png",
   세명대학교: "/semyung-university.png",
+  건국대학교: "/konkuk-university.png",
+  경성대학교: "/kyungsung-university.png",
+  동덕여자대학교: "/dongduk-womens-university.png",
+  목포대학교: "/mokpo-national-university.png",
+  충남대학교: "/chungnam-national-university.png",
+  충북대학교: "/chungbuk-national-university.png",
+  한국과학기술원: "/kaist.png",
+  KAIST: "/kaist.png",
+  포항공과대학교: "/postech.png",
+  POSTECH: "/postech.png",
 };
 
 type RegistrationMode = "single" | "bulk";
