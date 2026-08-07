@@ -14,7 +14,6 @@ import { Combobox } from "@/components/Combobox";
 import { FileDrop } from "@/components/FileDrop";
 import { StatusBadge } from "@/components/StatusBadge";
 import { LoginForm } from "@/components/LoginForm";
-import { UniversityManager } from "@/components/UniversityManager";
 import { EditRowModal } from "@/components/EditRowModal";
 import { FilePreviewModal } from "@/components/FilePreviewModal";
 import { ScholarshipSection } from "@/components/ScholarshipSection";
@@ -152,7 +151,7 @@ export default function AdmitCollectorApp() {
   const [previewRow, setPreviewRow] = useState<AdmitRow | null>(null);
 
   // 탭
-  const [tab, setTab] = useState<"upload" | "status" | "admin">("upload");
+  const [tab, setTab] = useState<"upload" | "status">("upload");
 
   // 관리자 보기 및 검색 필터
   const [viewAllBranches, setViewAllBranches] = useState(false);
@@ -561,22 +560,6 @@ export default function AdmitCollectorApp() {
     }
   };
 
-  const upsertUniversity = (uName: string, code: string) => {
-    setUniversities((m) => ({ ...m, [uName]: m[uName] ? { ...m[uName], code } : { code, depts: {} } }));
-    pushToast(`✅ ${uName} 대학 정보가 저장되었습니다.`);
-  };
-
-  const upsertDept = (uName: string, dName: string, dCode: string) => {
-    setUniversities((m) => ({
-      ...m,
-      [uName]: {
-        code: m[uName]?.code ?? "",
-        depts: { ...(m[uName]?.depts ?? {}), [dName]: dCode || "000" },
-      },
-    }));
-    pushToast(`✅ ${uName} > ${dName} 학과 정보가 저장되었습니다.`);
-  };
-
   const filteredRows = useMemo(() => {
     return rows
       .filter((r) => (isAdmin && viewAllBranches ? true : r.branch === branch))
@@ -683,8 +666,8 @@ export default function AdmitCollectorApp() {
             </button>
             {isAdmin && (
               <button
-                onClick={() => setTab("admin")}
-                className={classNames("hover:text-[#3f9fdb]", tab === "admin" && "text-[#3f9fdb]")}
+                onClick={() => { window.location.href = "/dashboard"; }}
+                className="hover:text-[#3f9fdb]"
               >
                 대시보드
               </button>
@@ -1258,19 +1241,6 @@ export default function AdmitCollectorApp() {
         </div>
       </section>
 
-      {/* 8. 관리자 센터 탭일 때 매니저 모듈 */}
-      {tab === "admin" && (
-        <section className="w-full px-5 py-6 md:px-10 xl:px-[100px]">
-          <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:bg-gray-900">
-            <UniversityManager
-              universities={universities}
-              onUpsertUniversity={upsertUniversity}
-              onUpsertDept={upsertDept}
-            />
-          </div>
-        </section>
-      )}
-
       {/* 10. 플로팅 대한항공 AI 챗봇 오마주 버튼 (+ 이용 가이드) */}
       <a
         href={HOWTO_URL}
@@ -1434,7 +1404,7 @@ export default function AdmitCollectorApp() {
               onSuccess={() => {
                 localStorage.setItem("admit_token", "admin_token_v1");
                 setIsAdmin(true);
-                setTab("admin");
+                window.setTimeout(() => { window.location.href = "/dashboard"; }, 250);
                 setShowLogin(false);
                 pushToast("관리자 로그인에 성공하였습니다.");
               }}
