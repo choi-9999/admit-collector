@@ -35,6 +35,16 @@ const UNIVERSITY_CIS: Record<string, string> = {
   중앙대학교: "/chung-ang-university.webp",
   숙명여자대학교: "/sookmyung-womens-university.png",
   한양대학교: "/hanyang-university.png",
+  가톨릭관동대학교: "/catholic-kwandong-university.png",
+  강원대학교: "/kangwon-national-university.png",
+  경상국립대학교: "/gyeongsang-national-university.png",
+  고신대학교: "/kosin-university.png",
+  대구가톨릭대학교: "/daegu-catholic-university.png",
+  부산대학교: "/pusan-national-university.png",
+  원광대학교: "/wonkwang-university.webp",
+  인제대학교: "/inje-university.png",
+  전남대학교: "/chonnam-national-university.png",
+  전북대학교: "/jeonbuk-national-university.png",
 };
 
 type RegistrationMode = "single" | "bulk";
