@@ -45,6 +45,17 @@ const UNIVERSITY_CIS: Record<string, string> = {
   인제대학교: "/inje-university.png",
   전남대학교: "/chonnam-national-university.png",
   전북대학교: "/jeonbuk-national-university.png",
+  한림대학교: "/hallym-university.png",
+  단국대학교: "/dankook-university.png",
+  "단국대학교(천안)": "/dankook-university.png",
+  조선대학교: "/chosun-university.png",
+  가천대학교: "/gachon-university.png",
+  대구한의대학교: "/daegu-haany-university.png",
+  대전대학교: "/daejeon-university.png",
+  동국대학교: "/dongguk-university.png",
+  동신대학교: "/dongshin-university.png",
+  상지대학교: "/sangji-university.png",
+  세명대학교: "/semyung-university.png",
 };
 
 type RegistrationMode = "single" | "bulk";
