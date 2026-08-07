@@ -325,7 +325,7 @@ function formatAmount(amount: number) {
 function formatBranch(branch: string) {
   const trimmed = branch.trim();
   if (!trimmed) return "지점 미지정";
-  return trimmed.endsWith("지점") ? trimmed : `${trimmed} 지점`;
+  return trimmed.replace(/\s*지점$/, "");
 }
 
 function ScholarshipCard({ recipient }: { recipient: ScholarshipRecipient }) {
