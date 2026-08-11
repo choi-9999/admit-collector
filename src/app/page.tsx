@@ -5,6 +5,7 @@ import Image from "next/image";
 import { createPortal } from "react-dom";
 import { AdmitRow, AdmitStatus, isUniversitiesMap } from "@/types/admit";
 import { BRANCHES, INIT_UNIVERSITIES, HOWTO_URL } from "@/constants/masterData";
+import { UNIVERSITY_CIS } from "@/constants/universityCis";
 import { buildExportComparator, toApplicant } from "@/utils/comparator";
 import { buildCSV, downloadFile } from "@/utils/csv";
 import { computeStats } from "@/utils/stats";
@@ -21,52 +22,6 @@ import { ScholarshipSection } from "@/components/ScholarshipSection";
 function classNames(...xs: Array<string | false | null | undefined>) {
   return xs.filter(Boolean).join(" ");
 }
-
-const UNIVERSITY_CIS: Record<string, string> = {
-  서울대학교: "/seoul-national-university.png",
-  연세대학교: "/yonsei-university.png",
-  고려대학교: "/korea-university.png",
-  성균관대학교: "/sungkyunkwan-university.png",
-  가톨릭대학교: "/catholic-university.webp",
-  울산대학교: "/ulsan-university.gif",
-  경희대학교: "/kyung-hee-university.png",
-  이화여자대학교: "/ewha-womans-university.webp",
-  중앙대학교: "/chung-ang-university.webp",
-  숙명여자대학교: "/sookmyung-womens-university.png",
-  한양대학교: "/hanyang-university.png",
-  가톨릭관동대학교: "/catholic-kwandong-university.png",
-  강원대학교: "/kangwon-national-university.png",
-  경상국립대학교: "/gyeongsang-national-university.png",
-  고신대학교: "/kosin-university.png",
-  대구가톨릭대학교: "/daegu-catholic-university.png",
-  부산대학교: "/pusan-national-university.png",
-  원광대학교: "/wonkwang-university.webp",
-  인제대학교: "/inje-university.png",
-  전남대학교: "/chonnam-national-university.png",
-  전북대학교: "/jeonbuk-national-university.png",
-  한림대학교: "/hallym-university.png",
-  단국대학교: "/dankook-university.png",
-  "단국대학교(천안)": "/dankook-university.png",
-  조선대학교: "/chosun-university.png",
-  가천대학교: "/gachon-university.png",
-  대구한의대학교: "/daegu-haany-university.png",
-  대전대학교: "/daejeon-university.png",
-  동국대학교: "/dongguk-university.png",
-  "동국대학교(WISE)": "/dongguk-university.png",
-  동신대학교: "/dongshin-university.png",
-  상지대학교: "/sangji-university.png",
-  세명대학교: "/semyung-university.png",
-  건국대학교: "/konkuk-university.png",
-  경성대학교: "/kyungsung-university.png",
-  동덕여자대학교: "/dongduk-womens-university.png",
-  목포대학교: "/mokpo-national-university.png",
-  충남대학교: "/chungnam-national-university.png",
-  충북대학교: "/chungbuk-national-university.png",
-  한국과학기술원: "/kaist.png",
-  KAIST: "/kaist.png",
-  포항공과대학교: "/postech.png",
-  POSTECH: "/postech.png",
-};
 
 type RegistrationMode = "single" | "bulk";
 type BatchEntryStatus = "idle" | "uploading" | "error";
