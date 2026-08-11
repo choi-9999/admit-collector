@@ -10,6 +10,7 @@ import { buildExportComparator, toApplicant } from "@/utils/comparator";
 import { buildCSV, downloadFile } from "@/utils/csv";
 import { computeStats } from "@/utils/stats";
 import { runCsvExtraTests, runDashboardTests } from "@/utils/testRunners";
+import { appAlert, appConfirm } from "@/lib/appDialog";
 
 import { Combobox } from "@/components/Combobox";
 import { FileDrop } from "@/components/FileDrop";
@@ -313,19 +314,19 @@ export default function AdmitCollectorApp() {
 
     if (!file) {
       setFileError(true);
-      alert("합격증 파일은 필수 항목입니다. 업로드 후 제출해 주세요.");
+      void appAlert("합격증 파일은 필수 항목입니다. 업로드 후 제출해 주세요.");
       return;
     }
     if (!branch) {
-      alert("지점을 먼저 선택해 주세요.");
+      void appAlert("지점을 먼저 선택해 주세요.");
       return;
     }
     if (!name.trim() || !univ.trim() || !dept.trim()) {
-      alert("이름, 대학, 학과를 모두 입력해 주세요.");
+      void appAlert("이름, 대학, 학과를 모두 입력해 주세요.");
       return;
     }
     if (!universities[univ.trim()]) {
-      alert("합격 대학은 목록에서 선택한 항목만 제출할 수 있습니다.");
+      void appAlert("합격 대학은 목록에서 선택한 항목만 제출할 수 있습니다.");
       return;
     }
 
@@ -347,7 +348,7 @@ export default function AdmitCollectorApp() {
       pushToast(result.message || "✅ 제출이 완료되었습니다. 검토가 진행됩니다.");
     } catch (err) {
       console.error("❌ Submit exception:", err);
-      alert(err instanceof Error ? err.message : "업로드 중 오류가 발생했습니다. 네트워크를 확인해 주세요.");
+      void appAlert(err instanceof Error ? err.message : "업로드 중 오류가 발생했습니다. 네트워크를 확인해 주세요.");
     } finally {
       setSubmitting(false);
     }
@@ -365,7 +366,7 @@ export default function AdmitCollectorApp() {
 
   const addBatchEntry = () => {
     if (batchEntries.length >= 20) {
-      alert("한 번에 최대 20명까지 등록할 수 있습니다.");
+      void appAlert("한 번에 최대 20명까지 등록할 수 있습니다.");
       return;
     }
     setBatchEntries((entries) => [...entries, createBatchEntry()]);
@@ -380,7 +381,7 @@ export default function AdmitCollectorApp() {
 
   const handleBatchSubmit = async () => {
     if (!branch) {
-      alert("지점을 먼저 선택해 주세요.");
+      void appAlert("지점을 먼저 선택해 주세요.");
       return;
     }
 
@@ -419,7 +420,7 @@ export default function AdmitCollectorApp() {
 
     setBatchEntries(validated);
     if (hasValidationError) {
-      alert("확인이 필요한 학생 행이 있습니다.");
+      void appAlert("확인이 필요한 학생 행이 있습니다.");
       return;
     }
 
@@ -510,7 +511,7 @@ export default function AdmitCollectorApp() {
   };
 
   const deleteRow = async (row: AdmitRow) => {
-    const confirmed = confirm(
+    const confirmed = await appConfirm(
       `'${row.name}' 학생의 합격 내역을 삭제하시겠습니까?\n삭제한 내용은 복구할 수 없습니다.`,
     );
     if (!confirmed) return;
@@ -531,7 +532,7 @@ export default function AdmitCollectorApp() {
       setRows((current) => current.filter((item) => item.id !== row.id));
       pushToast("✅ 합격 내역이 삭제되었습니다.");
     } catch (error) {
-      alert("합격 내역을 삭제하지 못했습니다. 잠시 후 다시 시도해 주세요.");
+      void appAlert("합격 내역을 삭제하지 못했습니다. 잠시 후 다시 시도해 주세요.");
       console.error("delete error:", error);
     }
   };
@@ -595,7 +596,7 @@ export default function AdmitCollectorApp() {
       : filteredRows;
 
     if (target.length === 0) {
-      alert(onlyApproved ? "승인 상태의 데이터가 없습니다." : "내보낼 데이터가 없습니다.");
+      void appAlert(onlyApproved ? "승인 상태의 데이터가 없습니다." : "내보낼 데이터가 없습니다.");
       return;
     }
 
@@ -1443,7 +1444,7 @@ export default function AdmitCollectorApp() {
 
             const json = await res.json().catch(() => null);
             if (!res.ok || !json?.ok) {
-              alert("수정 내용이 서버에 반영되지 않았습니다.");
+              void appAlert("수정 내용이 서버에 반영되지 않았습니다.");
               console.error("edit error:", json);
               return;
             }

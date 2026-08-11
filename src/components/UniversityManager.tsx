@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { UniversitiesMap } from "@/types/admit";
+import { appAlert } from "@/lib/appDialog";
 
 export function UniversityManager({
   universities,
@@ -44,7 +45,7 @@ export function UniversityManager({
           />
           <button
             onClick={() => {
-              if (!uName.trim()) return alert("대학명을 입력하세요");
+              if (!uName.trim()) return void appAlert("대학명을 입력하세요");
               onUpsertUniversity(uName.trim(), uCode.trim());
               setUName("");
               setUCode("");
@@ -107,8 +108,8 @@ export function UniversityManager({
           />
           <button
             onClick={() => {
-              if (!selectedU) return alert("대학을 먼저 선택하세요");
-              if (!dName.trim()) return alert("학과명을 입력하세요");
+              if (!selectedU) return void appAlert("대학을 먼저 선택하세요");
+              if (!dName.trim()) return void appAlert("학과명을 입력하세요");
               onUpsertDept(selectedU, dName.trim(), dCode.trim() || "000");
               setDName("");
               setDCode("000");

@@ -1,4 +1,5 @@
 import React, { useRef, useState } from "react";
+import { appAlert } from "@/lib/appDialog";
 
 function classNames(...xs: Array<string | false | null | undefined>) {
   return xs.filter(Boolean).join(" ");
@@ -26,11 +27,11 @@ export function FileDrop({
     const hasValidExt = ALLOWED_EXT.some((ext) => lowerName.endsWith(ext));
 
     if (!(hasValidMime || hasValidExt)) {
-      alert("PDF, JPG, PNG 확장자 파일만 업로드 가능합니다.");
+      void appAlert("PDF, JPG, PNG 확장자 파일만 업로드 가능합니다.");
       return;
     }
     if (f.size > MAX_SIZE) {
-      alert("파일 용량은 최대 10MB 이하이어야 합니다.");
+      void appAlert("파일 용량은 최대 10MB 이하이어야 합니다.");
       return;
     }
 

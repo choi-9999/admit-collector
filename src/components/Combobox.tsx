@@ -1,4 +1,5 @@
 import React, { useMemo, useRef, useState } from "react";
+import { appAlert } from "@/lib/appDialog";
 
 function classNames(...xs: Array<string | false | null | undefined>) {
   return xs.filter(Boolean).join(" ");
@@ -52,7 +53,7 @@ export function Combobox({
         onBlur={() => {
           setTimeout(() => setOpen(false), 150);
           if (restrictToList && value.trim() && !suggestions.includes(value.trim())) {
-            alert("목록에서 정해진 대학을 선택해 주세요.");
+            void appAlert("목록에서 정해진 대학을 선택해 주세요.");
             setValue("");
           }
           onBlur?.();

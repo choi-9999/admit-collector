@@ -1,6 +1,7 @@
 import { AdmitRow } from "@/types/admit";
 import { buildCSV } from "./csv";
 import { computeStats } from "./stats";
+import { appAlert } from "@/lib/appDialog";
 
 export function runCsvTests() {
   const failures: string[] = [];
@@ -41,9 +42,9 @@ export function runCsvTests() {
   if (csvEmpty.split("\n").length !== 1) failures.push("빈 CSV 행 수 오류");
 
   if (failures.length) {
-    alert("CSV 테스트 실패\n- " + failures.join("\n- "));
+    void appAlert("CSV 테스트 실패\n- " + failures.join("\n- "));
   } else {
-    alert("✅ CSV 테스트 통과 (총 5건)");
+    void appAlert("✅ CSV 테스트 통과 (총 5건)");
   }
 }
 
@@ -65,7 +66,7 @@ export function runCsvExtraTests() {
   const csv = buildCSV(tricky);
   if (!csv.includes('"A,B"')) failures.push("콤마 이스케이프 실패");
   if (!csv.includes('"멀티\n라인"')) failures.push("줄바꿈 필드 따옴표 처리 실패");
-  alert(failures.length ? "CSV 확장 테스트 실패:\n- " + failures.join("\n- ") : "✅ CSV 확장 테스트 통과 (2건)");
+  void appAlert(failures.length ? "CSV 확장 테스트 실패:\n- " + failures.join("\n- ") : "✅ CSV 확장 테스트 통과 (2건)");
 }
 
 export function runDashboardTests() {
@@ -81,5 +82,5 @@ export function runDashboardTests() {
   if (s.byStatus["승인"] !== 2 || s.byStatus["반려"] !== 1 || s.byStatus["대기중"] !== 1) fails.push("상태 집계 오류");
   if (s.byTrack["수시"] !== 3 || s.byTrack["정시"] !== 1) fails.push("전형 집계 오류");
   if (s.topUniversities[0]?.name !== "U1" || s.topUniversities[0]?.count !== 3) fails.push("상위 대학 집계 오류");
-  alert(fails.length ? "대시보드 테스트 실패:\n- " + fails.join("\n- ") : "✅ 대시보드 테스트 통과 (4건)");
+  void appAlert(fails.length ? "대시보드 테스트 실패:\n- " + fails.join("\n- ") : "✅ 대시보드 테스트 통과 (4건)");
 }
