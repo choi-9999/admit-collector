@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import { AdmitRow, AdmitStatus } from "@/types/admit";
+import { appConfirm } from "@/lib/appDialog";
 import { UNIVERSITY_CIS } from "@/constants/universityCis";
 import {
   CUMULATIVE_ADMISSION_TOTAL,
@@ -141,7 +142,7 @@ export default function DashboardPage() {
 
   const saveAdmissionYear = async () => {
     if (selectedAdmissionYear === currentAdmissionYear) return;
-    const confirmed = window.confirm(
+    const confirmed = await appConfirm(
       `현재 모집연도를 ${selectedAdmissionYear}학년도로 변경하시겠습니까?\n변경 이후 새로 등록되는 데이터부터 적용되며 기존 데이터는 변경되지 않습니다.`,
     );
     if (!confirmed) {
