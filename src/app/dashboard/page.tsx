@@ -321,13 +321,26 @@ export default function DashboardPage() {
 
         <section className="grid gap-5 md:grid-cols-3">
           {[
-            { label: "유효 제출 건", value: `${metrics.valid.length.toLocaleString()}건`, note: `${currentAdmissionYear}학년도 승인·대기중 합계`, icon: "document" as const, color: "text-[#397ff5]", bg: "bg-[#edf4ff]" },
-            { label: "승인 완료율", value: `${metrics.approvedRate}%`, note: `${currentAdmissionYear}학년도 승인 ${metrics.statuses.승인.toLocaleString()}건`, icon: "check" as const, color: "text-[#11b981]", bg: "bg-[#e9f9f3]" },
-            { label: "취합 참여 지점", value: `${metrics.branches.length.toLocaleString()}곳`, note: `${currentAdmissionYear}학년도 유효 제출 기준`, icon: "branch" as const, color: "text-[#f39a19]", bg: "bg-[#fff6e9]" },
+            { label: "유효 제출 건", value: `${metrics.valid.length.toLocaleString()}건`, note: `${currentAdmissionYear}학년도 승인·대기중 합계`, icon: "document" as const, color: "text-[#397ff5]", bg: "bg-[#edf4ff]", tooltip: undefined },
+            { label: "승인 완료율", value: `${metrics.approvedRate}%`, note: `${currentAdmissionYear}학년도 승인 ${metrics.statuses.승인.toLocaleString()}건`, icon: "check" as const, color: "text-[#11b981]", bg: "bg-[#e9f9f3]", tooltip: undefined },
+            { label: "취합 참여 지점", value: `${metrics.branches.length.toLocaleString()}곳`, note: `${currentAdmissionYear}학년도 유효 제출 기준`, icon: "branch" as const, color: "text-[#f39a19]", bg: "bg-[#fff6e9]", tooltip: metrics.branches.map(([name]) => name.replace(/\s*지점$/, "")) },
           ].map((card) => (
-            <article key={card.label} className="flex min-h-28 items-center gap-5 rounded-2xl border border-slate-200/80 bg-white px-6 py-5 shadow-[0_7px_22px_rgba(15,35,60,0.05)]">
+            <article
+              key={card.label}
+              className="group relative flex min-h-28 items-center gap-5 rounded-2xl border border-slate-200/80 bg-white px-6 py-5 shadow-[0_7px_22px_rgba(15,35,60,0.05)] hover:z-50 focus:z-50"
+              tabIndex={card.tooltip?.length ? 0 : undefined}
+            >
               <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${card.bg} ${card.color}`}><StatIcon kind={card.icon} /></div>
               <div><p className="text-sm font-semibold text-slate-500">{card.label}</p><p className="mt-1 text-3xl font-black text-[#17233a]">{loading ? "—" : card.value}</p><p className="mt-1 text-xs font-medium text-slate-400">{card.note}</p></div>
+              {!!card.tooltip?.length && (
+                <div role="tooltip" className="pointer-events-none invisible absolute left-1/2 top-full z-50 mt-3 w-[min(560px,calc(100vw-40px))] -translate-x-1/2 rounded-2xl bg-[#071d49] p-5 text-white opacity-0 shadow-[0_18px_45px_rgba(7,29,73,0.28)] transition group-hover:visible group-hover:opacity-100 group-focus:visible group-focus:opacity-100">
+                  <span className="absolute -top-2 left-1/2 h-4 w-4 -translate-x-1/2 rotate-45 bg-[#071d49]" />
+                  <p className="relative text-sm font-black">{currentAdmissionYear}학년도 취합 참여 지점</p>
+                  <div className="relative mt-3 grid grid-cols-2 gap-x-6 gap-y-2.5 sm:grid-cols-3">
+                    {card.tooltip.map((branch) => <span key={branch} className="truncate text-xs font-semibold text-blue-100">{branch}</span>)}
+                  </div>
+                </div>
+              )}
             </article>
           ))}
         </section>
