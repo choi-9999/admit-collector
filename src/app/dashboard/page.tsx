@@ -3,7 +3,13 @@
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import { AdmitRow, AdmitStatus } from "@/types/admit";
-import { HISTORICAL_ADMISSIONS } from "@/data/historicalAdmissions";
+import {
+  CUMULATIVE_ADMISSION_TOTAL,
+  CUMULATIVE_BRANCH_RANKING,
+  CUMULATIVE_CATEGORY_COUNTS,
+  CUMULATIVE_UNIVERSITY_RANKING,
+  HISTORICAL_ADMISSIONS,
+} from "@/data/historicalAdmissions";
 
 const NAVY = "#071d49";
 
@@ -52,6 +58,48 @@ function PanelTitle({ children }: { children: React.ReactNode }) {
   );
 }
 
+function ViewToggle({
+  value,
+  currentYear,
+  onChange,
+}: {
+  value: "current" | "cumulative";
+  currentYear: number;
+  onChange: (value: "current" | "cumulative") => void;
+}) {
+  return (
+    <div className="flex rounded-full bg-[#f1f4f8] p-1" aria-label="집계 기간 선택">
+      {([
+        ["current", `${currentYear}학년도`],
+        ["cumulative", "전체 연도 누적"],
+      ] as const).map(([mode, label]) => (
+        <button
+          key={mode}
+          type="button"
+          onClick={() => onChange(mode)}
+          className={`rounded-full px-3 py-1.5 text-[11px] font-black transition ${
+            value === mode
+              ? "bg-[#071d49] text-white shadow-sm"
+              : "text-slate-500 hover:text-[#071d49]"
+          }`}
+          aria-pressed={value === mode}
+        >
+          {label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function mergeRankings(
+  base: readonly (readonly [string, number])[],
+  extra: Array<[string, number]>,
+) {
+  const merged = new Map<string, number>(base.map(([name, count]) => [name, count]));
+  extra.forEach(([name, count]) => merged.set(name, (merged.get(name) || 0) + count));
+  return [...merged.entries()].sort((a, b) => b[1] - a[1]);
+}
+
 export default function DashboardPage() {
   const [authorized, setAuthorized] = useState(false);
   const [rows, setRows] = useState<AdmitRow[]>([]);
@@ -60,6 +108,8 @@ export default function DashboardPage() {
   const [selectedAdmissionYear, setSelectedAdmissionYear] = useState(2027);
   const [savingAdmissionYear, setSavingAdmissionYear] = useState(false);
   const [yearSettingError, setYearSettingError] = useState("");
+  const [branchView, setBranchView] = useState<"current" | "cumulative">("current");
+  const [distributionView, setDistributionView] = useState<"current" | "cumulative">("current");
 
   useEffect(() => {
     if (localStorage.getItem("admit_token") !== "admin_token_v1") {
@@ -164,15 +214,38 @@ export default function DashboardPage() {
     };
   }, [yearRows]);
 
+  const cumulativeMetrics = useMemo(() => {
+    const futureValid = rows.filter(
+      (row) => (row.admissionYear ?? 2026) > 2026 && row.status !== "반려",
+    );
+    const branchMap = new Map<string, number>();
+    const universityMap = new Map<string, number>();
+    const categoryMap = new Map<string, number>();
+    futureValid.forEach((row) => {
+      const branch = row.branch || "지점 미입력";
+      const university = row.university || "대학 미입력";
+      const category = classify(row);
+      branchMap.set(branch, (branchMap.get(branch) || 0) + 1);
+      universityMap.set(university, (universityMap.get(university) || 0) + 1);
+      categoryMap.set(category, (categoryMap.get(category) || 0) + 1);
+    });
+    return {
+      branches: mergeRankings(CUMULATIVE_BRANCH_RANKING, [...branchMap.entries()]),
+      universities: mergeRankings(CUMULATIVE_UNIVERSITY_RANKING, [...universityMap.entries()]),
+      categories: mergeRankings(CUMULATIVE_CATEGORY_COUNTS, [...categoryMap.entries()]),
+      total: CUMULATIVE_ADMISSION_TOTAL + futureValid.length,
+    };
+  }, [rows]);
+
   if (!authorized) return <main className="min-h-screen bg-[#f4f7fb]" />;
 
   const total = yearRows.length || 1;
   const approvedDeg = (metrics.statuses.승인 / total) * 360;
   const pendingDeg = approvedDeg + (metrics.statuses.대기중 / total) * 360;
-  const branchRanking = metrics.branches;
-  const universityRanking = metrics.universities;
-  const categoryRanking = metrics.categories;
-  const distributionTotal = metrics.valid.length;
+  const branchRanking = branchView === "cumulative" ? cumulativeMetrics.branches : metrics.branches;
+  const universityRanking = distributionView === "cumulative" ? cumulativeMetrics.universities : metrics.universities;
+  const categoryRanking = distributionView === "cumulative" ? cumulativeMetrics.categories : metrics.categories;
+  const distributionTotal = distributionView === "cumulative" ? cumulativeMetrics.total : metrics.valid.length;
   const maxBranch = branchRanking[0]?.[1] || 1;
   const maxUniversity = universityRanking[0]?.[1] || 1;
   const trendData = [
@@ -289,7 +362,8 @@ export default function DashboardPage() {
 
           <article className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-[0_7px_22px_rgba(15,35,60,0.05)] md:p-7">
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <PanelTitle>{currentAdmissionYear}학년도 지점별 취합 순위</PanelTitle>
+              <PanelTitle>{branchView === "cumulative" ? "전체 연도 지점별 취합 순위" : `${currentAdmissionYear}학년도 지점별 취합 순위`}</PanelTitle>
+              <ViewToggle value={branchView} currentYear={currentAdmissionYear} onChange={setBranchView} />
             </div>
             <div className="mt-7 space-y-5">
               {branchRanking.slice(0, 6).map(([name, count], index) => (
@@ -301,7 +375,8 @@ export default function DashboardPage() {
 
           <article className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-[0_7px_22px_rgba(15,35,60,0.05)] md:p-7">
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <PanelTitle>{currentAdmissionYear}학년도 대학·계열별 합격 비중</PanelTitle>
+              <PanelTitle>{distributionView === "cumulative" ? "전체 연도 대학·계열별 합격 비중" : `${currentAdmissionYear}학년도 대학·계열별 합격 비중`}</PanelTitle>
+              <ViewToggle value={distributionView} currentYear={currentAdmissionYear} onChange={setDistributionView} />
             </div>
             <div className="mt-7 grid gap-8 sm:grid-cols-2">
               <div><h3 className="mb-4 text-xs font-black uppercase tracking-wider text-slate-400">상위 합격 대학</h3><div className="space-y-4">{universityRanking.slice(0, 5).map(([name, count]) => <div key={name}><div className="mb-1.5 flex justify-between gap-3 text-xs font-bold"><span className="truncate">{name}</span><span>{count}건</span></div><div className="h-2 rounded-full bg-slate-100"><div className="h-full rounded-full bg-[#7a5af8]" style={{ width: `${count / maxUniversity * 100}%` }} /></div></div>)}</div></div>
