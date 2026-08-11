@@ -102,6 +102,7 @@ export default function AdmitCollectorApp() {
 
   // 제출된 행
   const [rows, setRows] = useState<AdmitRow[]>([]);
+  const [previousYearRows, setPreviousYearRows] = useState<AdmitRow[]>([]);
   const [currentAdmissionYear, setCurrentAdmissionYear] = useState(2027);
   const [editRow, setEditRow] = useState<AdmitRow | null>(null);
   const [previewRow, setPreviewRow] = useState<AdmitRow | null>(null);
@@ -192,19 +193,32 @@ export default function AdmitCollectorApp() {
 
   // 목록 재조회
   useEffect(() => {
+    let cancelled = false;
     (async () => {
       const q = new URLSearchParams();
       q.set("year", "current");
       if (!(isAdmin && viewAllBranches) && branch) q.set("branch", branch);
       const res = await fetch(`/api/admits?${q.toString()}`, { cache: "no-store" });
       const json = await res.json();
-      if (json?.ok) {
+      if (json?.ok && !cancelled) {
         setRows(json.rows);
         if (Number.isInteger(json.currentYear)) {
           setCurrentAdmissionYear(json.currentYear);
+
+          const previousQuery = new URLSearchParams(q);
+          previousQuery.set("year", String(json.currentYear - 1));
+          const previousResponse = await fetch(`/api/admits?${previousQuery.toString()}`, { cache: "no-store" });
+          const previousJson = await previousResponse.json();
+          if (!cancelled) {
+            setPreviousYearRows(previousJson?.ok ? previousJson.rows : []);
+          }
         }
       }
     })();
+
+    return () => {
+      cancelled = true;
+    };
   }, [branch, isAdmin, viewAllBranches, tab]);
 
   const univSuggestions = useMemo(() => Object.keys(universities), [universities]);
@@ -538,11 +552,37 @@ export default function AdmitCollectorApp() {
       });
   }, [rows, isAdmin, viewAllBranches, branch, statusFilter, searchQuery]);
 
+  const filteredPreviousYearRows = useMemo(() => {
+    return previousYearRows
+      .filter((r) => (isAdmin && viewAllBranches ? true : r.branch === branch))
+      .filter((r) => (statusFilter === "전체" ? true : r.status === statusFilter))
+      .filter((r) => {
+        if (!searchQuery.trim()) return true;
+        const q = searchQuery.trim().toLowerCase();
+        return (
+          r.name.toLowerCase().includes(q) ||
+          r.university.toLowerCase().includes(q) ||
+          r.dept.toLowerCase().includes(q) ||
+          r.branch.toLowerCase().includes(q)
+        );
+      });
+  }, [previousYearRows, isAdmin, viewAllBranches, branch, statusFilter, searchQuery]);
+
   const showManageColumn =
     isAdmin || filteredRows.some((row) => row.status === "대기중");
   const stats = useMemo(() => computeStats(filteredRows), [filteredRows]);
   const submissionTotal =
     stats.byStatus["승인"] + stats.byStatus["대기중"];
+  const previousYearStats = useMemo(
+    () => computeStats(filteredPreviousYearRows),
+    [filteredPreviousYearRows],
+  );
+  const previousSubmissionTotal =
+    previousYearStats.byStatus["승인"] + previousYearStats.byStatus["대기중"];
+  const submissionDelta = submissionTotal - previousSubmissionTotal;
+  const submissionDeltaRate = previousSubmissionTotal > 0
+    ? Math.round((submissionDelta / previousSubmissionTotal) * 1000) / 10
+    : null;
   const topUniversity = useMemo(
     () => computeStats(filteredRows.filter((row) => row.status !== "반려")).topUniversities[0],
     [filteredRows],
@@ -1017,9 +1057,18 @@ export default function AdmitCollectorApp() {
           <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3">
             <article className="flex min-h-28 flex-col items-center justify-center rounded-md bg-white/70 p-4 text-center dark:bg-gray-900">
               <span className="text-xs font-bold text-[#315d81] dark:text-sky-300">총 제출 건</span>
-              <strong className="mt-3 text-3xl font-black text-[#071d49] dark:text-white">
+              <strong className="mt-2 text-3xl font-black text-[#071d49] dark:text-white">
                 {submissionTotal}
               </strong>
+              {submissionDeltaRate === null ? (
+                <span className="mt-1.5 text-[11px] font-semibold text-slate-400">
+                  {currentAdmissionYear - 1}학년도 데이터 없음
+                </span>
+              ) : (
+                <span className={`mt-1.5 text-[11px] font-bold ${submissionDelta > 0 ? "text-emerald-600" : submissionDelta < 0 ? "text-rose-500" : "text-slate-400"}`}>
+                  {currentAdmissionYear - 1}학년도 대비 {submissionDelta > 0 ? "▲" : submissionDelta < 0 ? "▼" : "-"} {Math.abs(submissionDelta).toLocaleString()}건 ({submissionDelta > 0 ? "+" : submissionDelta < 0 ? "-" : ""}{Math.abs(submissionDeltaRate)}%)
+                </span>
+              )}
             </article>
 
             <article className="flex min-h-28 flex-col items-center justify-center rounded-md bg-white/70 p-4 text-center dark:bg-gray-900">
