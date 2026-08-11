@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { appAlert } from "@/lib/appDialog";
 
 function classNames(...xs: Array<string | false | null | undefined>) {
   return xs.filter(Boolean).join(" ");
@@ -33,7 +34,7 @@ export function BranchSelector({
       setShowSuggest(false);
       setHoverIndex(-1);
     } else {
-      alert("목록에 포함된 정확한 지점명을 선택해 주세요.");
+      void appAlert("목록에 포함된 정확한 지점명을 선택해 주세요.");
     }
   };
 
