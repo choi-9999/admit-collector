@@ -147,6 +147,7 @@ export default function AdmitCollectorApp() {
 
   // 제출된 행
   const [rows, setRows] = useState<AdmitRow[]>([]);
+  const [currentAdmissionYear, setCurrentAdmissionYear] = useState(2027);
   const [editRow, setEditRow] = useState<AdmitRow | null>(null);
   const [previewRow, setPreviewRow] = useState<AdmitRow | null>(null);
 
@@ -238,10 +239,16 @@ export default function AdmitCollectorApp() {
   useEffect(() => {
     (async () => {
       const q = new URLSearchParams();
+      q.set("year", "current");
       if (!(isAdmin && viewAllBranches) && branch) q.set("branch", branch);
       const res = await fetch(`/api/admits?${q.toString()}`, { cache: "no-store" });
       const json = await res.json();
-      if (json?.ok) setRows(json.rows);
+      if (json?.ok) {
+        setRows(json.rows);
+        if (Number.isInteger(json.currentYear)) {
+          setCurrentAdmissionYear(json.currentYear);
+        }
+      }
     })();
   }, [branch, isAdmin, viewAllBranches, tab]);
 
@@ -1048,7 +1055,7 @@ export default function AdmitCollectorApp() {
       </section>
 
       <section className="w-full px-5 py-10 md:px-10 md:py-14 xl:px-[100px]">
-        <ScholarshipSection rows={rows} />
+        <ScholarshipSection rows={rows} admissionYear={currentAdmissionYear} />
       </section>
 
       <section className="w-full bg-[#dff2fb] px-5 py-8 dark:bg-slate-900 md:px-10 xl:px-[100px]">
