@@ -49,5 +49,6 @@ model AdmitRow {
   fileUrl        String      // 미리보기 링크(로컬에선 임시 프리뷰 URL)
   mimeType       String
   status         AdmitStatus @default(대기중)
+  admissionYear  Int         @default(2026)
   createdAt      DateTime    @default(now())
 }
