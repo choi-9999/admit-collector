@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { AdmitRow, UniversitiesMap } from "@/types/admit";
 import { Combobox } from "./Combobox";
+import { appAlert } from "@/lib/appDialog";
 
 export function EditRowModal({
   row,
@@ -122,11 +123,11 @@ export function EditRowModal({
           <button
             onClick={() => {
               if (!name.trim() || !univ.trim() || !dept.trim()) {
-                alert("이름, 대학, 학과를 모두 입력해 주세요.");
+                void appAlert("이름, 대학, 학과를 모두 입력해 주세요.");
                 return;
               }
               if (!universities[univ]) {
-                alert("합격 대학은 목록에서만 선택할 수 있습니다.");
+                void appAlert("합격 대학은 목록에서만 선택할 수 있습니다.");
                 return;
               }
               const uniCode = universities[univ]?.code ?? "";
