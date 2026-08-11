@@ -93,6 +93,10 @@ export default function DashboardPage() {
   const [authorized, setAuthorized] = useState(false);
   const [rows, setRows] = useState<AdmitRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentAdmissionYear, setCurrentAdmissionYear] = useState(2027);
+  const [selectedAdmissionYear, setSelectedAdmissionYear] = useState(2027);
+  const [savingAdmissionYear, setSavingAdmissionYear] = useState(false);
+  const [yearSettingError, setYearSettingError] = useState("");
   const [branchView, setBranchView] = useState<"current" | "cumulative">("current");
   const [distributionView, setDistributionView] = useState<"current" | "cumulative">("current");
 
@@ -102,11 +106,60 @@ export default function DashboardPage() {
       return;
     }
     setAuthorized(true);
-    fetch("/api/admits", { cache: "no-store" })
-      .then((res) => res.json())
-      .then((data) => { if (data?.ok) setRows(data.rows); })
+    const token = localStorage.getItem("admit_token") || "";
+    Promise.all([
+      fetch("/api/admits", { cache: "no-store" }).then((res) => res.json()),
+      fetch("/api/admin/admission-year", {
+        cache: "no-store",
+        headers: { Authorization: `Bearer ${token}` },
+      }).then((res) => res.json()),
+    ])
+      .then(([admitData, settingData]) => {
+        if (admitData?.ok) setRows(admitData.rows);
+        if (settingData?.ok) {
+          setCurrentAdmissionYear(settingData.currentYear);
+          setSelectedAdmissionYear(settingData.currentYear);
+        } else {
+          setYearSettingError("모집연도 설정을 불러오지 못했습니다.");
+        }
+      })
+      .catch(() => setYearSettingError("모집연도 설정을 불러오지 못했습니다."))
       .finally(() => setLoading(false));
   }, []);
+
+  const saveAdmissionYear = async () => {
+    if (selectedAdmissionYear === currentAdmissionYear) return;
+    const confirmed = window.confirm(
+      `현재 모집연도를 ${selectedAdmissionYear}학년도로 변경하시겠습니까?\n변경 이후 새로 등록되는 데이터부터 적용되며 기존 데이터는 변경되지 않습니다.`,
+    );
+    if (!confirmed) {
+      setSelectedAdmissionYear(currentAdmissionYear);
+      return;
+    }
+
+    setSavingAdmissionYear(true);
+    setYearSettingError("");
+    try {
+      const response = await fetch("/api/admin/admission-year", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("admit_token") || ""}`,
+        },
+        body: JSON.stringify({ year: selectedAdmissionYear }),
+      });
+      const data = await response.json();
+      if (!response.ok || !data?.ok) throw new Error(data?.error || "저장 실패");
+      setCurrentAdmissionYear(data.currentYear);
+      setSelectedAdmissionYear(data.currentYear);
+    } catch (error) {
+      console.error("[admission year setting]", error);
+      setSelectedAdmissionYear(currentAdmissionYear);
+      setYearSettingError("모집연도를 저장하지 못했습니다. 잠시 후 다시 시도해 주세요.");
+    } finally {
+      setSavingAdmissionYear(false);
+    }
+  };
 
   const metrics = useMemo(() => {
     const statuses: Record<AdmitStatus, number> = { 승인: 0, 대기중: 0, 반려: 0 };
@@ -193,6 +246,36 @@ export default function DashboardPage() {
           <h1 className="text-3xl font-black tracking-[-0.04em] text-[#17233a] md:text-4xl">합격자 취합 대시보드</h1>
           <p className="mt-3 text-sm font-medium text-slate-500">전국 지점의 합격자 취합 현황과 2023~2026년 실적을 한 화면에서 확인합니다.</p>
         </div>
+
+        <section className="mb-6 flex flex-col gap-4 rounded-2xl border border-[#cfe5f2] bg-[#eaf7fc] px-6 py-5 shadow-[0_7px_22px_rgba(15,35,60,0.04)] sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-sm font-black text-[#315d81]">현재 합격자 등록 모집연도</p>
+            <p className="mt-1 text-xs font-semibold text-slate-500">
+              지점에서 새로 등록하는 합격자 데이터에 자동으로 적용됩니다.
+            </p>
+            {yearSettingError && <p className="mt-2 text-xs font-bold text-rose-600">{yearSettingError}</p>}
+          </div>
+          <div className="flex items-center gap-3">
+            <select
+              value={selectedAdmissionYear}
+              onChange={(event) => setSelectedAdmissionYear(Number(event.target.value))}
+              className="h-11 rounded-xl border border-[#b9d7e8] bg-white px-4 text-sm font-black text-[#071d49] outline-none focus:border-[#397ff5]"
+              aria-label="현재 합격자 등록 모집연도"
+            >
+              {Array.from({ length: 10 }, (_, index) => 2026 + index).map((year) => (
+                <option key={year} value={year}>{year}학년도</option>
+              ))}
+            </select>
+            <button
+              type="button"
+              onClick={saveAdmissionYear}
+              disabled={savingAdmissionYear || selectedAdmissionYear === currentAdmissionYear}
+              className="h-11 rounded-xl bg-[#071d49] px-5 text-xs font-black text-white transition hover:bg-[#153866] disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              {savingAdmissionYear ? "저장 중" : "변경 저장"}
+            </button>
+          </div>
+        </section>
 
         <section className="grid gap-5 md:grid-cols-3">
           {[
