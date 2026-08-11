@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { google } from "googleapis";
 import { nanoid } from "nanoid";
+import { getCurrentAdmissionYear, LEGACY_ADMISSION_YEAR } from "@/lib/admissionYear";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -11,7 +12,7 @@ const TAB = "admit";
 const HEADER = [
   "id","name","university","universityCode","dept","deptCode",
   "track","branch","fileUrl","filePublicId","status","rejectReason",
-  "createdAt","updatedAt"
+  "createdAt","updatedAt","admissionYear"
 ];
 
 function sheetsClient() {
@@ -31,7 +32,7 @@ export async function GET(req: NextRequest) {
     const sheets = sheetsClient();
     const { data } = await sheets.spreadsheets.values.get({
       spreadsheetId: SHEET_ID,
-      range: `${TAB}!A1:N`,
+      range: `${TAB}!A1:O`,
     });
 
     const rows = data.values || [];
@@ -53,15 +54,17 @@ export async function GET(req: NextRequest) {
       rejectReason: r[idx.rejectReason] || "",
       createdAt: r[idx.createdAt] || "",
       updatedAt: r[idx.updatedAt] || "",
+      admissionYear: Number(r[idx.admissionYear]) || LEGACY_ADMISSION_YEAR,
     }));
 
     const filtered = branch ? body.filter(b => b.branch === branch) : body;
     filtered.sort((a,b)=> (b.createdAt||"").localeCompare(a.createdAt||"")); // 최신순
 
     return NextResponse.json({ ok: true, rows: filtered });
-  } catch (e:any) {
-    console.error("[GET /api/admits]", e?.response?.data || e);
-    return NextResponse.json({ ok:false, error:e.message }, { status:500 });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "합격자 데이터를 불러오지 못했습니다.";
+    console.error("[GET /api/admits]", error);
+    return NextResponse.json({ ok:false, error:message }, { status:500 });
   }
 }
 
@@ -70,6 +73,7 @@ export async function POST(req: NextRequest) {
     const payload = await req.json();
     const id = nanoid();
     const now = new Date().toISOString();
+    const admissionYear = await getCurrentAdmissionYear();
 
     const row = [
       id,
@@ -86,6 +90,7 @@ export async function POST(req: NextRequest) {
       "",
       now,
       now,
+      admissionYear,
     ];
 
     const sheets = sheetsClient();
@@ -109,10 +114,12 @@ export async function POST(req: NextRequest) {
         rejectReason: "",
         createdAt: now,
         updatedAt: now,
+        admissionYear,
       },
     });
-  } catch (e:any) {
-    console.error("[POST /api/admits]", e?.response?.data || e);
-    return NextResponse.json({ ok:false, error:e.message }, { status:500 });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "합격자 데이터를 저장하지 못했습니다.";
+    console.error("[POST /api/admits]", error);
+    return NextResponse.json({ ok:false, error:message }, { status:500 });
   }
 }
