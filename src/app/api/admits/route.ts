@@ -28,6 +28,13 @@ export async function GET(req: NextRequest) {
   try {
     const url = new URL(req.url);
     const branch = url.searchParams.get("branch") || undefined;
+    const yearParam = url.searchParams.get("year") || undefined;
+    const currentYear = await getCurrentAdmissionYear();
+    const requestedYear = yearParam === "current"
+      ? currentYear
+      : yearParam && Number.isInteger(Number(yearParam))
+        ? Number(yearParam)
+        : undefined;
 
     const sheets = sheetsClient();
     const { data } = await sheets.spreadsheets.values.get({
@@ -36,7 +43,9 @@ export async function GET(req: NextRequest) {
     });
 
     const rows = data.values || [];
-    if (rows.length <= 1) return NextResponse.json({ ok: true, rows: [] });
+    if (rows.length <= 1) {
+      return NextResponse.json({ ok: true, rows: [], currentYear });
+    }
 
     const idx = Object.fromEntries(HEADER.map((h, i) => [h, i]));
     const body = rows.slice(1).map((r) => ({
@@ -57,10 +66,14 @@ export async function GET(req: NextRequest) {
       admissionYear: Number(r[idx.admissionYear]) || LEGACY_ADMISSION_YEAR,
     }));
 
-    const filtered = branch ? body.filter(b => b.branch === branch) : body;
+    const filtered = body.filter((row) => {
+      if (branch && row.branch !== branch) return false;
+      if (requestedYear && row.admissionYear !== requestedYear) return false;
+      return true;
+    });
     filtered.sort((a,b)=> (b.createdAt||"").localeCompare(a.createdAt||"")); // 최신순
 
-    return NextResponse.json({ ok: true, rows: filtered });
+    return NextResponse.json({ ok: true, rows: filtered, currentYear });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "합격자 데이터를 불러오지 못했습니다.";
     console.error("[GET /api/admits]", error);
