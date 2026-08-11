@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import { AdmitRow, AdmitStatus } from "@/types/admit";
+import { UNIVERSITY_CIS } from "@/constants/universityCis";
 import {
   CUMULATIVE_ADMISSION_TOTAL,
   CUMULATIVE_BRANCH_RANKING,
@@ -379,7 +380,7 @@ export default function DashboardPage() {
               <ViewToggle value={distributionView} currentYear={currentAdmissionYear} onChange={setDistributionView} />
             </div>
             <div className="mt-7 grid gap-8 sm:grid-cols-2">
-              <div><h3 className="mb-4 text-xs font-black uppercase tracking-wider text-slate-400">상위 합격 대학</h3><div className="space-y-4">{universityRanking.slice(0, 5).map(([name, count]) => <div key={name}><div className="mb-1.5 flex justify-between gap-3 text-xs font-bold"><span className="truncate">{name}</span><span>{count}건</span></div><div className="h-2 rounded-full bg-slate-100"><div className="h-full rounded-full bg-[#7a5af8]" style={{ width: `${count / maxUniversity * 100}%` }} /></div></div>)}</div></div>
+              <div><h3 className="mb-4 text-xs font-black uppercase tracking-wider text-slate-400">상위 합격 대학</h3><div className="space-y-4">{universityRanking.slice(0, 7).map(([name, count]) => <div key={name}><div className="mb-1.5 flex items-center justify-between gap-3 text-xs font-bold"><span className="flex min-w-0 items-center gap-2">{UNIVERSITY_CIS[name] && <span className="grid h-6 w-6 shrink-0 place-items-center overflow-hidden rounded-md bg-white"><Image src={UNIVERSITY_CIS[name]} alt="" width={24} height={24} className="h-5 w-5 object-contain" /></span>}<span className="truncate">{name}</span></span><span className="shrink-0">{count}건</span></div><div className="h-2 rounded-full bg-slate-100"><div className="h-full rounded-full bg-[#7a5af8]" style={{ width: `${count / maxUniversity * 100}%` }} /></div></div>)}</div></div>
               <div><h3 className="mb-4 text-xs font-black uppercase tracking-wider text-slate-400">계열 분류</h3><div className="space-y-4">{categoryRanking.map(([name, count], index) => { const colors = ["#ef476f", "#7a5af8", "#20b8cd", "#12b981"]; return <div key={name}><div className="mb-1.5 flex justify-between gap-3 text-xs font-bold"><span>{name}</span><span>{distributionTotal ? Math.round(count / distributionTotal * 100) : 0}%</span></div><div className="h-2 rounded-full bg-slate-100"><div className="h-full rounded-full" style={{ width: `${distributionTotal ? count / distributionTotal * 100 : 0}%`, backgroundColor: colors[index % colors.length] }} /></div></div>; })}</div></div>
             </div>
           </article>
