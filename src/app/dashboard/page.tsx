@@ -3,7 +3,13 @@
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import { AdmitRow, AdmitStatus } from "@/types/admit";
-import { HISTORICAL_ADMISSIONS } from "@/data/historicalAdmissions";
+import {
+  CUMULATIVE_ADMISSION_TOTAL,
+  CUMULATIVE_BRANCH_RANKING,
+  CUMULATIVE_CATEGORY_COUNTS,
+  CUMULATIVE_UNIVERSITY_RANKING,
+  HISTORICAL_ADMISSIONS,
+} from "@/data/historicalAdmissions";
 
 const NAVY = "#071d49";
 
@@ -52,10 +58,43 @@ function PanelTitle({ children }: { children: React.ReactNode }) {
   );
 }
 
+function ViewToggle({
+  value,
+  onChange,
+}: {
+  value: "current" | "cumulative";
+  onChange: (value: "current" | "cumulative") => void;
+}) {
+  return (
+    <div className="flex rounded-full bg-[#f1f4f8] p-1" aria-label="집계 기간 선택">
+      {([
+        ["current", "현재"],
+        ["cumulative", "4개년 누적"],
+      ] as const).map(([mode, label]) => (
+        <button
+          key={mode}
+          type="button"
+          onClick={() => onChange(mode)}
+          className={`rounded-full px-3 py-1.5 text-[11px] font-black transition ${
+            value === mode
+              ? "bg-[#071d49] text-white shadow-sm"
+              : "text-slate-500 hover:text-[#071d49]"
+          }`}
+          aria-pressed={value === mode}
+        >
+          {label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 export default function DashboardPage() {
   const [authorized, setAuthorized] = useState(false);
   const [rows, setRows] = useState<AdmitRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [branchView, setBranchView] = useState<"current" | "cumulative">("current");
+  const [distributionView, setDistributionView] = useState<"current" | "cumulative">("current");
 
   useEffect(() => {
     if (localStorage.getItem("admit_token") !== "admin_token_v1") {
@@ -111,8 +150,20 @@ export default function DashboardPage() {
   const total = rows.length || 1;
   const approvedDeg = (metrics.statuses.승인 / total) * 360;
   const pendingDeg = approvedDeg + (metrics.statuses.대기중 / total) * 360;
-  const maxBranch = metrics.branches[0]?.[1] || 1;
-  const maxUniversity = metrics.universities[0]?.[1] || 1;
+  const branchRanking = branchView === "cumulative"
+    ? CUMULATIVE_BRANCH_RANKING
+    : metrics.branches;
+  const universityRanking = distributionView === "cumulative"
+    ? CUMULATIVE_UNIVERSITY_RANKING
+    : metrics.universities;
+  const categoryRanking = distributionView === "cumulative"
+    ? CUMULATIVE_CATEGORY_COUNTS
+    : metrics.categories;
+  const distributionTotal = distributionView === "cumulative"
+    ? CUMULATIVE_ADMISSION_TOTAL
+    : metrics.valid.length;
+  const maxBranch = branchRanking[0]?.[1] || 1;
+  const maxUniversity = universityRanking[0]?.[1] || 1;
   const trendValues = HISTORICAL_ADMISSIONS.map((item) => item.submissions);
   const trendMin = Math.min(...trendValues) - 8;
   const trendMax = Math.max(...trendValues) + 8;
@@ -186,20 +237,26 @@ export default function DashboardPage() {
           </article>
 
           <article className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-[0_7px_22px_rgba(15,35,60,0.05)] md:p-7">
-            <PanelTitle>지점별 취합 순위</PanelTitle>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <PanelTitle>지점별 취합 순위</PanelTitle>
+              <ViewToggle value={branchView} onChange={setBranchView} />
+            </div>
             <div className="mt-7 space-y-5">
-              {metrics.branches.slice(0, 6).map(([name, count], index) => (
+              {branchRanking.slice(0, 6).map(([name, count], index) => (
                 <div key={name}><div className="mb-2 flex items-center justify-between text-sm"><span className="flex items-center gap-3 font-bold"><i className={`grid h-7 w-7 place-items-center rounded-full text-xs not-italic ${index === 0 ? "bg-[#fff1d9] text-[#e68a00]" : "bg-slate-100 text-slate-500"}`}>{index + 1}</i>{name.replace(/\s*지점$/, "")}</span><strong className="text-slate-500">{count.toLocaleString()}건</strong></div><div className="ml-10 h-2 overflow-hidden rounded-full bg-slate-100"><div className="h-full rounded-full bg-[#397ff5]" style={{ width: `${count / maxBranch * 100}%` }} /></div></div>
               ))}
-              {!metrics.branches.length && <p className="py-20 text-center text-sm text-slate-400">집계할 데이터가 없습니다.</p>}
+              {!branchRanking.length && <p className="py-20 text-center text-sm text-slate-400">집계할 데이터가 없습니다.</p>}
             </div>
           </article>
 
           <article className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-[0_7px_22px_rgba(15,35,60,0.05)] md:p-7">
-            <PanelTitle>대학·계열별 합격 비중</PanelTitle>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <PanelTitle>대학·계열별 합격 비중</PanelTitle>
+              <ViewToggle value={distributionView} onChange={setDistributionView} />
+            </div>
             <div className="mt-7 grid gap-8 sm:grid-cols-2">
-              <div><h3 className="mb-4 text-xs font-black uppercase tracking-wider text-slate-400">상위 합격 대학</h3><div className="space-y-4">{metrics.universities.slice(0, 5).map(([name, count]) => <div key={name}><div className="mb-1.5 flex justify-between gap-3 text-xs font-bold"><span className="truncate">{name}</span><span>{count}건</span></div><div className="h-2 rounded-full bg-slate-100"><div className="h-full rounded-full bg-[#7a5af8]" style={{ width: `${count / maxUniversity * 100}%` }} /></div></div>)}</div></div>
-              <div><h3 className="mb-4 text-xs font-black uppercase tracking-wider text-slate-400">계열 분류</h3><div className="space-y-4">{metrics.categories.map(([name, count], index) => { const colors = ["#ef476f", "#7a5af8", "#20b8cd", "#12b981"]; return <div key={name}><div className="mb-1.5 flex justify-between gap-3 text-xs font-bold"><span>{name}</span><span>{metrics.valid.length ? Math.round(count / metrics.valid.length * 100) : 0}%</span></div><div className="h-2 rounded-full bg-slate-100"><div className="h-full rounded-full" style={{ width: `${metrics.valid.length ? count / metrics.valid.length * 100 : 0}%`, backgroundColor: colors[index % colors.length] }} /></div></div>; })}</div></div>
+              <div><h3 className="mb-4 text-xs font-black uppercase tracking-wider text-slate-400">상위 합격 대학</h3><div className="space-y-4">{universityRanking.slice(0, 5).map(([name, count]) => <div key={name}><div className="mb-1.5 flex justify-between gap-3 text-xs font-bold"><span className="truncate">{name}</span><span>{count}건</span></div><div className="h-2 rounded-full bg-slate-100"><div className="h-full rounded-full bg-[#7a5af8]" style={{ width: `${count / maxUniversity * 100}%` }} /></div></div>)}</div></div>
+              <div><h3 className="mb-4 text-xs font-black uppercase tracking-wider text-slate-400">계열 분류</h3><div className="space-y-4">{categoryRanking.map(([name, count], index) => { const colors = ["#ef476f", "#7a5af8", "#20b8cd", "#12b981"]; return <div key={name}><div className="mb-1.5 flex justify-between gap-3 text-xs font-bold"><span>{name}</span><span>{distributionTotal ? Math.round(count / distributionTotal * 100) : 0}%</span></div><div className="h-2 rounded-full bg-slate-100"><div className="h-full rounded-full" style={{ width: `${distributionTotal ? count / distributionTotal * 100 : 0}%`, backgroundColor: colors[index % colors.length] }} /></div></div>; })}</div></div>
             </div>
           </article>
         </section>
