@@ -14,6 +14,7 @@ export type AdmitRow = {
   filePublicId?: string;
   rejectReason?: string;
   status: AdmitStatus;
+  admissionYear?: number;
   createdAt?: string;
   updatedAt?: string;
 };
@@ -33,15 +34,15 @@ export type UniversitiesMap = Record<
   { code: string; depts: Record<string, string> }
 >;
 
-export function isUniversitiesMap(data: any): data is UniversitiesMap {
-  if (!data || typeof data !== "object") return false;
-  for (const [u, val] of Object.entries(data as Record<string, any>)) {
-    if (!val || typeof val !== "object") return false;
-    if (typeof (val as any).code !== "string") return false;
-    const depts = (val as any).depts;
-    if (!depts || typeof depts !== "object") return false;
-    for (const [d, code] of Object.entries(depts as Record<string, any>)) {
-      if (typeof d !== "string") return false;
+export function isUniversitiesMap(data: unknown): data is UniversitiesMap {
+  if (!data || typeof data !== "object" || Array.isArray(data)) return false;
+  for (const val of Object.values(data as Record<string, unknown>)) {
+    if (!val || typeof val !== "object" || Array.isArray(val)) return false;
+    const university = val as Record<string, unknown>;
+    if (typeof university.code !== "string") return false;
+    const depts = university.depts;
+    if (!depts || typeof depts !== "object" || Array.isArray(depts)) return false;
+    for (const code of Object.values(depts as Record<string, unknown>)) {
       if (typeof code !== "string") return false;
     }
   }
