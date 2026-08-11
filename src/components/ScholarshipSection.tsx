@@ -12,6 +12,7 @@ import {
 
 type ScholarshipSectionProps = {
   rows: AdmitRow[];
+  admissionYear: number;
 };
 
 type AdmissionsTooltipState = {
@@ -414,11 +415,18 @@ function ScholarshipCard({ recipient }: { recipient: ScholarshipRecipient }) {
   );
 }
 
-export function ScholarshipSection({ rows }: ScholarshipSectionProps) {
+export function ScholarshipSection({ rows, admissionYear }: ScholarshipSectionProps) {
   const [listView, setListView] = useState(false);
   const [admissionsTooltip, setAdmissionsTooltip] = useState<AdmissionsTooltipState | null>(null);
   const [noticeTooltip, setNoticeTooltip] = useState<NoticeTooltipState | null>(null);
-  const recipients = useMemo(() => selectScholarshipRecipients(rows), [rows]);
+  const currentYearRows = useMemo(
+    () => rows.filter((row) => (row.admissionYear ?? 2026) === admissionYear),
+    [admissionYear, rows],
+  );
+  const recipients = useMemo(
+    () => selectScholarshipRecipients(currentYearRows),
+    [currentYearRows],
+  );
   const totalAmount = recipients.reduce((sum, item) => sum + item.amount, 0);
   const carouselItems = useMemo(() => {
     if (recipients.length === 0) return [];
@@ -485,7 +493,7 @@ export function ScholarshipSection({ rows }: ScholarshipSectionProps) {
               }}
               onBlur={() => setNoticeTooltip(null)}
             >
-              2027 총 1억 장학금 대상자
+              {admissionYear} 총 1억 장학금 대상자
               <span className="flex h-4 w-4 items-center justify-center rounded-full border border-[#8ba3b8] text-[9px] font-black text-[#52728e]">
                 i
               </span>
@@ -603,7 +611,7 @@ export function ScholarshipSection({ rows }: ScholarshipSectionProps) {
           <span className="block text-[10px] font-black tracking-[0.12em] text-[#89d1f2]">
             SCHOLARSHIP NOTICE
           </span>
-          <span className="mt-1 block text-sm font-black">2027 총 1억 장학금 안내</span>
+          <span className="mt-1 block text-sm font-black">{admissionYear} 총 1억 장학금 안내</span>
 
           <span className="mt-3 block rounded-xl bg-white/10 px-3.5 py-3 text-[11px] font-bold leading-5">
             <strong className="block">자동 선정된 장학금 대상자로 최종 확정 상태가 아닙니다.</strong>
