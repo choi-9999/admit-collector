@@ -44,4 +44,6 @@ export const UNIVERSITY_CIS: Record<string, string> = {
   KAIST: "/kaist.png",
   포항공과대학교: "/postech.png",
   POSTECH: "/postech.png",
+  영남대학교: "/yeungnam-university.png",
+  삼육대학교: "/sahmyook-university.png",
 };
