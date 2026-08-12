@@ -67,6 +67,12 @@ const SCHOOL_BRANDS: Record<string, { mark: string; from: string; to: string; ci
     to: "#ab4765",
     ci: "/korea-university.png",
   },
+  "고려대학교(세종)": {
+    mark: "KOREA",
+    from: "#8b0029",
+    to: "#ab4765",
+    ci: "/korea-university.png",
+  },
   성균관대학교: {
     mark: "SKKU",
     from: "#093c71",
@@ -248,6 +254,12 @@ const SCHOOL_BRANDS: Record<string, { mark: string; from: string; to: string; ci
     ci: "/semyung-university.png",
   },
   건국대학교: {
+    mark: "KONKUK",
+    from: "#248f1c",
+    to: "#69ad64",
+    ci: "/konkuk-university.png",
+  },
+  "건국대학교(글로컬)": {
     mark: "KONKUK",
     from: "#248f1c",
     to: "#69ad64",
