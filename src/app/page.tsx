@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useMemo, useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { createPortal } from "react-dom";
 import { AdmitRow, AdmitStatus, isUniversitiesMap } from "@/types/admit";
@@ -126,6 +126,7 @@ export default function AdmitCollectorApp() {
   const [file, setFile] = useState<File | undefined>(undefined);
   const [fileError, setFileError] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const submissionLockRef = useRef(false);
   const [registrationMode, setRegistrationMode] = useState<RegistrationMode>("single");
   const [batchEntries, setBatchEntries] = useState<BatchEntry[]>(() => [createBatchEntry()]);
 
@@ -302,7 +303,7 @@ export default function AdmitCollectorApp() {
     const metaJson = await metaRes.json();
     if (!metaRes.ok || !metaJson?.ok) {
       console.error("Meta save error:", metaJson);
-      throw new Error("서버 저장에 실패했습니다.");
+      throw new Error(metaJson?.error || "서버 저장에 실패했습니다.");
     }
 
     return {
@@ -312,28 +313,31 @@ export default function AdmitCollectorApp() {
   };
 
   const handleSubmit = async () => {
-    setFileError(false);
+    if (submissionLockRef.current) return;
+    submissionLockRef.current = true;
 
-    if (!file) {
-      setFileError(true);
-      void appAlert("합격증 파일은 필수 항목입니다. 업로드 후 제출해 주세요.");
-      return;
-    }
-    if (!branch) {
-      void appAlert("지점을 먼저 선택해 주세요.");
-      return;
-    }
-    if (!name.trim() || !univ.trim() || !dept.trim()) {
-      void appAlert("이름, 대학, 학과를 모두 입력해 주세요.");
-      return;
-    }
-    if (!universities[univ.trim()]) {
-      void appAlert("합격 대학은 목록에서 선택한 항목만 제출할 수 있습니다.");
-      return;
-    }
-
-    setSubmitting(true);
     try {
+      setFileError(false);
+
+      if (!file) {
+        setFileError(true);
+        void appAlert("합격증 파일은 필수 항목입니다. 업로드 후 제출해 주세요.");
+        return;
+      }
+      if (!branch) {
+        void appAlert("지점을 먼저 선택해 주세요.");
+        return;
+      }
+      if (!name.trim() || !univ.trim() || !dept.trim()) {
+        void appAlert("이름, 대학, 학과를 모두 입력해 주세요.");
+        return;
+      }
+      if (!universities[univ.trim()]) {
+        void appAlert("합격 대학은 목록에서 선택한 항목만 제출할 수 있습니다.");
+        return;
+      }
+
+      setSubmitting(true);
       const result = await uploadAdmission({
         applicantName: name.trim(),
         universityName: univ.trim(),
@@ -353,6 +357,7 @@ export default function AdmitCollectorApp() {
       void appAlert(err instanceof Error ? err.message : "업로드 중 오류가 발생했습니다. 네트워크를 확인해 주세요.");
     } finally {
       setSubmitting(false);
+      submissionLockRef.current = false;
     }
   };
 
