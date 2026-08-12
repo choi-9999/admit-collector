@@ -1,4 +1,5 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { appAlert } from "@/lib/appDialog";
 
 function classNames(...xs: Array<string | false | null | undefined>) {
@@ -28,7 +29,9 @@ export function Combobox({
 }) {
   const [open, setOpen] = useState(false);
   const [hoverIndex, setHoverIndex] = useState<number>(-1);
+  const [dropdownStyle, setDropdownStyle] = useState<React.CSSProperties>({});
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
 
   const filtered = useMemo(() => {
     const q = value.trim();
@@ -36,8 +39,36 @@ export function Combobox({
     return suggestions.filter((s) => s.toLowerCase().includes(q.toLowerCase()));
   }, [suggestions, value]);
 
+  const updateDropdownPosition = useCallback(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    const rect = container.getBoundingClientRect();
+    const spaceBelow = window.innerHeight - rect.bottom;
+    const openAbove = spaceBelow < 260 && rect.top > spaceBelow;
+
+    setDropdownStyle({
+      position: "fixed",
+      left: rect.left,
+      width: rect.width,
+      ...(openAbove
+        ? { bottom: window.innerHeight - rect.top + 8 }
+        : { top: rect.bottom + 8 }),
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!open) return;
+    updateDropdownPosition();
+    window.addEventListener("resize", updateDropdownPosition);
+    window.addEventListener("scroll", updateDropdownPosition, true);
+    return () => {
+      window.removeEventListener("resize", updateDropdownPosition);
+      window.removeEventListener("scroll", updateDropdownPosition, true);
+    };
+  }, [open, updateDropdownPosition]);
+
   return (
-    <div className="relative flex min-h-[72px] flex-col justify-center px-4 py-2">
+    <div ref={containerRef} className="relative flex min-h-[72px] flex-col justify-center px-4 py-2">
       <div className="flex items-center justify-between">
         <label className="text-[10px] font-bold tracking-wide text-slate-500">
           {label} {required && <span className="text-[#3f9fdb]">*</span>}
@@ -84,8 +115,11 @@ export function Combobox({
         className="w-full bg-transparent text-base font-bold leading-6 text-[#071d49] placeholder:font-normal placeholder:text-slate-300 focus:outline-none dark:text-gray-100"
       />
 
-      {open && (
-        <div className="absolute left-0 right-0 top-full z-50 mt-2 max-h-60 overflow-auto rounded-lg border border-[#dfe8ef] bg-white p-2 shadow-[0_10px_28px_rgba(7,29,73,0.12)] dark:border-gray-700 dark:bg-gray-900">
+      {open && typeof document !== "undefined" && createPortal(
+        <div
+          style={dropdownStyle}
+          className="z-[190] max-h-60 overflow-auto rounded-lg border border-[#dfe8ef] bg-white p-2 shadow-[0_10px_28px_rgba(7,29,73,0.16)] dark:border-gray-700 dark:bg-gray-900"
+        >
           {filtered.length === 0 ? (
             <div className="p-3 text-center text-xs text-slate-400">
               {restrictToList ? "검색 결과 없음 (목록 내 선택만 가능)" : "입력값 그대로 사용 가능"}
@@ -114,7 +148,8 @@ export function Combobox({
               </button>
             ))
           )}
-        </div>
+        </div>,
+        document.body,
       )}
     </div>
   );
