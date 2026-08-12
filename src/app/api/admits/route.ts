@@ -84,9 +84,40 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const payload = await req.json();
-    const id = nanoid();
-    const now = new Date().toISOString();
     const admissionYear = await getCurrentAdmissionYear();
+    const sheets = sheetsClient();
+    const nowDate = new Date();
+    const now = nowDate.toISOString();
+
+    // UI 잠금이 적용되지 않는 오래된 화면이나 네트워크 재시도에서도
+    // 동일 제출이 연속 저장되지 않도록 최근 요청을 한 번 더 확인한다.
+    const { data: existingData } = await sheets.spreadsheets.values.get({
+      spreadsheetId: SHEET_ID,
+      range: `${TAB}!A2:O`,
+    });
+    const recentDuplicate = (existingData.values || []).some((existingRow) => {
+      const createdAt = Date.parse(existingRow[12] || "");
+      return (
+        Number.isFinite(createdAt) &&
+        nowDate.getTime() - createdAt >= 0 &&
+        nowDate.getTime() - createdAt < 60_000 &&
+        (existingRow[1] || "").trim() === String(payload.name || "").trim() &&
+        (existingRow[2] || "").trim() === String(payload.university || "").trim() &&
+        (existingRow[4] || "").trim() === String(payload.dept || "").trim() &&
+        (existingRow[6] || "").trim() === String(payload.track || "").trim() &&
+        (existingRow[7] || "").trim() === String(payload.branch || "").trim() &&
+        (Number(existingRow[14]) || LEGACY_ADMISSION_YEAR) === admissionYear
+      );
+    });
+
+    if (recentDuplicate) {
+      return NextResponse.json(
+        { ok: false, error: "동일한 합격증이 이미 등록 처리되었습니다." },
+        { status: 409 },
+      );
+    }
+
+    const id = nanoid();
 
     const row = [
       id,
@@ -106,7 +137,6 @@ export async function POST(req: NextRequest) {
       admissionYear,
     ];
 
-    const sheets = sheetsClient();
     const res = await sheets.spreadsheets.values.append({
       spreadsheetId: SHEET_ID,
       range: `${TAB}!A1`,
