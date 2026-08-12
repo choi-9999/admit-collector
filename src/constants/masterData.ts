@@ -1,7 +1,5 @@
 import { AdmitStatus, UniversitiesMap } from "@/types/admit";
 
-export const HOWTO_URL = "https://charm-count-364.notion.site/2aa47bd4842d80bea0d4d78f64d99a0a";
-
 export const BRANCHES = [
   "강남", "강북", "광명", "광주남구", "광주동구", "광주북구", "광주수완", "구리남양주", "김포", "노량진",
   "대구달서", "대구수성1관", "대구수성2관", "대전둔산", "독학기숙", "동탄", "마포", "목동", "목동오목교", "목포",
