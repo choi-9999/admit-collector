@@ -4,7 +4,7 @@ import React, { useMemo, useState, useEffect } from "react";
 import Image from "next/image";
 import { createPortal } from "react-dom";
 import { AdmitRow, AdmitStatus, isUniversitiesMap } from "@/types/admit";
-import { BRANCHES, INIT_UNIVERSITIES, HOWTO_URL } from "@/constants/masterData";
+import { BRANCHES, INIT_UNIVERSITIES } from "@/constants/masterData";
 import { UNIVERSITY_CIS } from "@/constants/universityCis";
 import { buildExportComparator, toApplicant } from "@/utils/comparator";
 import { buildCSV, downloadFile } from "@/utils/csv";
@@ -1253,15 +1253,14 @@ export default function AdmitCollectorApp() {
         </div>
       </section>
 
-      {/* 10. 플로팅 대한항공 AI 챗봇 오마주 버튼 (+ 이용 가이드) */}
-      <a
-        href={HOWTO_URL}
-        target="_blank"
-        rel="noreferrer"
+      {/* 10. 문의하기 플로팅 버튼 */}
+      <button
+        type="button"
+        onClick={() => void appAlert("가맹마케팅지원팀\n최선규 대리\n070-7464-9770", { title: "문의하기" })}
         className="fixed bottom-7 right-7 z-40 flex items-center gap-2 rounded-full bg-gradient-to-r from-[#3346ad] to-[#147dc2] px-4 py-3 text-[10px] font-bold text-white shadow-xl hover:-translate-y-0.5"
       >
-        <span className="text-sm">✦</span> AI 도움말
-      </a>
+        <span className="text-sm">✦</span> 문의하기
+      </button>
 
       {/* 11. 이투스247 브랜드 푸터 */}
       <footer className="bg-[#dff2fb] px-5 py-10 text-[#315d81] md:px-10 md:py-12 xl:px-[100px]">
