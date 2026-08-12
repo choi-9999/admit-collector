@@ -265,6 +265,18 @@ const SCHOOL_BRANDS: Record<string, { mark: string; from: string; to: string; ci
     to: "#69ad64",
     ci: "/konkuk-university.png",
   },
+  영남대학교: {
+    mark: "YU",
+    from: "#004a8f",
+    to: "#5680aa",
+    ci: "/yeungnam-university.png",
+  },
+  삼육대학교: {
+    mark: "SAHMYOOK",
+    from: "#00559f",
+    to: "#5d8fbd",
+    ci: "/sahmyook-university.png",
+  },
   경성대학교: {
     mark: "KYUNGSUNG",
     from: "#a97800",
