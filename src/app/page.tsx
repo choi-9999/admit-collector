@@ -19,6 +19,7 @@ import { LoginForm } from "@/components/LoginForm";
 import { EditRowModal } from "@/components/EditRowModal";
 import { FilePreviewModal } from "@/components/FilePreviewModal";
 import { ScholarshipSection } from "@/components/ScholarshipSection";
+import { ContactModal } from "@/components/ContactModal";
 
 function classNames(...xs: Array<string | false | null | undefined>) {
   return xs.filter(Boolean).join(" ");
@@ -65,6 +66,7 @@ export default function AdmitCollectorApp() {
   // 권한/로그인
   const [isAdmin, setIsAdmin] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
+  const [showContact, setShowContact] = useState(false);
 
   // 지점
   const [branch, setBranch] = useState<string | null>(BRANCHES[0]);
@@ -1256,11 +1258,13 @@ export default function AdmitCollectorApp() {
       {/* 10. 문의하기 플로팅 버튼 */}
       <button
         type="button"
-        onClick={() => void appAlert("가맹마케팅지원팀\n최선규 대리\n070-7464-9770", { title: "문의하기" })}
+        onClick={() => setShowContact(true)}
         className="fixed bottom-7 right-7 z-40 flex items-center gap-2 rounded-full bg-gradient-to-r from-[#3346ad] to-[#147dc2] px-4 py-3 text-[10px] font-bold text-white shadow-xl hover:-translate-y-0.5"
       >
         <span className="text-sm">✦</span> 문의하기
       </button>
+
+      {showContact && <ContactModal onClose={() => setShowContact(false)} />}
 
       {/* 11. 이투스247 브랜드 푸터 */}
       <footer className="bg-[#dff2fb] px-5 py-10 text-[#315d81] md:px-10 md:py-12 xl:px-[100px]">
